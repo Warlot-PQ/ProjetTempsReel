@@ -11,7 +11,6 @@ int gestion_IHM();
 
 //----------------Gestion quantité
 //Gestion évènement
-int gestion_evenement_cmd();
 int gestion_evenement_malax();
 int gestion_evenement_agregat();
 int gestion_evenement_ciment();

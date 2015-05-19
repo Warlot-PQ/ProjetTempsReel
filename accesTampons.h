@@ -31,4 +31,7 @@ int lire_tampon_fonct_calcul_cmd_eau();
 int lire_tampon_fonct_calcul_cmd_agregat();
 int lire_tampon_fonct_calcul_cmd_ciment();
 
+int tampon_fonct_calcul_plein();
+int is_tampon_fonct_calcul_premiere_cmd();
+int set_tampon_fonct_calcul_premiere_cmd();
 #endif

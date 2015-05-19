@@ -264,3 +264,44 @@ int lire_tampon_fonct_calcul_cmd_ciment(){
 	
 	return value;
 }
+
+int tampon_fonct_calcul_plein(){
+	int value;
+	int cmd_plus_recente, cmd_en_cours;
+	
+	semTake(sem_tampon_fonct_calcul, WAIT_FOREVER);
+	cmd_plus_recente = tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_plus_recente];
+	cmd_en_cours = tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_en_cours];
+	semGive(sem_tampon_fonct_calcul);
+	
+	//Test tampon plein
+	if (cmd_plus_recente + 1 == cmd_en_cours){
+		value = PB;
+	} else {
+		value = 0;
+	}
+	
+	return value;
+}
+
+int is_tampon_fonct_calcul_premiere_cmd(){
+	int value;
+	
+	semTake(sem_tampon_fonct_calcul, WAIT_FOREVER)
+	if (tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_plus_recente] == -1){
+		value = 0;
+	} else {
+		value = PB;
+	}
+	semTake(sem_tampon_fonct_calcul, WAIT_FOREVER);
+	
+	return value;
+}
+
+int set_tampon_fonct_calcul_premiere_cmd(){
+	semTake(sem_tampon_fonct_calcul, WAIT_FOREVER)
+	tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_en_cours] = 0;
+	semTake(sem_tampon_fonct_calcul, WAIT_FOREVER);
+	
+	return 0;
+}
