@@ -39,4 +39,8 @@ int ecrire_niveau_eau_nul();
 int ecrire_niveau_eau_max();
 int incremente_niveau_eau();
 int decremente_niveau_eau();
+//Quantité eau restante
+int ecrire_quantite_eau_restante(float);
+int decremente_quantite_eau_restante();
+int is_quantite_eau_restante_nulle();
 #endif
