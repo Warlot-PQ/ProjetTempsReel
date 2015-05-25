@@ -22,12 +22,12 @@ int calcul_qte_ciment();
 
 //----------------Gestion silos agregats et ciments
 //Gestion silos agregats
-int versement_agregat(int);
+int versement_agregat();
 int remplissage_agregat_1();
 int remplissage_agregat_2();
 int remplissage_agregat_3();
 //Gestion silos ciments
-int versement_ciment(int);
+int versement_ciment();
 int remplissage_ciment_1();
 int remplissage_ciment_2();
 
