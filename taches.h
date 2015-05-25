@@ -32,7 +32,7 @@ int remplissage_ciment_1();
 int remplissage_ciment_2();
 
 //----------------Gestion balances et tapis
-//Gestion balances et tapis
+//Gestion balances
 int gestion_balance_agregats();
 int gestion_balance_ciment();
 

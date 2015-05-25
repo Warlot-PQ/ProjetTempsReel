@@ -62,11 +62,79 @@ int calcul_qte_eau(){
 	return 0;
 }
 int calcul_qte_agregat(){
+	float B, V, D, agregat_1, agregat_2, agregat_3;
+	
+//----------------Lecture des valeurs B, V, D dans le tampon_cmd
+	B = lire_tampon_cmd_cmd_plus_recent_beton();
+	V = lire_tampon_cmd_cmd_plus_recent_volume();
+	D = lire_tampon_cmd_cmd_plus_recent_distance();
+
+//----------------Calcul des quantités d'agrégats voulu selon la valeur de B
+	switch(B){
+		case 1:
+			agregat_1 = beton_type_1.agregat_1*V;
+			agregat_2 = beton_type_1.agregat_2*V;
+			agregat_3 = beton_type_1.agregat_3*V;
+			break;
+		case 2:
+			agregat_1 = beton_type_2.agregat_1*V;
+			agregat_2 = beton_type_2.agregat_2*V;
+			agregat_3 = beton_type_2.agregat_3*V;
+			break;
+		case 3:
+			agregat_1 = beton_type_3.agregat_1*V;
+			agregat_2 = beton_type_3.agregat_2*V;
+			agregat_3 = beton_type_3.agregat_3*V;
+			break;
+		default:
+			printf("calcul_qte_agregat : default case !\n");
+			return PB;
+	}
+
+//----------------Ecriture des quantités dans le tampon_qte
+	ecrire_tampon_qte_silos_agregat(index_tampon_qte_silos_agregat_1, agregat_1);
+	ecrire_tampon_qte_silos_agregat(index_tampon_qte_silos_agregat_2, agregat_2);
+	ecrire_tampon_qte_silos_agregat(index_tampon_qte_silos_agregat_3, agregat_3);
+	
+//----------------Signale la tache "gestion remplissage et versement silos" que le tampon_qte a été mis à jour
+	//TODO gestionRemplissageEtVersementSilos!d_agregat
 	
 	return 0;
 }
 int calcul_qte_ciment(){
-	
+	float B, V, D, ciment_1, ciment_2;
+		
+	//----------------Lecture des valeurs B, V, D dans le tampon_cmd
+		B = lire_tampon_cmd_cmd_plus_recent_beton();
+		V = lire_tampon_cmd_cmd_plus_recent_volume();
+		D = lire_tampon_cmd_cmd_plus_recent_distance();
+
+	//----------------Calcul des quantités d'agrégats voulu selon la valeur de B
+		switch(B){
+			case 1:
+				agregat_1 = beton_type_1.ciment_1*V;
+				agregat_2 = beton_type_1.ciment_2*V;
+				break;
+			case 2:
+				agregat_1 = beton_type_2.ciment_1*V;
+				agregat_2 = beton_type_2.ciment_2*V;
+				break;
+			case 3:
+				agregat_1 = beton_type_3.ciment_1*V;
+				agregat_2 = beton_type_3.ciment_2*V;
+				break;
+			default:
+				printf("calcul_qte_ciment : default case !\n");
+				return PB;
+		}
+
+	//----------------Ecriture des quantités dans le tampon_qte
+		ecrire_tampon_qte_silos_ciment(index_tampon_qte_silos_ciment_1, ciment_1);
+		ecrire_tampon_qte_silos_ciment(index_tampon_qte_silos_ciment_2, ciment_2);
+		
+	//----------------Signale la tache "gestion remplissage et versement silos" que le tampon_qte a été mis à jour
+		//TODO gestionRemplissageEtVersementSilos!d_ciment
+		
 	return 0;
 }
 

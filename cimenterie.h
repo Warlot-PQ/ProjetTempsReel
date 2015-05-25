@@ -33,10 +33,14 @@ extern float tampon_cmd[NB_COMMANDE * 3];
 extern float tampon_qte_silos[6]; 
 extern float tampon_fonct_calcul[5];
 
-//----------------Sémaphore d'exclusion mutuel
+//----------------Sémaphores d'exclusion mutuel
 extern SEM_ID sem_tampon_cmd;
 extern SEM_ID sem_tampon_qte_silos;
 extern SEM_ID sem_tampon_fonct_calcul;
+
+//----------------Sémaphores d'exclusion mutuel : gestion_calcul, fin des calculs
+extern SEM_ID d_agregat;
+extern SEM_ID d_ciment;
 
 //----------------Sémaphore de synchronisation des tâches entre elles
 extern SEM_ID sem_fin_eau;
