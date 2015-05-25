@@ -38,9 +38,14 @@ extern SEM_ID sem_tampon_cmd;
 extern SEM_ID sem_tampon_qte_silos;
 extern SEM_ID sem_tampon_fonct_calcul;
 
-//----------------Sémaphores d'exclusion mutuel : gestion_calcul, fin des calculs
-extern SEM_ID d_agregat;
-extern SEM_ID d_ciment;
+//----------------Sémaphores d'exclusion mutuel : gestion_calcul
+extern SEM_ID sem_calcul_agregat;
+extern SEM_ID sem_d_agregat;
+extern SEM_ID sem_calcul_ciment;
+extern SEM_ID sem_d_ciment;
+extern SEM_ID sem_calcul_eau;
+extern SEM_ID sem_demande_hygronometrie;
+extern SEM_ID sem_hygronometrie;
 
 //----------------Sémaphore de synchronisation des tâches entre elles
 extern SEM_ID sem_fin_eau;
@@ -66,6 +71,8 @@ extern SEM_ID sem_fin_remplissage_balance_agregat;	//signal la fin du versement 
 extern MSG_Q_ID file_debut_remplissage_balance_ciment;
 extern SEM_ID  sem_demande_versement_ciment;	//signal la fin du versement d'un silo, demande de fermeture de vanne
 
+extern SEM_ID sem_agregat_et_ciment_suivant;
+
 typedef struct type_beton{
 	int agregat_1;
 	int agregat_2;
@@ -78,5 +85,6 @@ typedef struct type_beton{
 extern type_beton beton_type_1;
 extern type_beton beton_type_2;
 extern type_beton beton_type_3;
+extern K = 0.5;
 
 #endif

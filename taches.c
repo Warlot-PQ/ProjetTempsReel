@@ -42,11 +42,33 @@ int gestion_evenement_malax(){
 	return 0;
 }
 int gestion_evenement_agregat(){
+	int cmd_plus_recente, cmd_en_cours;
+	
+	while(1){
+		cmd_plus_recente = lire_tampon_fonct_calcul_cmd_plus_recente();
+		cmd_en_cours = lire_tampon_fonct_calcul_cmd_en_cours();
+		
+		if(cmd_plus_recente != cmd_en_cours){
+			incremente_tampon_fonct_calcul_cmd_agregat();
+			semGive(sem_calcul_agregat);
+		}
+	}
 	
 	return 0;
 }
 int gestion_evenement_ciment(){
-	
+	int cmd_plus_recente, cmd_en_cours;
+		
+		while(1){
+			cmd_plus_recente = lire_tampon_fonct_calcul_cmd_plus_recente();
+			cmd_en_cours = lire_tampon_fonct_calcul_cmd_en_cours();
+			
+			if(cmd_plus_recente != cmd_en_cours){
+				incremente_tampon_fonct_calcul_cmd_ciment();
+				semGive(sem_calcul_ciment);
+			}
+		}
+		
 	return 0;
 }
 int gestion_evenement_eau(){
@@ -59,58 +81,100 @@ int gestion_evenement_eau(){
 }
 
 int calcul_qte_eau(){
+	float B, V, D, qte_eau, hygronometrie;
 	
+	while(1){
+		semTake(sem_calcul_eau, WAIT_FOREVER);
+		semGive(sem_demande_hygronometrie);
+//----------------Lecture des valeurs B, V, D dans le tampon_cmd		
+		B = lire_tampon_cmd_cmd_plus_recent_beton();
+		V = lire_tampon_cmd_cmd_plus_recent_volume();
+		D = lire_tampon_cmd_cmd_plus_recent_distance();
+
+//----------------Remarque : le driver devra alimenter ce sémaphore
+		semTake(sem_hygronometrie, WAIT_FOREVER);
+		
+//----------------Calcul de la quantité d'eau voulue selon le type de béton
+		switch(B){
+			case 1:
+				qte_eau = beton_type_1.eau*V - hygronometrie*V*beton_type_1.agregat_1 + K*D;
+				break;
+			case 2:
+				qte_eau = beton_type_2.eau*V - hygronometrie*V*beton_type_2.agregat_1 + K*D;
+				break;
+			case 3:
+				qte_eau = beton_type_3.eau*V - hygronometrie*V*beton_type_3.agregat_1 + K*D;
+				break;
+			default:
+				printf("calcul_qte_agregat : default case !\n");
+				return PB;
+		}
+		
+//----------------Ecriture dans tampon_qte
+		ecrire_tampon_qte_silos_eau(qte_eau);
+		
+//----------------Signale la tache "gestion synchro" que le système traite la commande suivante 	
+		semGive(sem_agregat_et_ciment_suivant);
+	}
 	return 0;
 }
 int calcul_qte_agregat(){
 	float B, V, D, agregat_1, agregat_2, agregat_3;
-	
-//----------------Lecture des valeurs B, V, D dans le tampon_cmd
-	B = lire_tampon_cmd_cmd_plus_recent_beton();
-	V = lire_tampon_cmd_cmd_plus_recent_volume();
-	D = lire_tampon_cmd_cmd_plus_recent_distance();
 
-//----------------Calcul des quantités d'agrégats voulu selon la valeur de B
-	switch(B){
-		case 1:
-			agregat_1 = beton_type_1.agregat_1*V;
-			agregat_2 = beton_type_1.agregat_2*V;
-			agregat_3 = beton_type_1.agregat_3*V;
-			break;
-		case 2:
-			agregat_1 = beton_type_2.agregat_1*V;
-			agregat_2 = beton_type_2.agregat_2*V;
-			agregat_3 = beton_type_2.agregat_3*V;
-			break;
-		case 3:
-			agregat_1 = beton_type_3.agregat_1*V;
-			agregat_2 = beton_type_3.agregat_2*V;
-			agregat_3 = beton_type_3.agregat_3*V;
-			break;
-		default:
-			printf("calcul_qte_agregat : default case !\n");
-			return PB;
-	}
+
+	while(1){
+		semTake(sem_calcul_agregat, WAIT_FOREVER);
+		
+//----------------Lecture des valeurs B, V, D dans le tampon_cmd
+		B = lire_tampon_cmd_cmd_plus_recent_beton();
+		V = lire_tampon_cmd_cmd_plus_recent_volume();
+		D = lire_tampon_cmd_cmd_plus_recent_distance();
+
+//----------------Calcul des quantités d'agrégats voulues selon la valeur de B
+		switch(B){
+			case 1:
+				agregat_1 = beton_type_1.agregat_1*V;
+				agregat_2 = beton_type_1.agregat_2*V;
+				agregat_3 = beton_type_1.agregat_3*V;
+				break;
+			case 2:
+				agregat_1 = beton_type_2.agregat_1*V;
+				agregat_2 = beton_type_2.agregat_2*V;
+				agregat_3 = beton_type_2.agregat_3*V;
+				break;
+			case 3:
+				agregat_1 = beton_type_3.agregat_1*V;
+				agregat_2 = beton_type_3.agregat_2*V;
+				agregat_3 = beton_type_3.agregat_3*V;
+				break;
+			default:
+				printf("calcul_qte_agregat : default case !\n");
+				return PB;
+		}
 
 //----------------Ecriture des quantités dans le tampon_qte
-	ecrire_tampon_qte_silos_agregat(index_tampon_qte_silos_agregat_1, agregat_1);
-	ecrire_tampon_qte_silos_agregat(index_tampon_qte_silos_agregat_2, agregat_2);
-	ecrire_tampon_qte_silos_agregat(index_tampon_qte_silos_agregat_3, agregat_3);
+		ecrire_tampon_qte_silos_agregat(index_tampon_qte_silos_agregat_1, agregat_1);
+		ecrire_tampon_qte_silos_agregat(index_tampon_qte_silos_agregat_2, agregat_2);
+		ecrire_tampon_qte_silos_agregat(index_tampon_qte_silos_agregat_3, agregat_3);
 	
 //----------------Signale la tache "gestion remplissage et versement silos" que le tampon_qte a été mis à jour
-	//TODO gestionRemplissageEtVersementSilos!d_agregat
+		semGive(sem_d_agregat);
+	}
 	
 	return 0;
 }
 int calcul_qte_ciment(){
 	float B, V, D, ciment_1, ciment_2;
+	
+	while(1){
+		semTake(sem_calcul_ciment, WAIT_FOREVER);
 		
-	//----------------Lecture des valeurs B, V, D dans le tampon_cmd
+//----------------Lecture des valeurs B, V, D dans le tampon_cmd
 		B = lire_tampon_cmd_cmd_plus_recent_beton();
 		V = lire_tampon_cmd_cmd_plus_recent_volume();
 		D = lire_tampon_cmd_cmd_plus_recent_distance();
-
-	//----------------Calcul des quantités d'agrégats voulu selon la valeur de B
+	
+//----------------Calcul des quantités d'agrégats voulues selon la valeur de B
 		switch(B){
 			case 1:
 				agregat_1 = beton_type_1.ciment_1*V;
@@ -128,13 +192,14 @@ int calcul_qte_ciment(){
 				printf("calcul_qte_ciment : default case !\n");
 				return PB;
 		}
-
-	//----------------Ecriture des quantités dans le tampon_qte
+	
+//----------------Ecriture des quantités dans le tampon_qte
 		ecrire_tampon_qte_silos_ciment(index_tampon_qte_silos_ciment_1, ciment_1);
 		ecrire_tampon_qte_silos_ciment(index_tampon_qte_silos_ciment_2, ciment_2);
-		
-	//----------------Signale la tache "gestion remplissage et versement silos" que le tampon_qte a été mis à jour
-		//TODO gestionRemplissageEtVersementSilos!d_ciment
+			
+//----------------Signale la tache "gestion remplissage et versement silos" que le tampon_qte a été mis à jour
+		semGive(sem_d_ciment);
+	}
 		
 	return 0;
 }
