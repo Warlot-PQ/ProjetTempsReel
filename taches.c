@@ -95,6 +95,14 @@ int versement_agregat(){
 	return 0;
 }
 int remplissage_agregat_1(){
+	//Initialisation du système, remplissage du silo
+	van_haut_ouvr_agregat(1);
+	
+	//Attente de l'évènement silo plein
+	semTake(sem_int_max_agr_1, WAIT_FOREVER);
+	
+	van_haut_ferm_agregat(1);
+	
 	while(1){
 		semTake(sem_int_min_agr_1, WAIT_FOREVER);
 		
@@ -108,6 +116,14 @@ int remplissage_agregat_1(){
 	return 0;
 }
 int remplissage_agregat_2(){
+	//Initialisation du système, remplissage du silo
+	van_haut_ouvr_agregat(2);
+	
+	//Attente de l'évènement silo plein
+	semTake(sem_int_max_agr_2, WAIT_FOREVER);
+	
+	van_haut_ferm_agregat(2);
+	
 	while(1){
 		semTake(sem_int_min_agr_2, WAIT_FOREVER);
 		
@@ -121,6 +137,14 @@ int remplissage_agregat_2(){
 	return 0;
 }
 int remplissage_agregat_3(){
+	//Initialisation du système, remplissage du silo
+	van_haut_ouvr_agregat(3);
+	
+	//Attente de l'évènement silo plein
+	semTake(sem_int_max_agr_3, WAIT_FOREVER);
+	
+	van_haut_ferm_agregat(3);
+	
 	while(1){
 		semTake(sem_int_min_agr_3, WAIT_FOREVER);
 		
@@ -158,6 +182,14 @@ int versement_ciment(){
 	return 0;
 }
 int remplissage_ciment_1(){
+	//Initialisation du système, remplissage du silo
+	van_haut_ouvr_ciment(1);
+	
+	//Attente de l'évènement silo plein
+	semTake(sem_int_max_cim_1, WAIT_FOREVER);
+	
+	van_haut_ferm_ciment(1);
+	
 	while(1){
 		semTake(sem_int_min_cim_1, WAIT_FOREVER);
 		
@@ -171,6 +203,14 @@ int remplissage_ciment_1(){
 	return 0;
 }
 int remplissage_ciment_2(){
+	//Initialisation du système, remplissage du silo
+	van_haut_ouvr_ciment(2);
+	
+	//Attente de l'évènement silo plein
+	semTake(sem_int_max_cim_2, WAIT_FOREVER);
+	
+	van_haut_ferm_ciment(2);
+	
 	while(1){
 		semTake(sem_int_min_cim_2, WAIT_FOREVER);
 		
@@ -199,10 +239,66 @@ int gestion_synchro(){
 }
 
 int versement_eau(){
+	while(1){
+		semTake(sem_demande_versement_eau, WAIT_FOREVER);
+		
+		
+		
+		
+		
+		
+		
+		
+	}
 	
 	return 0;
 }
 int remplissage_eau(){
+	ecrire_niveau_eau_nul();
+	
+	// Initialisation du système, remplissage du silo
+	semTake(versement_eau, WAIT_FOREVER); // versement impossible
+	
+	van_haut_ouvr_eau();
+	
+	// Attente de l'évènement silo plein
+	semTake(sem_int_max_eau, WAIT_FOREVER);
+	
+	van_haut_ferm_eau();
+	ecrire_niveau_eau_max();
+	semGive(versement_eau);		// autorise le versment
+	
+	while(1){
+		semTake(sem_int_min_eau, WAIT_FOREVER);		// silo eau vide
+		semTake(versement_eau, WAIT_FOREVER); // versement impossible
+		
+		van_haut_ouvr_eau();
+		
+		// Attente de l'évènement silo plein
+		semTake(sem_int_max_eau, WAIT_FOREVER);
+		
+		van_haut_ferm_eau();
+		ecrire_niveau_eau_max();
+		semGive(versement_eau);		// autorise le versment
+	}
+	
+	return 0;
+}
+
+int compteur_plus_eau(){
+	while (1){
+		semTake(sem_int_plus_eau, WAIT_FOREVER);
+		incremente_niveau_eau();
+	}
+	
+	return 0;
+}
+
+int compteur_moins_eau(){
+	while (1){
+		semTake(sem_int_moins_eau, WAIT_FOREVER);
+		decremente_niveau_eau();
+	}
 	
 	return 0;
 }

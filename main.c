@@ -37,6 +37,8 @@ int main(){
 		
 	//Initialise les sémaphores de synchronisation des tâches
 	sem_fin_eau = semBCreate(SEM_Q_FIFO, 0);
+	versement_eau = semBCreate(SEM_Q_FIFO, 1);
+	
 	
 	
 	
