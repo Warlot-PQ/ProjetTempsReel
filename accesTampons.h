@@ -6,7 +6,7 @@
 
 //----------------Fonctions d'accès aux tampons
 //Tampon commande
-int ecrire__tampon_cmd_cmd_plus_recent_distance(float distance);
+int ecrire_tampon_cmd_cmd_plus_recent_distance(float distance);
 int ecrire_tampon_cmd_cmd_plus_recent_volume(float volume);
 int ecrire_tampon_cmd_cmd_plus_recent_beton(float beton);
 float lire_tampon_cmd_cmd_plus_recent_distance();
@@ -30,8 +30,12 @@ int lire_tampon_fonct_calcul_cmd_en_cours();
 int lire_tampon_fonct_calcul_cmd_eau();
 int lire_tampon_fonct_calcul_cmd_agregat();
 int lire_tampon_fonct_calcul_cmd_ciment();
-
 int tampon_fonct_calcul_plein();
 int is_tampon_fonct_calcul_premiere_cmd();
 int set_tampon_fonct_calcul_premiere_cmd();
+//Niveau eau
+int ecrire_niveau_eau_nul();
+int ecrire_niveau_eau_max();
+int incremente_niveau_eau();
+int decremente_niveau_eau();
 #endif

@@ -37,6 +37,7 @@ int main(){
 		
 	//Initialise les sémaphores de synchronisation des tâches
 	sem_fin_eau = semBCreate(SEM_Q_FIFO, 0);
+
 	sem_calcul_agregat = semBCreate(SEM_Q_FIFO, 0);
 	sem_d_agregat = semBCreate(SEM_Q_FIFO, 0);
 	sem_calcul_ciment = semBCreate(SEM_Q_FIFO, 0);
@@ -45,6 +46,9 @@ int main(){
 	sem_demande_hygronometrie = semBCreate(SEM_Q_INFO, 0);
 	sem_hygronometrie = semBCreate(SEM_Q_INFO, 0);
 	sem_agregat_et_ciment_suivant = semBCreate(SEM_Q_INFO, 0);
+
+	versement_eau = semBCreate(SEM_Q_FIFO, 1);
+	
 	
 	
 	

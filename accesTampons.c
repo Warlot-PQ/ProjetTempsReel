@@ -293,7 +293,7 @@ int is_tampon_fonct_calcul_premiere_cmd(){
 	} else {
 		value = PB;
 	}
-	semTake(sem_tampon_fonct_calcul, WAIT_FOREVER);
+	semGive(sem_tampon_fonct_calcul);
 	
 	return value;
 }
@@ -301,7 +301,31 @@ int is_tampon_fonct_calcul_premiere_cmd(){
 int set_tampon_fonct_calcul_premiere_cmd(){
 	semTake(sem_tampon_fonct_calcul, WAIT_FOREVER);
 	tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_en_cours] = 0;
-	semTake(sem_tampon_fonct_calcul, WAIT_FOREVER);
+	semGive(sem_tampon_fonct_calcul);
 	
 	return 0;
+}
+
+int ecrire_niveau_eau_nul(){
+	semTake(sem_niveau_eau, WAIT_FOREVER);
+	niveau_eau = 0;
+	semGive(sem_niveau_eau);
+}
+
+int ecrire_niveau_eau_max(){
+	semTake(sem_niveau_eau, WAIT_FOREVER);
+	niveau_eau = NIVEAU_EAU_MAX;
+	semGive(sem_niveau_eau);
+}
+
+int incremente_niveau_eau(){
+	semTake(sem_niveau_eau, WAIT_FOREVER);
+	niveau_eau += 1;
+	semGive(sem_niveau_eau);
+}
+
+int decremente_niveau_eau(){
+	semTake(sem_niveau_eau, WAIT_FOREVER);
+	niveau_eau -= 1;
+	semGive(sem_niveau_eau);
 }
