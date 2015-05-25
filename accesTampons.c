@@ -116,7 +116,7 @@ int ecrire_tampon_qte_silos_agregat(int numero_silo, float qte){
 	return 0;
 }
 int ecrire_tampon_qte_silos_ciment(int numero_silo, float qte){
-	if (numero_silo < 0 || numero_silo > 3 || qte < 0){
+	if (numero_silo < 0 || numero_silo > 2 || qte < 0){
 		return PB;
 	}
 	

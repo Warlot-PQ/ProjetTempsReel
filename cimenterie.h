@@ -44,16 +44,17 @@ extern SEM_ID sem_tampon_fonct_calcul;
 extern SEM_ID sem_niveau_eau;
 
 //----------------Sémaphores d'exclusion mutuel : gestion_calcul
-extern SEM_ID sem_calcul_agregat;
-extern SEM_ID sem_d_agregat;
-extern SEM_ID sem_calcul_ciment;
-extern SEM_ID sem_d_ciment;
-extern SEM_ID sem_calcul_eau;
 extern SEM_ID sem_demande_hygronometrie;
 extern SEM_ID sem_hygronometrie;
 
 //----------------Sémaphore de synchronisation des tâches entre elles
+extern SEM_ID sem_fin_agregat;
+extern SEM_ID sem_fin_ciment;
 extern SEM_ID sem_fin_eau;
+
+extern SEM_ID sem_calcul_agregat;
+extern SEM_ID sem_calcul_ciment;
+extern SEM_ID sem_calcul_eau;
 
 extern SEM_ID sem_int_min_agr_1;
 extern SEM_ID sem_int_min_agr_2;

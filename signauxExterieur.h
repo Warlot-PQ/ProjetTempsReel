@@ -22,6 +22,8 @@ void van_haut_ouvr_eau();
 
 void van_haut_ferm_eau();
 
+void demande_hygrometrie(); //demande l'hygrometrie et bloque tant que la valeur n'est pas reçu
+
 //----------------Reception
 Silos Agrégat min
 Silos Agrégat max

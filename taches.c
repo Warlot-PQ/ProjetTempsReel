@@ -45,6 +45,8 @@ int gestion_evenement_agregat(){
 	int cmd_plus_recente, cmd_en_cours;
 	
 	while(1){
+		semTake(sem_fin_agregat, WAIT_FOREVER);
+		
 		cmd_plus_recente = lire_tampon_fonct_calcul_cmd_plus_recente();
 		cmd_en_cours = lire_tampon_fonct_calcul_cmd_en_cours();
 		
@@ -60,6 +62,8 @@ int gestion_evenement_ciment(){
 	int cmd_plus_recente, cmd_en_cours;
 		
 		while(1){
+			semTake(sem_fin_ciment, WAIT_FOREVER);
+			
 			cmd_plus_recente = lire_tampon_fonct_calcul_cmd_plus_recente();
 			cmd_en_cours = lire_tampon_fonct_calcul_cmd_en_cours();
 			
@@ -85,14 +89,12 @@ int calcul_qte_eau(){
 	
 	while(1){
 		semTake(sem_calcul_eau, WAIT_FOREVER);
-		semGive(sem_demande_hygronometrie);
+		demande_hygrometrie();
+		
 //----------------Lecture des valeurs B, V, D dans le tampon_cmd		
 		B = lire_tampon_cmd_cmd_plus_recent_beton();
 		V = lire_tampon_cmd_cmd_plus_recent_volume();
 		D = lire_tampon_cmd_cmd_plus_recent_distance();
-
-//----------------Remarque : le driver devra alimenter ce sémaphore
-		semTake(sem_hygronometrie, WAIT_FOREVER);
 		
 //----------------Calcul de la quantité d'eau voulue selon le type de béton
 		switch(B){
@@ -153,12 +155,12 @@ int calcul_qte_agregat(){
 		}
 
 //----------------Ecriture des quantités dans le tampon_qte
-		ecrire_tampon_qte_silos_agregat(index_tampon_qte_silos_agregat_1, agregat_1);
-		ecrire_tampon_qte_silos_agregat(index_tampon_qte_silos_agregat_2, agregat_2);
-		ecrire_tampon_qte_silos_agregat(index_tampon_qte_silos_agregat_3, agregat_3);
+		ecrire_tampon_qte_silos_agregat(1, agregat_1);
+		ecrire_tampon_qte_silos_agregat(2, agregat_2);
+		ecrire_tampon_qte_silos_agregat(3, agregat_3);
 	
 //----------------Signale la tache "gestion remplissage et versement silos" que le tampon_qte a été mis à jour
-		semGive(sem_d_agregat);
+		semGive(sem_demande_versement_agregat);
 	}
 	
 	return 0;
@@ -194,11 +196,11 @@ int calcul_qte_ciment(){
 		}
 	
 //----------------Ecriture des quantités dans le tampon_qte
-		ecrire_tampon_qte_silos_ciment(index_tampon_qte_silos_ciment_1, ciment_1);
-		ecrire_tampon_qte_silos_ciment(index_tampon_qte_silos_ciment_2, ciment_2);
+		ecrire_tampon_qte_silos_ciment(1, ciment_1);
+		ecrire_tampon_qte_silos_ciment(2, ciment_2);
 			
 //----------------Signale la tache "gestion remplissage et versement silos" que le tampon_qte a été mis à jour
-		semGive(sem_d_ciment);
+		semGive(sem_demande_versement_ciment);
 	}
 		
 	return 0;
@@ -219,7 +221,7 @@ int versement_agregat(){
 			//Ouverture du silo num_silo
 			van_bas_ouvr_agregat((int) num_silo);
 			
-			semTake(sem_demande_versement_agregat, WAIT_FOREVER)
+			semTake(sem_fin_remplissage_balance_agregat, WAIT_FOREVER);
 			
 			//Fermeture du silo num_silo
 			van_bas_ferm_agregat((int) num_silo);
@@ -299,14 +301,14 @@ int versement_ciment(){
 		//Attente de la demande de versement d'agregat
 		semTake(sem_demande_versement_ciment, WAIT_FOREVER);
 		
-		for (num_silo = 1; num_silo <= 3; num_silo += 1) {
+		for (num_silo = 1; num_silo <= 2; num_silo += 1) {
 			//Signal de début de versement à la balance
 			msgQSend(file_debut_remplissage_balance_ciment, (char *) num_silo, 1, WAIT_FOREVER, MSG_PRI_NORMAL);
 			
 			//Ouverture du silo num_silo
 			van_bas_ouvr_ciment((int) num_silo);
 			
-			semTake(sem_demande_versement_ciment, WAIT_FOREVER)
+			semTake(sem_fin_remplissage_balance_ciment, WAIT_FOREVER)
 			
 			//Fermeture du silo num_silo
 			van_bas_ferm_ciment((int) num_silo);
