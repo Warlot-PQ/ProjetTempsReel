@@ -1,6 +1,7 @@
 #include "cimenterie.h"
 #include "accesTampons.h"
 #include "taches.h"
+#include "signauxExterieur.h"
 
 int gestion_IHM(){
 	char valeur_volume;
@@ -70,33 +71,116 @@ int calcul_qte_ciment(){
 	return 0;
 }
 
-int versement_agregat(int numero_silo){
+int versement_agregat(){
+	//Numéro du silo à ouvrir
+	int num_silo = 0;
 	
+	while(1){
+		//Attente de la demande de versement d'agregat
+		semTake(sem_demande_versement_agregat, WAIT_FOREVER);
+		
+		for (num_silo = 1; num_silo <= 3; num_silo += 1) {
+			//Signal de début de versement à la balance
+			msgQSend(file_debut_remplissage_balance_agregat, (char *) num_silo, 1, WAIT_FOREVER, MSG_PRI_NORMAL);
+			
+			//Ouverture du silo num_silo
+			van_bas_ouvr_agregat((int) num_silo);
+			
+			semTake(sem_demande_versement_agregat, WAIT_FOREVER)
+			
+			//Fermeture du silo num_silo
+			van_bas_ferm_agregat((int) num_silo);
+		}
+	}
 	return 0;
 }
 int remplissage_agregat_1(){
+	while(1){
+		semTake(sem_int_min_agr_1, WAIT_FOREVER);
+		
+		van_haut_ouvr_agregat(1);
+		
+		semTake(sem_int_max_agr_1, WAIT_FOREVER);
+		
+		van_haut_ferm_agregat(1);
+	}
 	
 	return 0;
 }
 int remplissage_agregat_2(){
-	
+	while(1){
+		semTake(sem_int_min_agr_2, WAIT_FOREVER);
+		
+		van_haut_ouvr_agregat(2);
+		
+		semTake(sem_int_max_agr_2, WAIT_FOREVER);
+		
+		van_haut_ferm_agregat(2);
+	}
+		
 	return 0;
 }
 int remplissage_agregat_3(){
-	
+	while(1){
+		semTake(sem_int_min_agr_3, WAIT_FOREVER);
+		
+		van_haut_ouvr_agregat(3);
+		
+		semTake(sem_int_max_agr_3, WAIT_FOREVER);
+		
+		van_haut_ferm_agregat(3);
+	}
+		
 	return 0;
 }
 
-int versement_ciment(int numero_silo){
+int versement_ciment(){
+	//Numéro du silo à ouvrir
+	int num_silo = 0;
 	
+	while(1){
+		//Attente de la demande de versement d'agregat
+		semTake(sem_demande_versement_ciment, WAIT_FOREVER);
+		
+		for (num_silo = 1; num_silo <= 3; num_silo += 1) {
+			//Signal de début de versement à la balance
+			msgQSend(file_debut_remplissage_balance_ciment, (char *) num_silo, 1, WAIT_FOREVER, MSG_PRI_NORMAL);
+			
+			//Ouverture du silo num_silo
+			van_bas_ouvr_ciment((int) num_silo);
+			
+			semTake(sem_demande_versement_ciment, WAIT_FOREVER)
+			
+			//Fermeture du silo num_silo
+			van_bas_ferm_ciment((int) num_silo);
+		}
+	}
 	return 0;
 }
 int remplissage_ciment_1(){
-	
+	while(1){
+		semTake(sem_int_min_cim_1, WAIT_FOREVER);
+		
+		van_haut_ouvr_ciment(1);
+		
+		semTake(sem_int_max_cim_1, WAIT_FOREVER);
+		
+		van_haut_ferm_ciment(1);
+	}
+		
 	return 0;
 }
 int remplissage_ciment_2(){
-	
+	while(1){
+		semTake(sem_int_min_cim_2, WAIT_FOREVER);
+		
+		van_haut_ouvr_ciment(2);
+		
+		semTake(sem_int_max_cim_2, WAIT_FOREVER);
+		
+		van_haut_ferm_ciment(2);
+	}
+		
 	return 0;
 }
 

@@ -31,7 +31,7 @@
 //----------------Tampons
 extern float tampon_cmd[NB_COMMANDE * 3];
 extern float tampon_qte_silos[6]; 
-extern float tampon_fonct_calcul[5];
+extern int tampon_fonct_calcul[5];
 
 //----------------Sémaphore d'exclusion mutuel
 extern SEM_ID sem_tampon_cmd;
@@ -40,6 +40,27 @@ extern SEM_ID sem_tampon_fonct_calcul;
 
 //----------------Sémaphore de synchronisation des tâches entre elles
 extern SEM_ID sem_fin_eau;
+
+extern SEM_ID sem_int_min_agr_1;
+extern SEM_ID sem_int_min_agr_2;
+extern SEM_ID sem_int_min_agr_3;
+extern SEM_ID sem_int_max_agr_1;
+extern SEM_ID sem_int_max_agr_2;
+extern SEM_ID sem_int_max_agr_3;
+
+extern SEM_ID sem_int_min_cim_1;
+extern SEM_ID sem_int_min_cim_2;
+extern SEM_ID sem_int_max_cim_1;
+extern SEM_ID sem_int_max_cim_2;
+
+extern SEM_ID sem_demande_versement_agregat;
+extern SEM_ID sem_demande_versement_ciment;
+
+extern MSG_Q_ID file_debut_remplissage_balance_agregat;
+extern SEM_ID sem_fin_remplissage_balance_agregat;	//signal la fin du versement d'un silo, demande de fermeture de vanne
+
+extern MSG_Q_ID file_debut_remplissage_balance_ciment;
+extern SEM_ID  sem_demande_versement_ciment;	//signal la fin du versement d'un silo, demande de fermeture de vanne
 
 typedef struct type_beton{
 	int agregat_1;
