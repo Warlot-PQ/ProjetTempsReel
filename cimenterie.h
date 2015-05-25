@@ -36,12 +36,14 @@ extern float tampon_cmd[NB_COMMANDE * 3];
 extern float tampon_qte_silos[6]; 
 extern int tampon_fonct_calcul[5];
 extern int niveau_eau;
+extern float quantité_eau_restante;
 
 //----------------Sémaphores d'exclusion mutuel
 extern SEM_ID sem_tampon_cmd;
 extern SEM_ID sem_tampon_qte_silos;
 extern SEM_ID sem_tampon_fonct_calcul;
 extern SEM_ID sem_niveau_eau;
+extern SEM_ID sem_quantite_eau_restante;
 
 //----------------Sémaphores d'exclusion mutuel : gestion_calcul
 extern SEM_ID sem_demande_hygronometrie;

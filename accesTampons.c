@@ -310,22 +310,58 @@ int ecrire_niveau_eau_nul(){
 	semTake(sem_niveau_eau, WAIT_FOREVER);
 	niveau_eau = 0;
 	semGive(sem_niveau_eau);
+	
+	return 0;
 }
 
 int ecrire_niveau_eau_max(){
 	semTake(sem_niveau_eau, WAIT_FOREVER);
 	niveau_eau = NIVEAU_EAU_MAX;
 	semGive(sem_niveau_eau);
+	
+	return 0;
 }
 
 int incremente_niveau_eau(){
 	semTake(sem_niveau_eau, WAIT_FOREVER);
 	niveau_eau += 1;
 	semGive(sem_niveau_eau);
+	
+	return 0;
 }
 
 int decremente_niveau_eau(){
 	semTake(sem_niveau_eau, WAIT_FOREVER);
 	niveau_eau -= 1;
 	semGive(sem_niveau_eau);
+	
+	return 0;
+}
+
+int ecrire_quantite_eau_restante(float valeur){
+	semTake(sem_quantite_eau_restante, WAIT_FOREVER);
+	quantité_eau_restante = valeur;
+	semGive(sem_quantite_eau_restante);
+	
+	return 0;
+}
+
+int decremente_quantite_eau_restante(){
+	semTake(sem_quantite_eau_restante, WAIT_FOREVER);
+	quantité_eau_restante -= 1;
+	semGive(sem_quantite_eau_restante);
+	
+	return 0;
+}
+
+int is_quantite_eau_restante_nulle(){
+	int value = 0;
+	
+	semTake(sem_quantite_eau_restante, WAIT_FOREVER);
+	if (quantité_eau_restante <= 0) {
+		value = 1;
+	}
+	semGive(sem_quantite_eau_restante);
+	
+	return value;
 }

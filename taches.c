@@ -375,15 +375,17 @@ int gestion_synchro(){
 
 int versement_eau(){
 	while(1){
+		// Attend une demande de versement
 		semTake(sem_demande_versement_eau, WAIT_FOREVER);
 		
+		// Lance le calcul de la quantité d'eau
+		semGive(sem_calcul_eau);
 		
+		ecrire_quantite_eau_restante(lire_tampon_qte_silos_eau());
 		
-		
-		
-		
-		
-		
+		// Début versement dès que c'est possible
+		attente active tant que versement impossible ////////////////******************
+		Ouverture vanne bas eau ////////////////******************
 	}
 	
 	return 0;
@@ -392,7 +394,8 @@ int remplissage_eau(){
 	ecrire_niveau_eau_nul();
 	
 	// Initialisation du système, remplissage du silo
-	semTake(versement_eau, WAIT_FOREVER); // versement impossible
+	//Rupture versement
+	Fermeture vanne bas eau + versement impossible ////////////////******************
 	
 	van_haut_ouvr_eau();
 	
@@ -401,11 +404,13 @@ int remplissage_eau(){
 	
 	van_haut_ferm_eau();
 	ecrire_niveau_eau_max();
-	semGive(versement_eau);		// autorise le versment
+	//Autorise le versement
+	versement possible ////////////////******************
 	
 	while(1){
 		semTake(sem_int_min_eau, WAIT_FOREVER);		// silo eau vide
-		semTake(versement_eau, WAIT_FOREVER); // versement impossible
+		//Rupture versement
+		memorisation etat versement en cours + Fermeture vanne bas eau + versement impossible ////////////////******************
 		
 		van_haut_ouvr_eau();
 		
@@ -414,7 +419,9 @@ int remplissage_eau(){
 		
 		van_haut_ferm_eau();
 		ecrire_niveau_eau_max();
-		semGive(versement_eau);		// autorise le versment
+		//Reprise versement
+		si etat versement en cours = vrai alors ouverture vanne bas eau////////////////******************
+		versement possible ////////////////******************
 	}
 	
 	return 0;
@@ -433,6 +440,11 @@ int compteur_moins_eau(){
 	while (1){
 		semTake(sem_int_moins_eau, WAIT_FOREVER);
 		decremente_niveau_eau();
+		decremente_quantite_eau_restante();
+		
+		if(is_quantite_eau_restante_nulle() == 1) {
+			van_bas_ferm_eau();
+		}
 	}
 	
 	return 0;
