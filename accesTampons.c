@@ -46,6 +46,19 @@ int ecrire_tampon_cmd_cmd_plus_recent_beton(float beton){
 		    
 	return 0;
 }
+int efface_commande_traitee(){
+	int index_cmd_en_cours;
+	
+	index_cmd_en_cours = lire_tampon_fonct_calcul_cmd_en_cours();
+	
+	semTake(sem_tampon_cmd, WAIT_FOREVER);
+	tampon_cmd[index_cmd_en_cours + index_tampon_cmd_beton] = 0;
+	tampon_cmd[index_cmd_en_cours + index_tampon_cmd_agregat] = 0;
+	tampon_cmd[index_cmd_en_cours + index_tampon_cmd_ciment] = 0;
+	semGive(sem_tampon_cmd);
+	
+	return 0;
+}
 float lire_tampon_cmd_cmd_plus_recent_distance(){
 	int index_cmd_plus_recente;
 	float value;

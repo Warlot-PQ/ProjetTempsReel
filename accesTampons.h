@@ -9,6 +9,7 @@
 int ecrire_tampon_cmd_cmd_plus_recent_distance(float distance);
 int ecrire_tampon_cmd_cmd_plus_recent_volume(float volume);
 int ecrire_tampon_cmd_cmd_plus_recent_beton(float beton);
+int efface_commande_traitee();
 float lire_tampon_cmd_cmd_plus_recent_distance();
 float lire_tampon_cmd_cmd_plus_recent_volume();
 float lire_tampon_cmd_cmd_plus_recent_beton();

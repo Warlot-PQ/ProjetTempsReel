@@ -43,7 +43,7 @@ extern SEM_ID sem_tampon_qte_silos;
 extern SEM_ID sem_tampon_fonct_calcul;
 extern SEM_ID sem_niveau_eau;
 
-//----------------Sémaphores d'exclusion mutuel : gestion_calcul
+//----------------Sémaphores pour l'hygrometrie
 extern SEM_ID sem_demande_hygronometrie;
 extern SEM_ID sem_hygronometrie;
 
@@ -51,6 +51,7 @@ extern SEM_ID sem_hygronometrie;
 extern SEM_ID sem_fin_agregat;
 extern SEM_ID sem_fin_ciment;
 extern SEM_ID sem_fin_eau;
+extern SEM_ID sem_fin_malaxeur;
 
 extern SEM_ID sem_calcul_agregat;
 extern SEM_ID sem_calcul_ciment;

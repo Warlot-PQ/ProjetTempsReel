@@ -38,7 +38,34 @@ int gestion_IHM(){
 	return 0;
 }
 int gestion_evenement_malax(){
+	int cmd_plus_recente, cmd_en_cours;
 	
+	while(1){
+		semTake(sem_fin_malaxeur, WAIT_FOREVER);
+		
+		cmd_plus_recente = lire_tampon_fonct_calcul_cmd_plus_recente();
+		cmd_en_cours = lire_tampon_fonct_calcul_cmd_en_cours();
+		
+		if(cmd_plus_recente != cmd_en_cours){
+					efface_commande_traitee();
+					incremente_tampon_fonct_calcul_cmd_en_cours();
+					semGive(sem_calcul_eau);
+		}else{
+			for(index_boucle = 0; index_boucle < NB_COMMANDE * 3; index_boucle += 1){
+					tampon_cmd[index_boucle] = 0;
+			}
+				
+			for(index_boucle = 0; index_boucle < NB_SILOS; index_boucle += 1){
+					tampon_qte_silos[index_boucle] = 0;
+			}
+				
+				tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_plus_recente] = -1;
+				tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_en_cours] = -1;
+				tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_eau_en_cours] = 0;
+				tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_agregat_en_cours] = 0;
+				tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_ciment_en_cours] = 0;
+		}
+	}
 	return 0;
 }
 int gestion_evenement_agregat(){
