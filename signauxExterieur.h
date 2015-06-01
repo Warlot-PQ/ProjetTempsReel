@@ -22,9 +22,23 @@ void van_haut_ouvr_eau();
 
 void van_haut_ferm_eau();
 
+void van_bas_ouvr_eau();
+
 void van_bas_ferm_eau();
 
 void demande_hygrometrie(); //demande l'hygrometrie et bloque tant que la valeur n'est pas reçu
+
+void av_tapis_agr();
+
+void ar_tapis_agr();
+
+void av_tapis_cim();
+
+void ar_tapis_cim();
+
+void van_ouvr_bal_cim();
+
+void van_ferm_bal_cim();
 
 //----------------Reception
 Silos Agrégat min
