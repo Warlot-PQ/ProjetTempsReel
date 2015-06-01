@@ -52,7 +52,7 @@ int main(){
 	sem_debut_camion = semBCreate(SEM_Q_INFO, 0);
 	sem_diode_allumer_camion = semBCreate(SEM_Q_INFO, 0);
 	sem_diode_eteindre_camion = semBCreate(SEM_Q_INFO, 0);
-	sem_position_camion_absent_malax = semBCreate(SEM_Q_INFO, 0);
+	file_position_camion_absent_malax = msgQCreate(1000, 100, MSG_Q_FIFO);
 	sem_position_camion_present_malax = semBCreate(SEM_Q_INFO, 0);
 	sem_position_camion_ok = semBCreate(SEM_Q_INFO, 0);
 	
@@ -61,7 +61,7 @@ int main(){
 	
 	versement_eau = semBCreate(SEM_Q_FIFO, 1);
 	
-	
+	file_intensite = msgQCreate(1000, 100, MSG_Q_FIFO);
 	
 	
 	

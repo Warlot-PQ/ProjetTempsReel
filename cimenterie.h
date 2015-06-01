@@ -32,7 +32,8 @@
 #define index_tampon_fonct_calcul_cmd_ciment_en_cours 		4
 
 //----------------Temps
-#define temps_versement						5
+#define temps_versement										20
+#define temps_cst											15
 
 //----------------Tampons
 extern float tampon_cmd[NB_COMMANDE * 3];
@@ -96,14 +97,14 @@ extern SEM_ID sem_agregat_et_ciment_suivant;
 extern SEM_ID sem_debut_camion;
 extern SEM_ID sem_diode_allumer_camion;
 extern SEM_ID sem_diode_eteindre_camion;
-extern SEM_ID sem_position_camion_absent_malaxeur;
+extern MSG_Q_ID file_position_camion_absent_malaxeur;
 extern SEM_ID sem_position_camion_present_malaxeur;
 extern SEM_ID sem_position_ok;
 
 extern SEM_ID sem_van_ferme_malaxeur;
 extern SEM_ID sem_van_ouvre_malaxeur;
 
-
+extern MSG_Q_ID file_intensite;
 
 typedef struct type_beton{
 	int agregat_1;

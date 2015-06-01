@@ -479,20 +479,25 @@ int compteur_moins_eau(){
 
 int gestion_position_camion(){
 	int timer_camion_present;
-
+	char* buffer_camion_absent;
+	bool position_camion_present_recu;
+	position_camion_present = false;
+	
 	while(1){
 		semTake(sem_debut_camion, WAIT_FOREVER);
 		semGive(sem_diode_allumer_camion);
-		semTake(sem_position_camion_absent_malaxeur, WAIT_FOREVER);
-
-		semTake(sem_position_camion_present_malaxeur, WAIT_FOREVER);
-		semGive(sem_diode_eteindre_camion);
-		timer_camion_present = 0;
-		while(timer_camion_present == 5){
-			wait(1);
-			timer_camion_present += 1;
-		}
 		
+		while(msgQReceive(file_position_camion_absent_malaxeur, buffer_camion_absent, 100, NO_WAIT) == 0){
+			//reception du signal camion_position_present_malaxeur : le camion est en place.
+			semTake(sem_position_camion_present_malaxeur, WAIT_FOREVER);
+			position_camion_present = true;
+			semGive(sem_diode_eteindre_camion);
+			timer_camion_present = 0;
+			while(timer_camion_present < 5){
+				wait(1);
+				timer_camion_present += 1;
+			}
+		}
 		semGive(sem_position_camion_ok);
 	}
 	return 0;
@@ -519,17 +524,56 @@ int gestion_versement(){
 int gestion_moteur(){
 	bool Imax_atteint;
 	int temps_sans_fluctuation;
-	float intensite, vitesse;
+	char* buffer_file_intensite, buffer_file_vitesse;
+	float intensite, vitesse, intensite_avant;
+	intensite_avant = 0;
 	
 	while(1){
 		semTake(debut_malaxeur, WAIT_FOREVER);
-		consigne_moteur();
-		Imax_atteint = false;
-		temps_sans_fluctuation = 0;
+		//Invariant à revoir : la tâche boucle tant qu'elle n'a pas envoyé debut_camion.
+		while(!Imax_atteint){
+			consigne_moteur(vitesse_max);
+			Imax_atteint = false;
+			temps_sans_fluctuation = 0;
+		//invariant à revoir : ne doit pas porter sur Imax_atteint
+			while(!Imax_atteint){
+				semGive(sem_demande_valeur_intensite_malaxeur);
+				msgQReceive(file_valeur_intensite_malaxeur, buffer_file, 100, WAIT_FOREVER);
+				sprintf(str, buffer_file, intensite);
+				semGive(sem_demande_valeur_vitesse_malaxeur);
+				msgQReceive(file_valeur_vitesse_malaxeur, buffer_file, 100, WAIT_FOREVER);
+				sprintf(str, buffer_file_valeur_intensite, vitesse);
+				
+				msgQSend(file_intensite, (char *) intensite, 100, WAIT_FOREVER, MSG_PRI_NORMAL);
+				
+				if(intensite < Imax){
+					if(abs(intensite - intensite_avant) < 0.05){
+						temps_sans_fluctuation += 1;
+						if(temps_sans_fluctuation < temps_cst){
+							if(!Imax_atteint){
+								semGive(sem_diode_eteindre_malaxeur);
+								semGive(sem_reprise_bal_tapis_agrEtCim);
+							}
+						}else{
+							semGive(debut_camion);
+						}
+					}else{
+						temps_sans_fluctuation = 0;
+						if(Imax_atteint){
+							semGive(sem_diode_eteindre_malaxeur);
+							semGive(sem_reprise_bal_tapis_agrEtCim);
+						}
+					}
+				}else{
+					consigne_moteur(0);
+					Imax_atteint = true;
+					semGive(sem_stop_bal_tapis_agrEtCim);
+					semGive(sem_diode_allumer_malax);
+				}
+			}
+		}
 		
-		msgQSend(file_valeur_intensite_malaxeur, true, 1, NO_WAIT, MSG_PRI_NORMAL);
-		msgQreceive(file_valeur_intensite_malaxeur, (char *)
-		msgQSend(file_valeur_vitesse_malaxeur, true, 1, NO_WAIT, MSG_PRI_NORMAL);
+		semGive(sem_debut_camion);
 	}
 	return 0;
 }
