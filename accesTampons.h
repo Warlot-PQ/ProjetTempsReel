@@ -43,4 +43,25 @@ int decremente_niveau_eau();
 int ecrire_quantite_eau_restante(float);
 int decremente_quantite_eau_restante();
 int is_quantite_eau_restante_nulle();
+//Quantité agregat restant
+int ecrire_quantite_agregat_restante(float);
+int decremente_quantite_agregat_restante();
+int is_quantite_agregat_restante_nulle();
+//Quantité agregat total
+int ecrire_quantite_agregat_totale_nulle();
+int ajouter_quantite_agregat_totale(float);
+int decremente_quantite_agregat_totale();
+int is_quantite_agregat_totale_nulle();
+//Quantité ciment restant
+int ecrire_quantite_agregat_restante(float);
+int decremente_quantite_agregat_restante();
+int is_quantite_agregat_restant_nulle();
+//Quantité ciment total
+int ecrire_quantite_ciment_totale_nulle();
+int ajouter_quantite_ciment_totale(float);
+int decremente_quantite_ciment_totale();
+int is_quantite_ciment_totale_nulle();
+//Versement eau possible
+void set_versement_eau_possible(bool);
+int is_versement_eau_possible();
 #endif

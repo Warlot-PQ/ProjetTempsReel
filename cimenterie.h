@@ -39,7 +39,13 @@ extern float tampon_cmd[NB_COMMANDE * 3];
 extern float tampon_qte_silos[6]; 
 extern int tampon_fonct_calcul[5];
 extern int niveau_eau;
-extern float quantité_eau_restante;
+extern float quantite_eau_restante;
+extern float quantite_agregat_restante;
+extern float quantite_agregat_totale;
+
+//----------------Information sur le versement de l'eau
+extern int versement_eau_possible;
+extern int versement_eau_en_cours;
 
 //----------------Sémaphores d'exclusion mutuel
 extern SEM_ID sem_tampon_cmd;
@@ -47,6 +53,9 @@ extern SEM_ID sem_tampon_qte_silos;
 extern SEM_ID sem_tampon_fonct_calcul;
 extern SEM_ID sem_niveau_eau;
 extern SEM_ID sem_quantite_eau_restante;
+extern SEM_ID sem_quantite_agregat_restante;
+extern SEM_ID sem_quantite_agregat_totale;
+extern SEM_ID sem_versement_eau_possible;
 
 //----------------Sémaphores pour l'hygrometrie
 extern SEM_ID sem_demande_hygronometrie;
@@ -75,7 +84,6 @@ extern SEM_ID sem_int_min_cim_2;
 extern SEM_ID sem_int_max_cim_1;
 extern SEM_ID sem_int_max_cim_2;
 
-extern SEM_ID versement_eau;	//sémaphore de demande de versement de l'eau
 extern SEM_ID sem_int_max_eau;
 extern SEM_ID sem_int_min_eau;
 extern SEM_ID sem_int_plus_eau;
@@ -89,7 +97,15 @@ extern MSG_Q_ID file_debut_remplissage_balance_agregat;
 extern SEM_ID sem_fin_remplissage_balance_agregat;	//signal la fin du versement d'un silo, demande de fermeture de vanne
 
 extern MSG_Q_ID file_debut_remplissage_balance_ciment;
-extern SEM_ID  sem_fin_remplissage_balance_ciment;	//signal la fin du versement d'un silo, demande de fermeture de vanne
+extern SEM_ID sem_fin_remplissage_balance_ciment;	//signal la fin du versement d'un silo, demande de fermeture de vanne
+
+//sémaphore de synchro des balances
+extern SEM_ID sem_pret_balance_agregat;
+extern SEM_ID sem_pret_balance_ciment;
+extern SEM_ID sem_ouverture_balance_agregat;	//demande d'ouverture
+extern SEM_ID sem_ouverture_balance_ciment;		//demande d'ouverture
+extern SEM_ID sem_fin_vers_balance_agregat;
+extern SEM_ID sem_fin_vers_balance_ciment;
 
 extern SEM_ID sem_agregat_et_ciment_suivant;
 
@@ -102,8 +118,6 @@ extern SEM_ID sem_position_ok;
 
 extern SEM_ID sem_van_ferme_malaxeur;
 extern SEM_ID sem_van_ouvre_malaxeur;
-
-
 
 typedef struct type_beton{
 	int agregat_1;

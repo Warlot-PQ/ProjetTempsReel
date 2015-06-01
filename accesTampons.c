@@ -53,8 +53,8 @@ int efface_commande_traitee(){
 	
 	semTake(sem_tampon_cmd, WAIT_FOREVER);
 	tampon_cmd[index_cmd_en_cours + index_tampon_cmd_beton] = 0;
-	tampon_cmd[index_cmd_en_cours + index_tampon_cmd_agregat] = 0;
-	tampon_cmd[index_cmd_en_cours + index_tampon_cmd_ciment] = 0;
+	tampon_cmd[index_cmd_en_cours + index_tampon_fonct_calcul_cmd_agregat_en_cours] = 0;
+	tampon_cmd[index_cmd_en_cours + index_tampon_fonct_calcul_cmd_ciment_en_cours] = 0;
 	semGive(sem_tampon_cmd);
 	
 	return 0;
@@ -353,7 +353,7 @@ int decremente_niveau_eau(){
 
 int ecrire_quantite_eau_restante(float valeur){
 	semTake(sem_quantite_eau_restante, WAIT_FOREVER);
-	quantité_eau_restante = valeur;
+	quantite_eau_restante = valeur;
 	semGive(sem_quantite_eau_restante);
 	
 	return 0;
@@ -361,7 +361,7 @@ int ecrire_quantite_eau_restante(float valeur){
 
 int decremente_quantite_eau_restante(){
 	semTake(sem_quantite_eau_restante, WAIT_FOREVER);
-	quantité_eau_restante -= 1;
+	quantite_eau_restante -= 1;
 	semGive(sem_quantite_eau_restante);
 	
 	return 0;
@@ -371,10 +371,93 @@ int is_quantite_eau_restante_nulle(){
 	int value = 0;
 	
 	semTake(sem_quantite_eau_restante, WAIT_FOREVER);
-	if (quantité_eau_restante <= 0) {
+	if (quantite_eau_restante <= 0) {
 		value = 1;
 	}
 	semGive(sem_quantite_eau_restante);
+	
+	return value;
+}
+
+int ecrire_quantite_agregat_restante(float valeur){
+	semTake(sem_quantite_agregat_restante, WAIT_FOREVER);
+	quantite_agregat_restante = valeur;
+	semGive(sem_quantite_agregat_restante);
+	
+	return 0;
+}
+int decremente_quantite_agregat_restante(){
+	semTake(sem_quantite_agregat_restante, WAIT_FOREVER);
+	quantite_agregat_restante -= 1;
+	semGive(sem_quantite_agregat_restante);
+	
+	return 0;
+}
+int is_quantite_agregat_restante_nulle(){
+	int value = 0;
+		
+	semTake(sem_quantite_agregat_restante, WAIT_FOREVER);
+	if (quantite_agregat_restante <= 0) {
+		value = 1;
+	}
+	semGive(sem_quantite_agregat_restante);
+	
+	return value;
+}
+
+
+int ecrire_quantite_ciment_totale_nulle(){
+	semTake(sem_quantite_agregat_totale, WAIT_FOREVER);
+	quantite_agregat_totale = 0;
+	semGive(sem_quantite_agregat_totale);
+	
+	return 0;
+}
+int ajouter_quantite_ciment_totale(float valeur){
+	semTake(sem_quantite_agregat_totale, WAIT_FOREVER);
+	quantite_agregat_totale = valeur;
+	semGive(sem_quantite_agregat_totale);
+	
+	return 0;
+}
+int decremente_quantite_ciment_totale(){
+	semTake(sem_quantite_agregat_totale, WAIT_FOREVER);
+	quantite_agregat_totale -= 1;
+	semGive(sem_quantite_agregat_totale);
+	
+	return 0;
+}
+int is_quantite_ciment_totale_nulle(){
+	int value = 0;
+		
+	semTake(sem_quantite_agregat_totale, WAIT_FOREVER);
+	if (quantite_agregat_totale <= 0){
+		value = 1;
+	}
+	semGive(sem_quantite_agregat_totale);
+	
+	return value;
+}
+
+void set_versement_eau_possible(int value){
+	if (value != 0 && value != 1){
+		value = 0;
+	}
+	
+	semTake(sem_versement_eau_possible, WAIT_FOREVER);
+	versement_eau_possible = value;
+	semGive(sem_versement_eau_possible);
+}
+int is_versement_eau_possible(){
+	int value = 0;
+		
+	semTake(sem_versement_eau_possible, WAIT_FOREVER);
+	if (versement_eau_possible == 1){
+		value = 1;
+	} else {
+		value = 0;
+	}
+	semGive(sem_versement_eau_possible);
 	
 	return value;
 }

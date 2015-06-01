@@ -34,7 +34,12 @@ int remplissage_ciment_2();
 //----------------Gestion balances et tapis
 //Gestion balances
 int gestion_balance_agregats();
+int compteur_plus_balance_agregats();
+int compteur_moins_balance_agregats();
+
 int gestion_balance_ciment();
+int compteur_plus_balance_ciment();
+int compteur_moins_balance_ciment();
 
 //----------------Gestion silo eau et malaxeur
 //Gestion synchro
