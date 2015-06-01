@@ -568,26 +568,16 @@ int remplissage_eau(){
 }
 
 int compteur_plus_eau(){
-	while (1){
-		semTake(sem_int_plus_eau, WAIT_FOREVER);
-		incremente_niveau_eau();
-	}
-	
-	return 0;
+	incremente_niveau_eau();
 }
 
 int compteur_moins_eau(){
-	while (1){
-		semTake(sem_int_moins_eau, WAIT_FOREVER);
-		decremente_niveau_eau();
-		decremente_quantite_eau_restante();
-		
-		if(is_quantite_eau_restante_nulle() == 1) {
-			van_bas_ferm_eau();
-		}
-	}
+	decremente_niveau_eau();
+	decremente_quantite_eau_restante();
 	
-	return 0;
+	if(is_quantite_eau_restante_nulle() == 1) {
+		van_bas_ferm_eau();
+	}
 }
 
 int gestion_position_camion(){
