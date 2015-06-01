@@ -478,14 +478,58 @@ int compteur_moins_eau(){
 }
 
 int gestion_position_camion(){
-	
+	int timer_camion_present;
+
+	while(1){
+		semTake(sem_debut_camion, WAIT_FOREVER);
+		semGive(sem_diode_allumer_camion);
+		semTake(sem_position_camion_absent_malaxeur, WAIT_FOREVER);
+
+		semTake(sem_position_camion_present_malaxeur, WAIT_FOREVER);
+		semGive(sem_diode_eteindre_camion);
+		timer_camion_present = 0;
+		while(timer_camion_present == 5){
+			wait(1);
+			timer_camion_present += 1;
+		}
+		
+		semGive(sem_position_camion_ok);
+	}
 	return 0;
 }
 int gestion_versement(){
+	int temps_versement;
 	
+	while(1){
+		timer_versement = 0;
+		semTake(sem_position_camion_ok, WAIT_FOREVER);
+		semGive(sem_van_ouvre_malaxeur);
+		
+		while(temps_versement < temps_versement){
+			wait(1);
+			timer_versement += 1;
+		}
+		semGive(sem_arret_rotation_moteur);
+		semTake(sem_vide_malaxeur, WAIT_FOREVER);
+		semGive(sem_van_ferme_malaxeur);
+		semGive(fin_malaxeur);
+	}
 	return 0;
 }
 int gestion_moteur(){
+	bool Imax_atteint;
+	int temps_sans_fluctuation;
+	float intensite, vitesse;
 	
+	while(1){
+		semTake(debut_malaxeur, WAIT_FOREVER);
+		consigne_moteur();
+		Imax_atteint = false;
+		temps_sans_fluctuation = 0;
+		
+		msgQSend(file_valeur_intensite_malaxeur, true, 1, NO_WAIT, MSG_PRI_NORMAL);
+		msgQreceive(file_valeur_intensite_malaxeur, (char *)
+		msgQSend(file_valeur_vitesse_malaxeur, true, 1, NO_WAIT, MSG_PRI_NORMAL);
+	}
 	return 0;
 }

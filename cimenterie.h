@@ -31,6 +31,9 @@
 #define index_tampon_fonct_calcul_cmd_agregat_en_cours 		3
 #define index_tampon_fonct_calcul_cmd_ciment_en_cours 		4
 
+//----------------Temps
+#define temps_versement						5
+
 //----------------Tampons
 extern float tampon_cmd[NB_COMMANDE * 3];
 extern float tampon_qte_silos[6]; 
@@ -54,6 +57,7 @@ extern SEM_ID sem_fin_agregat;
 extern SEM_ID sem_fin_ciment;
 extern SEM_ID sem_fin_eau;
 extern SEM_ID sem_fin_malaxeur;
+extern SEM_ID sem_debut_malaxeur;
 
 extern SEM_ID sem_calcul_agregat;
 extern SEM_ID sem_calcul_ciment;
@@ -88,6 +92,18 @@ extern MSG_Q_ID file_debut_remplissage_balance_ciment;
 extern SEM_ID  sem_fin_remplissage_balance_ciment;	//signal la fin du versement d'un silo, demande de fermeture de vanne
 
 extern SEM_ID sem_agregat_et_ciment_suivant;
+
+extern SEM_ID sem_debut_camion;
+extern SEM_ID sem_diode_allumer_camion;
+extern SEM_ID sem_diode_eteindre_camion;
+extern SEM_ID sem_position_camion_absent_malaxeur;
+extern SEM_ID sem_position_camion_present_malaxeur;
+extern SEM_ID sem_position_ok;
+
+extern SEM_ID sem_van_ferme_malaxeur;
+extern SEM_ID sem_van_ouvre_malaxeur;
+
+
 
 typedef struct type_beton{
 	int agregat_1;

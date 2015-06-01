@@ -37,7 +37,8 @@ int main(){
 		
 	//Initialise les sémaphores de synchronisation des tâches
 	sem_fin_eau = semBCreate(SEM_Q_FIFO, 0);
-	sem_fin_malaxeur = semBCreate(SEm8Q_INFO, 0);
+	sem_fin_malaxeur = semBCreate(SEM_Q_INFO, 0);
+	sem_debut_malaxeur = semBCreate(SEM_Q_INFO, 0);
 	
 	sem_calcul_agregat = semBCreate(SEM_Q_FIFO, 0);
 	sem_calcul_ciment = semBCreate(SEM_Q_FIFO, 0);
@@ -47,6 +48,16 @@ int main(){
 	sem_demande_hygronometrie = semBCreate(SEM_Q_INFO, 0);
 	sem_hygronometrie = semBCreate(SEM_Q_INFO, 0);
 	sem_agregat_et_ciment_suivant = semBCreate(SEM_Q_INFO, 0);
+	
+	sem_debut_camion = semBCreate(SEM_Q_INFO, 0);
+	sem_diode_allumer_camion = semBCreate(SEM_Q_INFO, 0);
+	sem_diode_eteindre_camion = semBCreate(SEM_Q_INFO, 0);
+	sem_position_camion_absent_malax = semBCreate(SEM_Q_INFO, 0);
+	sem_position_camion_present_malax = semBCreate(SEM_Q_INFO, 0);
+	sem_position_camion_ok = semBCreate(SEM_Q_INFO, 0);
+	
+	sem_van_ouvre_malaxeur = semBCreate(SEM_Q_INFO, 0);
+	sem_van_ferme_malaxeur = semBCreate(SEM_Q_INFO, 0);
 	
 	versement_eau = semBCreate(SEM_Q_FIFO, 1);
 	
