@@ -2,6 +2,7 @@
 #define CIMENTERIE_H
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <semLib.h>
 
@@ -37,7 +38,7 @@
 
 //----------------Valeurs pour le moteur
 #define Imax												10
-
+#define vitesse_moteur_max									10
 //----------------Tampons
 extern float tampon_cmd[NB_COMMANDE * 3];
 extern float tampon_qte_silos[6]; 
@@ -113,12 +114,15 @@ extern SEM_ID sem_agregat_et_ciment_suivant;
 
 extern SEM_ID sem_debut_moteur;
 extern SEM_ID sem_debut_camion;
-extern SEM_ID sem_diode_allumer_camion;
+extern SEM_ID sem_position_camion_ok;
 extern SEM_ID sem_diode_eteindre_camion;
 extern SEM_ID sem_position_ok;
-
+extern SEM_ID sem_arret_rotation_moteur;
+extern SEM_ID sem_vide_malaxeur;
 extern SEM_ID sem_van_ferme_malaxeur;
 extern SEM_ID sem_van_ouvre_malaxeur;
+extern SEM_ID sem_stop_bal_tapis_agrEtCim;
+extern SEM_ID sem_reprise_bal_tapis_agrEtCim;
 
 extern MSG_Q_ID file_intensite;
 

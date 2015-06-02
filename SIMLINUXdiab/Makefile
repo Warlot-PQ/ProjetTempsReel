@@ -31,8 +31,8 @@ else
 MODE_DIR := NonDebug
 endif
 OBJ_DIR := .
-PRJ_ROOT_DIR := /users/elo/jnokaya/ENSSAT2A/TPS\ REEL/WINDRIVER/ProjetTempsReel
-WS_ROOT_DIR := /users/elo/jnokaya/ENSSAT2A/TPS\ REEL/WINDRIVER
+PRJ_ROOT_DIR := /users/elo/jnokaya/ENSSAT2A/TPSREEL/WINDRIVER/ProjetTempsReel
+WS_ROOT_DIR := /users/elo/jnokaya/ENSSAT2A/TPSREEL
 
 
 
@@ -158,19 +158,19 @@ ProjetTempsReel_partialImage/$(MODE_DIR)/% : LIBPATH =
 ProjetTempsReel_partialImage/$(MODE_DIR)/% : LIBS = 
 ProjetTempsReel_partialImage/$(MODE_DIR)/% : OBJ_DIR := ProjetTempsReel_partialImage/$(MODE_DIR)
 
-ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/accesTampons.o : /users/elo/jnokaya/ENSSAT2A/TPS\ REEL/WINDRIVER/ProjetTempsReel/accesTampons.c
+ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/accesTampons.o : /users/elo/jnokaya/ENSSAT2A/TPSREEL/WINDRIVER/ProjetTempsReel/accesTampons.c
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only  -Xforce-declarations   -Xmake-dependency=0xd $(ADDED_CFLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/main.o : /users/elo/jnokaya/ENSSAT2A/TPS\ REEL/WINDRIVER/ProjetTempsReel/main.c
+ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/main.o : /users/elo/jnokaya/ENSSAT2A/TPSREEL/WINDRIVER/ProjetTempsReel/main.c
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only  -Xforce-declarations   -Xmake-dependency=0xd $(ADDED_CFLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/signauxExterieur.o : /users/elo/jnokaya/ENSSAT2A/TPS\ REEL/WINDRIVER/ProjetTempsReel/signauxExterieur.c
+ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/signauxExterieur.o : /users/elo/jnokaya/ENSSAT2A/TPSREEL/WINDRIVER/ProjetTempsReel/signauxExterieur.c
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only  -Xforce-declarations   -Xmake-dependency=0xd $(ADDED_CFLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/taches.o : /users/elo/jnokaya/ENSSAT2A/TPS\ REEL/WINDRIVER/ProjetTempsReel/taches.c
+ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/taches.o : /users/elo/jnokaya/ENSSAT2A/TPSREEL/WINDRIVER/ProjetTempsReel/taches.c
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only  -Xforce-declarations   -Xmake-dependency=0xd $(ADDED_CFLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
