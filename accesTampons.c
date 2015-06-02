@@ -405,29 +405,28 @@ int is_quantite_agregat_restante_nulle(){
 	return value;
 }
 
-
-int ecrire_quantite_ciment_totale_nulle(){
+int ecrire_quantite_agregat_totale_nulle(){
 	semTake(sem_quantite_agregat_totale, WAIT_FOREVER);
 	quantite_agregat_totale = 0;
 	semGive(sem_quantite_agregat_totale);
 	
 	return 0;
 }
-int ajouter_quantite_ciment_totale(float valeur){
+int ajouter_quantite_agregat_totale(float valeur){
 	semTake(sem_quantite_agregat_totale, WAIT_FOREVER);
 	quantite_agregat_totale = valeur;
 	semGive(sem_quantite_agregat_totale);
 	
 	return 0;
 }
-int decremente_quantite_ciment_totale(){
+int decremente_quantite_agregat_totale(){
 	semTake(sem_quantite_agregat_totale, WAIT_FOREVER);
 	quantite_agregat_totale -= 1;
 	semGive(sem_quantite_agregat_totale);
 	
 	return 0;
 }
-int is_quantite_ciment_totale_nulle(){
+int is_quantite_agregat_totale_nulle(){
 	int value = 0;
 		
 	semTake(sem_quantite_agregat_totale, WAIT_FOREVER);
@@ -435,6 +434,66 @@ int is_quantite_ciment_totale_nulle(){
 		value = 1;
 	}
 	semGive(sem_quantite_agregat_totale);
+	
+	return value;
+}
+
+int ecrire_quantite_ciment_restante(float valeur){
+	semTake(sem_quantite_ciment_restante, WAIT_FOREVER);
+	quantite_ciment_restante = valeur;
+	semGive(sem_quantite_ciment_restante);
+	
+	return 0;
+	
+}
+int decremente_quantite_ciment_restante(){
+	semTake(sem_quantite_ciment_restante, WAIT_FOREVER);
+	quantite_ciment_restante -= 1;
+	semGive(sem_quantite_ciment_restante);
+	
+	return 0;
+};
+int is_quantite_ciment_restant_nulle(){
+	int value = 0;
+		
+	semTake(sem_quantite_ciment_restante, WAIT_FOREVER);
+	if (quantite_ciment_restante <= 0) {
+		value = 1;
+	}
+	semGive(sem_quantite_ciment_restante);
+	
+	return value;
+}
+
+int ecrire_quantite_ciment_totale_nulle(){
+	semTake(sem_quantite_ciment_totale, WAIT_FOREVER);
+	quantite_ciment_totale = 0;
+	semGive(sem_quantite_ciment_totale);
+	
+	return 0;
+}
+int ajouter_quantite_ciment_totale(float valeur){
+	semTake(sem_quantite_ciment_totale, WAIT_FOREVER);
+	quantite_ciment_totale = valeur;
+	semGive(sem_quantite_ciment_totale);
+	
+	return 0;
+}
+int decremente_quantite_ciment_totale(){
+	semTake(sem_quantite_ciment_totale, WAIT_FOREVER);
+	quantite_ciment_totale -= 1;
+	semGive(sem_quantite_ciment_totale);
+	
+	return 0;
+}
+int is_quantite_ciment_totale_nulle(){
+	int value = 0;
+		
+	semTake(sem_quantite_ciment_totale, WAIT_FOREVER);
+	if (quantite_ciment_totale <= 0){
+		value = 1;
+	}
+	semGive(sem_quantite_ciment_totale);
 	
 	return value;
 }

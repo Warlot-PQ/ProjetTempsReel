@@ -37,8 +37,6 @@ int main(){
 	sem_tampon_cmd = semMCreate(SEM_Q_FIFO);
 	sem_tampon_fonct_calcul = semMCreate(SEM_Q_FIFO);
 	sem_tampon_qte_silos = semMCreate(SEM_Q_FIFO);
-		
-	//Initialise les sémaphores de synchronisation des tâches
 	sem_tampon_cmd = semMCreate(SEM_Q_FIFO);
 	sem_tampon_qte_silos = semMCreate(SEM_Q_FIFO);
 	sem_tampon_fonct_calcul = semMCreate(SEM_Q_FIFO);
@@ -48,99 +46,62 @@ int main(){
 	sem_quantite_agregat_totale = semMCreate(SEM_Q_FIFO);
 	sem_versement_eau_possible = semMCreate(SEM_Q_FIFO);
 	
-	/*
-	sem_demande_hygronometrie
-	sem_hygronometrie
-	sem_fin_agregat
-	sem_fin_ciment
-	sem_fin_eau
-	sem_fin_malaxeur
-	sem_debut_malaxeur
-
-	sem_calcul_agregat
-	sem_calcul_ciment
-	sem_calcul_eau
-
-	extern SEM_ID sem_int_min_agr_1
-	extern SEM_ID sem_int_min_agr_2
-	extern SEM_ID sem_int_min_agr_3
-	extern SEM_ID sem_int_max_agr_1
-	extern SEM_ID sem_int_max_agr_2
-	extern SEM_ID sem_int_max_agr_3
-
-	extern SEM_ID sem_int_min_cim_1
-	extern SEM_ID sem_int_min_cim_2
-	extern SEM_ID sem_int_max_cim_1
-	extern SEM_ID sem_int_max_cim_2
-
-	extern SEM_ID sem_int_max_eau
-	extern SEM_ID sem_int_min_eau
-	extern SEM_ID sem_int_plus_eau
-	extern SEM_ID sem_int_moins_eau
-
-	extern SEM_ID sem_demande_versement_agregat
-	sem_demande_versement_ciment
-	sem_demande_versement_eau
-
-	file_debut_remplissage_balance_agregat
-	sem_fin_remplissage_balance_agregat
-	
-	file_debut_remplissage_balance_ciment
-	sem_fin_remplissage_balance_ciment*/
-
-	//sémaphore de synchro des balances
-	extern SEM_ID sem_pret_balance_agregat;
-	extern SEM_ID sem_pret_balance_ciment;
-	extern SEM_ID sem_ouverture_balance_agregat;	//demande d'ouverture
-	extern SEM_ID sem_ouverture_balance_ciment;		//demande d'ouverture
-	extern SEM_ID sem_fin_vers_balance_agregat;
-	extern SEM_ID sem_fin_vers_balance_ciment;
-
-	extern SEM_ID sem_agregat_et_ciment_suivant;
-
-	extern SEM_ID sem_debut_camion;
-	extern SEM_ID sem_diode_allumer_camion;
-	extern SEM_ID sem_diode_eteindre_camion;
-	extern SEM_ID sem_position_camion_absent_malaxeur;
-	extern SEM_ID sem_position_camion_present_malaxeur;
-	extern SEM_ID sem_position_ok;
-
-	extern SEM_ID sem_van_ferme_malaxeur;
-	extern SEM_ID sem_van_ouvre_malaxeur;
-	
-	
-	
-	
-	
-
+	//Initialise les sémaphores de synchronisation des tâches
+	sem_fin_agregat = semBCreate(SEM_Q_FIFO, 0);
+	sem_fin_ciment = semBCreate(SEM_Q_FIFO, 0);
 	sem_fin_eau = semBCreate(SEM_Q_FIFO, 0);
-	sem_fin_malaxeur = semBCreate(SEM_Q_INFO, 0);
-	sem_debut_malaxeur = semBCreate(SEM_Q_INFO, 0);
-	
+	sem_fin_malaxeur = semBCreate(SEM_Q_FIFO, 0);
+	sem_debut_malaxeur = semBCreate(SEM_Q_FIFO, 0);
+
 	sem_calcul_agregat = semBCreate(SEM_Q_FIFO, 0);
 	sem_calcul_ciment = semBCreate(SEM_Q_FIFO, 0);
 	sem_calcul_eau = semBCreate(SEM_Q_FIFO, 0);
+
+	sem_int_min_agr_1 = semBCreate(SEM_Q_FIFO, 0);
+	sem_int_min_agr_2 = semBCreate(SEM_Q_FIFO, 0);
+	sem_int_min_agr_3 = semBCreate(SEM_Q_FIFO, 0);
+	sem_int_min_cim_1 = semBCreate(SEM_Q_FIFO, 0);
+	sem_int_min_cim_2 = semBCreate(SEM_Q_FIFO, 0);
+	
+	sem_int_max_agr_1 = semBCreate(SEM_Q_FIFO, 0);
+	sem_int_max_agr_2 = semBCreate(SEM_Q_FIFO, 0);
+	sem_int_max_agr_3 = semBCreate(SEM_Q_FIFO, 0);
+	sem_int_max_cim_1 = semBCreate(SEM_Q_FIFO, 0);
+	sem_int_max_cim_2 = semBCreate(SEM_Q_FIFO, 0);
+
+	sem_int_max_eau = semBCreate(SEM_Q_FIFO, 0);
+	sem_int_min_eau = semBCreate(SEM_Q_FIFO, 0);
+
 	sem_demande_versement_agregat = semBCreate(SEM_Q_FIFO, 0);
 	sem_demande_versement_ciment = semBCreate(SEM_Q_FIFO, 0);
-	sem_demande_hygronometrie = semBCreate(SEM_Q_INFO, 0);
-	sem_hygronometrie = semBCreate(SEM_Q_INFO, 0);
-	sem_agregat_et_ciment_suivant = semBCreate(SEM_Q_INFO, 0);
+	sem_demande_versement_eau = semBCreate(SEM_Q_FIFO, 0);
+
+	file_debut_remplissage_balance_agregat = msgQCreate(1, 1, MSG_Q_FIFO);
+	sem_fin_remplissage_balance_agregat = semBCreate(SEM_Q_FIFO, 0);
 	
-	sem_debut_camion = semBCreate(SEM_Q_INFO, 0);
-	sem_diode_allumer_camion = semBCreate(SEM_Q_INFO, 0);
-	sem_diode_eteindre_camion = semBCreate(SEM_Q_INFO, 0);
-	file_position_camion_absent_malax = msgQCreate(1000, 100, MSG_Q_FIFO);
-	sem_position_camion_present_malax = semBCreate(SEM_Q_INFO, 0);
-	sem_position_camion_ok = semBCreate(SEM_Q_INFO, 0);
-	
-	sem_van_ouvre_malaxeur = semBCreate(SEM_Q_INFO, 0);
-	sem_van_ferme_malaxeur = semBCreate(SEM_Q_INFO, 0);
-	
-	versement_eau = semBCreate(SEM_Q_FIFO, 1);
+	file_debut_remplissage_balance_ciment = msgQCreate(1, 1, MSG_Q_FIFO);
+	sem_fin_remplissage_balance_ciment = semBCreate(SEM_Q_FIFO, 0);
+
+	//sémaphore de synchro des balances
+	sem_pret_balance_agregat = semBCreate(SEM_Q_FIFO, 0);
+	sem_pret_balance_ciment = semBCreate(SEM_Q_FIFO, 0);
+	sem_ouverture_balance_agregat = semBCreate(SEM_Q_FIFO, 0);		//demande d'ouverture
+	sem_ouverture_balance_ciment = semBCreate(SEM_Q_FIFO, 0);		//demande d'ouverture
+	sem_fin_vers_balance_agregat = semBCreate(SEM_Q_FIFO, 0);
+	sem_fin_vers_balance_ciment = semBCreate(SEM_Q_FIFO, 0);
+
+	sem_agregat_et_ciment_suivant = semBCreate(SEM_Q_FIFO, 0);
+
+	sem_debut_moteur = semBCreate(SEM_Q_FIFO, 0);
+	sem_debut_camion = semBCreate(SEM_Q_FIFO, 0);
+	sem_diode_allumer_camion = semBCreate(SEM_Q_FIFO, 0);
+	sem_diode_eteindre_camion = semBCreate(SEM_Q_FIFO, 0);
+	sem_position_ok = semBCreate(SEM_Q_FIFO, 0);
+
+	sem_van_ferme_malaxeur = semBCreate(SEM_Q_FIFO, 0);
+	sem_van_ouvre_malaxeur = semBCreate(SEM_Q_FIFO, 0);
 	
 	file_intensite = msgQCreate(1000, 100, MSG_Q_FIFO);
-	
-	
 	
 	//Initialise le contenu des tampons
 	for(index_boucle = 0; index_boucle < NB_COMMANDE * 3; index_boucle += 1){
@@ -164,9 +125,6 @@ int main(){
 	taskSpawn("gestion_IHM",200,
 		                0x100,2000,(FUNCPTR) gestion_IHM,
 		                0,0,0,0,0,0,0,0,0,0);
-	taskSpawn("gestion_evenement_cmd",200,
-			                0x100,2000,(FUNCPTR) gestion_evenement_cmd,
-			                0,0,0,0,0,0,0,0,0,0);
 	taskSpawn("gestion_evenement_malax",200,
 			                0x100,2000,(FUNCPTR) gestion_evenement_malax,
 			                0,0,0,0,0,0,0,0,0,0);

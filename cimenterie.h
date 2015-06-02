@@ -46,6 +46,8 @@ extern int niveau_eau;
 extern float quantite_eau_restante;
 extern float quantite_agregat_restante;
 extern float quantite_agregat_totale;
+extern float quantite_ciment_restante;
+extern float quantite_ciment_totale;
 
 //----------------Information sur le versement de l'eau
 extern int versement_eau_possible;
@@ -59,11 +61,9 @@ extern SEM_ID sem_niveau_eau;
 extern SEM_ID sem_quantite_eau_restante;
 extern SEM_ID sem_quantite_agregat_restante;
 extern SEM_ID sem_quantite_agregat_totale;
+extern SEM_ID sem_quantite_ciment_restante;
+extern SEM_ID sem_quantite_ciment_totale;
 extern SEM_ID sem_versement_eau_possible;
-
-//----------------Sémaphores pour l'hygrometrie
-extern SEM_ID sem_demande_hygronometrie;
-extern SEM_ID sem_hygronometrie;
 
 //----------------Sémaphore de synchronisation des tâches entre elles
 extern SEM_ID sem_fin_agregat;
@@ -111,11 +111,10 @@ extern SEM_ID sem_fin_vers_balance_ciment;
 
 extern SEM_ID sem_agregat_et_ciment_suivant;
 
+extern SEM_ID sem_debut_moteur;
 extern SEM_ID sem_debut_camion;
 extern SEM_ID sem_diode_allumer_camion;
 extern SEM_ID sem_diode_eteindre_camion;
-extern MSG_Q_ID file_position_camion_absent_malaxeur;
-extern SEM_ID sem_position_camion_present_malaxeur;
 extern SEM_ID sem_position_ok;
 
 extern SEM_ID sem_van_ferme_malaxeur;
