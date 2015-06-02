@@ -1,6 +1,5 @@
 #include <vxWorks.h>
 #include <taskLib.h> 
-#include <semLib.h> 
 #include "cimenterie.h"
 #include "accesTampons.h"
 #include "taches.h"
@@ -38,13 +37,14 @@ int main(){
 	sem_tampon_fonct_calcul = semMCreate(SEM_Q_FIFO);
 	sem_tampon_qte_silos = semMCreate(SEM_Q_FIFO);
 	sem_tampon_cmd = semMCreate(SEM_Q_FIFO);
-	sem_tampon_qte_silos = semMCreate(SEM_Q_FIFO);
-	sem_tampon_fonct_calcul = semMCreate(SEM_Q_FIFO);
 	sem_niveau_eau = semMCreate(SEM_Q_FIFO);
 	sem_quantite_eau_restante = semMCreate(SEM_Q_FIFO);
 	sem_quantite_agregat_restante = semMCreate(SEM_Q_FIFO);
+	sem_quantite_ciment_restante = semMCreate(SEM_Q_FIFO);
+	sem_quantite_ciment_totale= semMCreate(SEM_Q_FIFO);
 	sem_quantite_agregat_totale = semMCreate(SEM_Q_FIFO);
 	sem_versement_eau_possible = semMCreate(SEM_Q_FIFO);
+	
 	
 	//Initialise les sémaphores de synchronisation des tâches
 	sem_fin_agregat = semBCreate(SEM_Q_FIFO, 0);

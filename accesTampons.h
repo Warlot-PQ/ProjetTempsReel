@@ -12,7 +12,7 @@ int ecrire_tampon_cmd_cmd_plus_recent_beton(float beton);
 int efface_commande_traitee();
 float lire_tampon_cmd_cmd_plus_recent_distance();
 float lire_tampon_cmd_cmd_plus_recent_volume();
-float lire_tampon_cmd_cmd_plus_recent_beton();
+int lire_tampon_cmd_cmd_plus_recent_beton();
 //Tampon quantité
 int ecrire_tampon_qte_silos_eau(float qte);
 int ecrire_tampon_qte_silos_agregat(int numero_silo, float qte);
