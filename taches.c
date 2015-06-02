@@ -635,7 +635,7 @@ int gestion_versement(){
 	return 0;
 }
 int gestion_moteur(){
-	bool Imax_atteint;
+	bool Imax_atteint, diode_allumee;
 	int temps_sans_fluctuation;
 	char* buffer_file_intensite, buffer_file_vitesse;
 	float intensite, vitesse, intensite_avant;
@@ -643,50 +643,49 @@ int gestion_moteur(){
 	
 	while(1){
 		semTake(debut_malaxeur, WAIT_FOREVER);
-		//Invariant à revoir : la tâche boucle tant qu'elle n'a pas envoyé debut_camion.
-		while(!Imax_atteint){
+
+		while(temps_sans_fluctuation < temps_cst){
 			consigne_moteur(vitesse_max);
 			Imax_atteint = false;
+			diode_allumee = false;
 			temps_sans_fluctuation = 0;
-		//invariant à revoir : ne doit pas porter sur Imax_atteint
-			while(!Imax_atteint){
-				semGive(sem_demande_valeur_intensite_malaxeur);
-				msgQReceive(file_valeur_intensite_malaxeur, buffer_file, 100, WAIT_FOREVER);
-				sprintf(str, buffer_file, intensite);
-				semGive(sem_demande_valeur_vitesse_malaxeur);
-				msgQReceive(file_valeur_vitesse_malaxeur, buffer_file, 100, WAIT_FOREVER);
-				sprintf(str, buffer_file_valeur_intensite, vitesse);
-				
-				msgQSend(file_intensite, (char *) intensite, 100, WAIT_FOREVER, MSG_PRI_NORMAL);
-				
-				if(intensite < Imax){
-					if(abs(intensite - intensite_avant) < 0.05){
-						temps_sans_fluctuation += 1;
-						if(temps_sans_fluctuation < temps_cst){
-							if(!Imax_atteint){
-								semGive(sem_diode_eteindre_malaxeur);
-								semGive(sem_reprise_bal_tapis_agrEtCim);
-							}
-						}else{
-							semGive(debut_camion);
-						}
-					}else{
-						temps_sans_fluctuation = 0;
-						if(Imax_atteint){
+			
+			semGive(sem_demande_valeur_intensite_malaxeur);
+			msgQReceive(file_valeur_intensite_malaxeur, buffer_file, 100, WAIT_FOREVER);
+			sprintf(str, buffer_file, intensite);
+			semGive(sem_demande_valeur_vitesse_malaxeur);
+			msgQReceive(file_valeur_vitesse_malaxeur, buffer_file, 100, WAIT_FOREVER);
+			sprintf(str, buffer_file_valeur_intensite, vitesse);
+			
+			msgQSend(file_intensite, (char *) intensite, 100, WAIT_FOREVER, MSG_PRI_NORMAL);
+			
+			if(intensite < Imax){
+				if(abs(intensite - intensite_avant) < 0.05){
+					temps_sans_fluctuation += 1;
+					if(temps_sans_fluctuation < temps_cst){
+						if(!Imax_atteint){
 							semGive(sem_diode_eteindre_malaxeur);
 							semGive(sem_reprise_bal_tapis_agrEtCim);
 						}
+					}else{
+						semGive(debut_camion);
 					}
 				}else{
-					consigne_moteur(0);
-					Imax_atteint = true;
-					semGive(sem_stop_bal_tapis_agrEtCim);
-					semGive(sem_diode_allumer_malax);
+					temps_sans_fluctuation = 0;
+					if(Imax_atteint){
+						semGive(sem_diode_eteindre_malaxeur);
+						semGive(sem_reprise_bal_tapis_agrEtCim);
+					}
 				}
+			}else{
+				consigne_moteur(0);
+				Imax_atteint = true;
+				semGive(sem_stop_bal_tapis_agrEtCim);
+				semGive(sem_diode_allumer_malax);
 			}
 		}
-		
 		semGive(sem_debut_camion);
 	}
+	
 	return 0;
 }
