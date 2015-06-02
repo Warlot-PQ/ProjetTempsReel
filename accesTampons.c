@@ -1,7 +1,7 @@
 #include "cimenterie.h"
 #include "accesTampons.h"
 
-int ecrire__tampon_cmd_cmd_plus_recent_distance(float distance){
+int ecrire_tampon_cmd_cmd_plus_recent_distance(float distance){
 	int index_cmd_plus_recente;
 	
 	if (distance < 0){

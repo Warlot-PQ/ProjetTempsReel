@@ -48,4 +48,12 @@ int gestion_position_camion();
 int gestion_versement();
 int gestion_moteur();
 
+//----------------Collection de fonctions (ne sont pas des taches)
+int compteur_plus_balance_agregats();
+int compteur_moins_balance_agregats();
+int compteur_plus_balance_ciment();
+int compteur_moins_balance_ciment();
+int compteur_plus_eau();
+int compteur_moins_eau();
+
 #endif
