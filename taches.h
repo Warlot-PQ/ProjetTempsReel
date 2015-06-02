@@ -1,5 +1,5 @@
-#ifndef TACHES_H
-#define TACHES_H
+//#ifndef TACHES_H
+//#define TACHES_H
 
 #include <stdio.h>
 #include <unistd.h>
@@ -56,4 +56,4 @@ int compteur_moins_balance_ciment();
 int compteur_plus_eau();
 int compteur_moins_eau();
 
-#endif
+//#endif

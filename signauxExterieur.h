@@ -1,5 +1,5 @@
-#ifndef SIGNAUX_EXTERIEUR_H
-#define SIGNAUX_EXTERIEUR_H
+//#ifndef SIGNAUX_EXTERIEUR_H
+//#define SIGNAUX_EXTERIEUR_H
 
 //----------------Emission
 #define cst_vanne_haut_agregat_1 "VA1.1"
@@ -144,4 +144,5 @@ void interruptionPlus(char* element);
 *	element : constante de l'element, utiliser les defines du .h
 **/
 void interruptionMoins(char* element);
-#endif
+
+//#endif

@@ -493,7 +493,6 @@ int compteur_moins_balance_ciment(){
 		ArretTapis(cst_tapis_ciment);
 		semGive(sem_fin_vers_balance_ciment);
 	}
-	
 }
 
 int gestion_synchro(){
