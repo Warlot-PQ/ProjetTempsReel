@@ -614,6 +614,7 @@ int compteur_moins_eau(){
 }
 
 int gestion_position_camion(){
+	/*
 	int timer_camion_present;
 	int position_camion_ok;
 	while(1){
@@ -639,10 +640,11 @@ int gestion_position_camion(){
 			}
 		}
 	}
+	*/
 	return 0;
 }
 int gestion_versement(){
-	int timer_versement;
+/*	int timer_versement;
 	
 	while(1){
 		timer_versement = 0;
@@ -658,11 +660,12 @@ int gestion_versement(){
 		semGive(sem_van_ferme_malaxeur);
 		semGive(sem_fin_malaxeur);
 	}
+	*/
 	return 0;
 }
 int gestion_moteur(){
 	//le boolean Imax_atteint permet de savoir si lors de la mesure précédente, la valeur Imax a été atteinte.
-	int Imax_atteint;
+/*	int Imax_atteint;
 	int temps_sans_fluctuation;
 	char* buffer_file_intensite, buffer_file_vitesse;
 	float intensite, vitesse, intensite_avant;
@@ -703,6 +706,6 @@ int gestion_moteur(){
 		}
 		semGive(sem_debut_camion);
 	}
-	
+	*/
 	return 0;
 }

@@ -3,7 +3,7 @@
 #include "taches.h"
 
 void OuvrirVanne(char* vanne){
-
+	printf("Ouverture de la vanne %s", vanne);
 }
 
 void FermerVanne(char* vanne){
