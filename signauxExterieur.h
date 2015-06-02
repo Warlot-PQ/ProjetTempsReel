@@ -76,6 +76,24 @@ void OuvrirBalance();
 *	vanne : Constante de la balance, utiliser les defines du .h
 **/
 void FermerBalance();
+/**
+ *  Allume la diode signalant que le malaxeur passe en phase de versement et que le camion doit se positionner.
+ *  Est appelée quand le camion n'est pas en position
+**/
+void AllumerDiodePositionCamion();
+/**
+ *  Eteint la diode signalant que le malaxeur passe en phase de versement et que le camion doit se positionner.
+ *  Est appelée quand le camion est en position
+**/
+void EteindreDiodePositionCamion();
+/**
+ * 	Allume la diode du malaxeur quand le seuil d'intensité Imax du moteur est atteint
+**/
+void AllumerDiodeMalaxeur();
+/**
+ * 	Eteint la diode du malaxeur quand l'intensité du moteur passe sous le seuil Imax
+**/
+void EteindreDiodeMalaxeur();
 
 /****************************************/
 /***************CAPTEURS*****************/

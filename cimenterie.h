@@ -35,6 +35,9 @@
 #define temps_versement										20
 #define temps_cst											15
 
+//----------------Valeurs pour le moteur
+#define Imax												10
+
 //----------------Tampons
 extern float tampon_cmd[NB_COMMANDE * 3];
 extern float tampon_qte_silos[6]; 

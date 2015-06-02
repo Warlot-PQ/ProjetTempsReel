@@ -166,12 +166,17 @@ ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/main.o : /users
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only  -Xforce-declarations   -Xmake-dependency=0xd $(ADDED_CFLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
+ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/signauxExterieur.o : /users/elo/jnokaya/ENSSAT2A/TPS\ REEL/WINDRIVER/ProjetTempsReel/signauxExterieur.c
+	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only  -Xforce-declarations   -Xmake-dependency=0xd $(ADDED_CFLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
+
+
 ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/taches.o : /users/elo/jnokaya/ENSSAT2A/TPS\ REEL/WINDRIVER/ProjetTempsReel/taches.c
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only  -Xforce-declarations   -Xmake-dependency=0xd $(ADDED_CFLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
 OBJECTS_ProjetTempsReel_partialImage = ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/accesTampons.o \
 	 ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/main.o \
+	 ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/signauxExterieur.o \
 	 ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/taches.o
 
 ProjetTempsReel_partialImage/$(MODE_DIR)/ProjetTempsReel_partialImage.o : $(OBJECTS_ProjetTempsReel_partialImage)
@@ -184,7 +189,8 @@ _clean :: ProjetTempsReel_partialImage/$(MODE_DIR)/ProjetTempsReel_partialImage_
 ProjetTempsReel_partialImage/$(MODE_DIR)/ProjetTempsReel_partialImage_clean : 
 	$(TRACE_FLAG)if [ -d "ProjetTempsReel_partialImage" ]; then cd "ProjetTempsReel_partialImage"; rm -rf $(MODE_DIR); fi
 
-DEP_FILES := ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/accesTampons.d ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/main.d ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/taches.d
+DEP_FILES := ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/accesTampons.d ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/main.d ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/signauxExterieur.d \
+	 ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/taches.d
 -include $(DEP_FILES)
 
 

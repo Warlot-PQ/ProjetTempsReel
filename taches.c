@@ -582,26 +582,29 @@ int compteur_moins_eau(){
 
 int gestion_position_camion(){
 	int timer_camion_present;
-	char* buffer_camion_absent;
-	bool position_camion_present_recu;
-	position_camion_present = false;
-	
+	bool position_camion_ok;
 	while(1){
 		semTake(sem_debut_camion, WAIT_FOREVER);
-		semGive(sem_diode_allumer_camion);
+		AllumerDiodePositionCamion();
+		position_camion_ok = false;
 		
-		while(msgQReceive(file_position_camion_absent_malaxeur, buffer_camion_absent, 100, NO_WAIT) == 0){
-			//reception du signal camion_position_present_malaxeur : le camion est en place.
-			semTake(sem_position_camion_present_malaxeur, WAIT_FOREVER);
-			position_camion_present = true;
-			semGive(sem_diode_eteindre_camion);
+		while(!position_camion_ok){
+			while(!getPresence()){
+				
+			}
+			EteindreDiodePositionCamion();
 			timer_camion_present = 0;
-			while(timer_camion_present < 5){
+			
+			while(timer_camion_present < 5 && getPresence()){
 				wait(1);
 				timer_camion_present += 1;
 			}
+			
+			if(timer_camion_present == 5){
+				position_camion_ok = true;
+				semGive(sem_position_camion_ok);
+			}
 		}
-		semGive(sem_position_camion_ok);
 	}
 	return 0;
 }
@@ -625,21 +628,20 @@ int gestion_versement(){
 	return 0;
 }
 int gestion_moteur(){
+	//le boolean Imax_atteint permet de savoir si lors de la mesure précédente, la valeur Imax a été atteinte.
 	bool Imax_atteint, diode_allumee;
 	int temps_sans_fluctuation;
 	char* buffer_file_intensite, buffer_file_vitesse;
 	float intensite, vitesse, intensite_avant;
-	intensite_avant = 0;
 	
 	while(1){
 		semTake(debut_malaxeur, WAIT_FOREVER);
-
+		consigne_moteur(vitesse_max);
+		Imax_atteint = false;
+		temps_sans_fluctuation = 0;
+		intensite_avant = 0;
+		
 		while(temps_sans_fluctuation < temps_cst){
-			consigne_moteur(vitesse_max);
-			Imax_atteint = false;
-			diode_allumee = false;
-			temps_sans_fluctuation = 0;
-			
 			semGive(sem_demande_valeur_intensite_malaxeur);
 			msgQReceive(file_valeur_intensite_malaxeur, buffer_file, 100, WAIT_FOREVER);
 			sprintf(str, buffer_file, intensite);
@@ -652,26 +654,22 @@ int gestion_moteur(){
 			if(intensite < Imax){
 				if(abs(intensite - intensite_avant) < 0.05){
 					temps_sans_fluctuation += 1;
-					if(temps_sans_fluctuation < temps_cst){
-						if(!Imax_atteint){
-							semGive(sem_diode_eteindre_malaxeur);
-							semGive(sem_reprise_bal_tapis_agrEtCim);
-						}
-					}else{
-						semGive(debut_camion);
-					}
 				}else{
 					temps_sans_fluctuation = 0;
-					if(Imax_atteint){
-						semGive(sem_diode_eteindre_malaxeur);
-						semGive(sem_reprise_bal_tapis_agrEtCim);
-					}
+				}
+				
+				if(Imax_atteint){
+					EteindreDiodeMalaxeur();
+					semGive(sem_reprise_bal_tapis_agrEtCim);
+					Imax_atteint = false;
 				}
 			}else{
-				consigne_moteur(0);
-				Imax_atteint = true;
-				semGive(sem_stop_bal_tapis_agrEtCim);
-				semGive(sem_diode_allumer_malax);
+				if(!Imax_atteint){
+					consigne_moteur(0);
+					Imax_atteint = true;
+					semGive(sem_stop_bal_tapis_agrEtCim);
+					AllumerDiodeMalaxeur();
+				}
 			}
 		}
 		semGive(sem_debut_camion);
