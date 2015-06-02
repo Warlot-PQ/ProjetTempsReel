@@ -53,9 +53,9 @@ int ajouter_quantite_agregat_totale(float);
 int decremente_quantite_agregat_totale();
 int is_quantite_agregat_totale_nulle();
 //Quantité ciment restant
-int ecrire_quantite_agregat_restante(float);
-int decremente_quantite_agregat_restante();
-int is_quantite_agregat_restant_nulle();
+int ecrire_quantite_ciment_restante(float);
+int decremente_quantite_ciment_restante();
+int is_quantite_ciment_restant_nulle();
 //Quantité ciment total
 int ecrire_quantite_ciment_totale_nulle();
 int ajouter_quantite_ciment_totale(float);

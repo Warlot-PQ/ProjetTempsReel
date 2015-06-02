@@ -12,7 +12,7 @@
 #define cst_vanne_bas_ciment_1 "VC1.2"
 #define cst_vanne_haut_ciment_2 "VC2.1"
 #define cst_vanne_bas_ciment_2 "VC2.2"
-#define cst_vanne_malaxeur "M"
+#define cst_vanne_malaxeur "VM"
 #define cst_vanne_haut_eau "VE1"
 #define cst_vanne_bas_eau "VE2"
 
@@ -20,7 +20,7 @@
 #define cst_tapis_ciment "TPC"
 
 #define cst_balance_agregat "BA"
-#define cst_balance_ciment "BC";
+#define cst_balance_ciment "BC"
 
 #define cst_silo_agregat_1 "A1"
 #define cst_silo_agregat_2 "A2"
@@ -28,8 +28,6 @@
 #define cst_silo_ciment_1 "C1"
 #define cst_silo_ciment_2 "C2"
 #define cst_silo_eau "E"
-#define cst_balance_agregat "BA"
-#define cst_balance_ciment "BC"
 #define cst_malaxeur "M"
 
 /****************************************/
