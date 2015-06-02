@@ -87,8 +87,6 @@ extern SEM_ID sem_int_max_cim_2;
 
 extern SEM_ID sem_int_max_eau;
 extern SEM_ID sem_int_min_eau;
-extern SEM_ID sem_int_plus_eau;
-extern SEM_ID sem_int_moins_eau;
 
 extern SEM_ID sem_demande_versement_agregat;
 extern SEM_ID sem_demande_versement_ciment;
