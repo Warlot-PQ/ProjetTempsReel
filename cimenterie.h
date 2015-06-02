@@ -115,7 +115,7 @@ extern SEM_ID sem_debut_moteur;
 extern SEM_ID sem_debut_camion;
 extern SEM_ID sem_diode_allumer_camion;
 extern SEM_ID sem_diode_eteindre_camion;
-extern SEM_ID sem_position_ok;
+extern SEM_ID sem_position_ok_camion;
 
 extern SEM_ID sem_van_ferme_malaxeur;
 extern SEM_ID sem_van_ouvre_malaxeur;
@@ -134,6 +134,6 @@ typedef struct type_beton{
 extern type_beton beton_type_1;
 extern type_beton beton_type_2;
 extern type_beton beton_type_3;
-extern K = 0.5;
+//extern Ktest = 0.5;
 
 #endif

@@ -96,7 +96,7 @@ int main(){
 	sem_debut_camion = semBCreate(SEM_Q_FIFO, 0);
 	sem_diode_allumer_camion = semBCreate(SEM_Q_FIFO, 0);
 	sem_diode_eteindre_camion = semBCreate(SEM_Q_FIFO, 0);
-	sem_position_ok = semBCreate(SEM_Q_FIFO, 0);
+	sem_position_ok_camion = semBCreate(SEM_Q_FIFO, 0);
 
 	sem_van_ferme_malaxeur = semBCreate(SEM_Q_FIFO, 0);
 	sem_van_ouvre_malaxeur = semBCreate(SEM_Q_FIFO, 0);
@@ -195,6 +195,10 @@ int main(){
 	
 	//Réautorise la réquisition
 	taskUnlock();
+	
+	
+	
+	
 	
 	return 0;
 }
