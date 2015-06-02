@@ -83,14 +83,14 @@ float lire_tampon_cmd_cmd_plus_recent_volume(){
 	
 	return value;
 }
-float lire_tampon_cmd_cmd_plus_recent_beton(){
+int lire_tampon_cmd_cmd_plus_recent_beton(){
 	int index_cmd_plus_recente;
-	float value;
+	int value;
 	
 	index_cmd_plus_recente = lire_tampon_fonct_calcul_cmd_plus_recente();
 
 	semTake(sem_tampon_cmd, WAIT_FOREVER);
-	value = tampon_cmd[index_cmd_plus_recente + index_tampon_cmd_beton];
+	value = (int) tampon_cmd[index_cmd_plus_recente + index_tampon_cmd_beton];
 	semGive(sem_tampon_cmd);
 	
 	return value;

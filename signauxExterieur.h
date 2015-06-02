@@ -92,7 +92,10 @@ void AllumerDiodeMalaxeur();
  * 	Eteint la diode du malaxeur quand l'intensité du moteur passe sous le seuil Imax
 **/
 void EteindreDiodeMalaxeur();
-
+/**
+ * 	Envoie la consigne de vitesse au moteur
+**/
+void consigne_moteur(float intensite);
 /****************************************/
 /***************CAPTEURS*****************/
 /****************************************/
@@ -116,9 +119,9 @@ int getTypeBeton();
 
 int getHygrometrie();
 
-int getVmot();
+float getVmot();
 
-int getImot();
+float getImot();
 
 int getEtatBmal();
 /****************************************/

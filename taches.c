@@ -112,11 +112,12 @@ int gestion_evenement_eau(){
 }
 
 int calcul_qte_eau(){
-	/*float B, V, D, qte_eau, hygronometrie;
+	float V, D, qte_eau, hygronometrie;
+	int B;
 	
 	while(1){
 		semTake(sem_calcul_eau, WAIT_FOREVER);
-		demande_hygrometrie();
+		hygronometrie = getHygrometrie();
 		
 //----------------Lecture des valeurs B, V, D dans le tampon_cmd		
 		B = lire_tampon_cmd_cmd_plus_recent_beton();
@@ -124,15 +125,16 @@ int calcul_qte_eau(){
 		D = lire_tampon_cmd_cmd_plus_recent_distance();
 		
 //----------------Calcul de la quantité d'eau voulue selon le type de béton
-		switch(B){
+		switch(B)
+		{
 			case 1:
-				qte_eau = beton_type_1.eau*V - hygronometrie*V*beton_type_1.agregat_1 + K*D;
+					qte_eau = beton_type_1.eau*V - hygronometrie*V*beton_type_1.agregat_1 + k_hygronometrie*D;
 				break;
 			case 2:
-				qte_eau = beton_type_2.eau*V - hygronometrie*V*beton_type_2.agregat_1 + K*D;
+					qte_eau = beton_type_2.eau*V - hygronometrie*V*beton_type_2.agregat_1 + k_hygronometrie*D;
 				break;
 			case 3:
-				qte_eau = beton_type_3.eau*V - hygronometrie*V*beton_type_3.agregat_1 + K*D;
+					qte_eau = beton_type_3.eau*V - hygronometrie*V*beton_type_3.agregat_1 + k_hygronometrie*D;
 				break;
 			default:
 				printf("calcul_qte_agregat : default case !\n");
@@ -144,11 +146,12 @@ int calcul_qte_eau(){
 		
 //----------------Signale la tache "gestion synchro" que le système traite la commande suivante 	
 		semGive(sem_agregat_et_ciment_suivant);
-	}*/
+	}
 	return 0;
 }
 int calcul_qte_agregat(){
-	/*float B, V, D, agregat_1, agregat_2, agregat_3;
+	float V, D, agregat_1, agregat_2, agregat_3;
+	int B;
 
 
 	while(1){
@@ -189,12 +192,13 @@ int calcul_qte_agregat(){
 //----------------Signale la tache "gestion remplissage et versement silos" que le tampon_qte a été mis à jour
 		semGive(sem_demande_versement_agregat);
 	}
-	*/
+	
 	return 0;
 }
 int calcul_qte_ciment(){
-	float B, V, D, ciment_1, ciment_2;
-	/*
+	float V, D, ciment_1, ciment_2;
+	int B;
+	
 	while(1){
 		semTake(sem_calcul_ciment, WAIT_FOREVER);
 		
@@ -229,7 +233,7 @@ int calcul_qte_ciment(){
 //----------------Signale la tache "gestion remplissage et versement silos" que le tampon_qte a été mis à jour
 		semGive(sem_demande_versement_ciment);
 	}
-	*/
+	
 	return 0;
 }
 
@@ -613,7 +617,6 @@ int compteur_moins_eau(){
 }
 
 int gestion_position_camion(){
-	/*
 	int timer_camion_present;
 	int position_camion_ok;
 	while(1){
@@ -621,7 +624,7 @@ int gestion_position_camion(){
 		AllumerDiodePositionCamion();
 		position_camion_ok = 0;
 		
-		while(!position_camion_ok){
+		while(position_camion_ok == 0){
 			while(!getPresence()){
 				
 			}
@@ -629,7 +632,7 @@ int gestion_position_camion(){
 			timer_camion_present = 0;
 			
 			while(timer_camion_present < 5 && getPresence()){
-				wait(1);
+				sleep(1);
 				timer_camion_present += 1;
 			}
 			
@@ -639,19 +642,19 @@ int gestion_position_camion(){
 			}
 		}
 	}
-	*/
+	
 	return 0;
 }
 int gestion_versement(){
-	/*int temps_versement;
+	int timer_versement;
 	
 	while(1){
 		timer_versement = 0;
 		semTake(sem_position_camion_ok, WAIT_FOREVER);
 		semGive(sem_van_ouvre_malaxeur);
 		
-		while(temps_versement < temps_versement){
-			wait(1);
+		while(timer_versement < cste_temps_versement){
+			sleep(1);
 			timer_versement += 1;
 		}
 		semGive(sem_arret_rotation_moteur);
@@ -659,35 +662,29 @@ int gestion_versement(){
 		semGive(sem_van_ferme_malaxeur);
 		semGive(sem_fin_malaxeur);
 	}
-	*/
+	
 	return 0;
 }
 int gestion_moteur(){
-	//le boolean Imax_atteint permet de savoir si lors de la mesure précédente, la valeur Imax a été atteinte.
-	/*
-	int Imax_atteint, diode_allumee;
+	int Imax_atteint;
 	int temps_sans_fluctuation;
 	char* buffer_file_intensite, buffer_file_vitesse;
 	float intensite, vitesse, intensite_avant;
 	
 	while(1){
-		semTake(debut_malaxeur, WAIT_FOREVER);
-		consigne_moteur(vitesse_max);
-		Imax_atteint = false;
+		semTake(sem_debut_malaxeur, WAIT_FOREVER);
+		consigne_moteur(cste_vitesse_moteur_max);
+		Imax_atteint = 0;
 		temps_sans_fluctuation = 0;
 		intensite_avant = 0;
 		
-		while(temps_sans_fluctuation < temps_cst){
-			semGive(sem_demande_valeur_intensite_malaxeur);
-			msgQReceive(file_valeur_intensite_malaxeur, buffer_file, 100, WAIT_FOREVER);
-			sprintf(str, buffer_file, intensite);
-			semGive(sem_demande_valeur_vitesse_malaxeur);
-			msgQReceive(file_valeur_vitesse_malaxeur, buffer_file, 100, WAIT_FOREVER);
-			sprintf(str, buffer_file_valeur_intensite, vitesse);
+		while(temps_sans_fluctuation < cste_temps_cst){
+			intensite = getVmot();
+			vitesse = getImot();
+			sprintf(buffer_file_intensite, "%f", intensite);
+			msgQSend(file_intensite, buffer_file_intensite, 100, WAIT_FOREVER, MSG_PRI_NORMAL);
 			
-			msgQSend(file_intensite, (char *) intensite, 100, WAIT_FOREVER, MSG_PRI_NORMAL);
-			
-			if(intensite < Imax){
+			if(intensite < cste_Imax){
 				if(abs(intensite - intensite_avant) < 0.05){
 					temps_sans_fluctuation += 1;
 				}else{
@@ -697,12 +694,12 @@ int gestion_moteur(){
 				if(Imax_atteint){
 					EteindreDiodeMalaxeur();
 					semGive(sem_reprise_bal_tapis_agrEtCim);
-					Imax_atteint = false;
+					Imax_atteint = 0;
 				}
 			}else{
 				if(!Imax_atteint){
 					consigne_moteur(0);
-					Imax_atteint = true;
+					Imax_atteint = 1;
 					semGive(sem_stop_bal_tapis_agrEtCim);
 					AllumerDiodeMalaxeur();
 				}
@@ -710,6 +707,6 @@ int gestion_moteur(){
 		}
 		semGive(sem_debut_camion);
 	}
-	*/
+	
 	return 0;
 }

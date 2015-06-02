@@ -2,6 +2,7 @@
 //#define CIMENTERIE_H
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <semLib.h>
 
@@ -32,12 +33,15 @@
 #define index_tampon_fonct_calcul_cmd_ciment_en_cours 		4
 
 //----------------Temps
-#define temps_versement										20
-#define temps_cst											15
+#define cste_temps_versement								20
+#define cste_temps_cst										15
 
-//----------------Valeurs pour le moteur
-#define Imax												10
+//----------------Constantes pour le moteur
+#define cste_Imax											10
+#define cste_vitesse_moteur_max								10
 
+//----------------Constantes pour l'hygronométrie
+#define k_hygronometrie										0,5
 //----------------Tampons
 float tampon_cmd[NB_COMMANDE * 3];
 float tampon_qte_silos[6]; 
@@ -113,12 +117,16 @@ SEM_ID sem_agregat_et_ciment_suivant;
 
 SEM_ID sem_debut_moteur;
 SEM_ID sem_debut_camion;
-SEM_ID sem_diode_allumer_camion;
+SEM_ID sem_position_camion_ok;
 SEM_ID sem_diode_eteindre_camion;
+SEM_ID sem_arret_rotation_moteur;
+SEM_ID sem_vide_malaxeur;
 SEM_ID sem_position_ok_camion;
 
 SEM_ID sem_van_ferme_malaxeur;
 SEM_ID sem_van_ouvre_malaxeur;
+SEM_ID sem_stop_bal_tapis_agrEtCim;
+SEM_ID sem_reprise_bal_tapis_agrEtCim;
 
 MSG_Q_ID file_intensite;
 
