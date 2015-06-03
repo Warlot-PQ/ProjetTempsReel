@@ -2,6 +2,7 @@
 #include <taskLib.h> 
 #include "cimenterie.h"
 #include "accesTampons.h"
+#include "signauxExterieur.h"
 #include "taches.h"
 
 int main(){
@@ -121,7 +122,18 @@ int main(){
 	//Empeche la réquisition (préemption)
 	taskLock();
 	
+	//********************TEST
+	
+	OuvrirVanne("VA1.2");
+	
+	taskDelay(1500);
+	
+	FermerVanne("VA1.2");
+	
+	//********************TEST
+	
 	//Lance les tâches
+	/*
 	taskSpawn("gestion_IHM",200,
 		                0x100,2000,(FUNCPTR) gestion_IHM,
 		                0,0,0,0,0,0,0,0,0,0);
@@ -192,7 +204,7 @@ int main(){
 	taskSpawn("gestion_moteur",200,
 			                0x100,2000,(FUNCPTR) gestion_moteur,
 			                0,0,0,0,0,0,0,0,0,0);
-	
+	*/
 	//Réautorise la réquisition
 	taskUnlock();
 	

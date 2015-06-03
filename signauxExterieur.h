@@ -95,7 +95,7 @@ void EteindreDiodeMalaxeur();
 /**
  * 	Envoie la consigne de vitesse au moteur
 **/
-void consigne_moteur(float intensite);
+void consigne_moteur(float);
 /****************************************/
 /***************CAPTEURS*****************/
 /****************************************/
@@ -148,4 +148,14 @@ void interruptionPlus(char* element);
 **/
 void interruptionMoins(char* element);
 
+/****************************************/
+/****************Taches******************/
+/****************************************/
+int driver_versement_agregat();
+int driver_versement_ciment();
+int driver_versement_eau();
+int driver_versement_malaxeur();
+int driver_remplissage_agregat();
+int driver_remplissage_ciment();
+int driver_remplissage_eau();
 //#endif
