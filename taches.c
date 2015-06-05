@@ -43,6 +43,8 @@ int gestion_evenement_malax(){
 	while(1){
 		semTake(sem_fin_malaxeur, WAIT_FOREVER);
 		
+		printf("Semaphore ok\n");
+		
 		cmd_plus_recente = lire_tampon_fonct_calcul_cmd_plus_recente();
 		cmd_en_cours = lire_tampon_fonct_calcul_cmd_en_cours();
 		

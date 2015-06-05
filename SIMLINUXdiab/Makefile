@@ -31,8 +31,8 @@ else
 MODE_DIR := NonDebug
 endif
 OBJ_DIR := .
-PRJ_ROOT_DIR := /users/elo/jnokaya/ENSSAT2A/TPSREEL/WINDRIVER/ProjetTempsReel
-WS_ROOT_DIR := /users/elo/jnokaya/ENSSAT2A/TPSREEL
+PRJ_ROOT_DIR := /users/elo/pwarlot/Documents/temps_reel/workspace/Temps_reel_Nokaya_Warlot_projet
+WS_ROOT_DIR := /users/elo/pwarlot/Documents/temps_reel/workspace
 
 
 
@@ -77,120 +77,120 @@ endif
 
 
 #Project Targets
-PROJECT_TARGETS = ProjetTempsReel/$(MODE_DIR)/ProjetTempsReel.out \
-	 ProjetTempsReel_partialImage/$(MODE_DIR)/ProjetTempsReel_partialImage.o
+PROJECT_TARGETS = Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/Temps_reel_Nokaya_Warlot_projet.out \
+	 Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Temps_reel_Nokaya_Warlot_projet_partialImage.o
 
 
 #Rules
 
-# ProjetTempsReel
+# Temps_reel_Nokaya_Warlot_projet
 ifeq ($(DEBUG_MODE),1)
-ProjetTempsReel/$(MODE_DIR)/% : DEBUGFLAGS_C-Compiler = -g
-ProjetTempsReel/$(MODE_DIR)/% : DEBUGFLAGS_C++-Compiler = -g
-ProjetTempsReel/$(MODE_DIR)/% : DEBUGFLAGS_Linker = -g
-ProjetTempsReel/$(MODE_DIR)/% : DEBUGFLAGS_Partial-Image-Linker = 
-ProjetTempsReel/$(MODE_DIR)/% : DEBUGFLAGS_Librarian = 
-ProjetTempsReel/$(MODE_DIR)/% : DEBUGFLAGS_Assembler = -g
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : DEBUGFLAGS_C-Compiler = -g
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : DEBUGFLAGS_C++-Compiler = -g
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : DEBUGFLAGS_Linker = -g
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : DEBUGFLAGS_Partial-Image-Linker = 
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : DEBUGFLAGS_Librarian = 
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : DEBUGFLAGS_Assembler = -g
 else
-ProjetTempsReel/$(MODE_DIR)/% : DEBUGFLAGS_C-Compiler = -XO -Xsize-opt
-ProjetTempsReel/$(MODE_DIR)/% : DEBUGFLAGS_C++-Compiler = -XO -Xsize-opt
-ProjetTempsReel/$(MODE_DIR)/% : DEBUGFLAGS_Linker = -XO -Xsize-opt
-ProjetTempsReel/$(MODE_DIR)/% : DEBUGFLAGS_Partial-Image-Linker = 
-ProjetTempsReel/$(MODE_DIR)/% : DEBUGFLAGS_Librarian = 
-ProjetTempsReel/$(MODE_DIR)/% : DEBUGFLAGS_Assembler = -XO -Xsize-opt
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : DEBUGFLAGS_C-Compiler = -XO -Xsize-opt
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : DEBUGFLAGS_C++-Compiler = -XO -Xsize-opt
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : DEBUGFLAGS_Linker = -XO -Xsize-opt
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : DEBUGFLAGS_Partial-Image-Linker = 
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : DEBUGFLAGS_Librarian = 
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : DEBUGFLAGS_Assembler = -XO -Xsize-opt
 endif
-ProjetTempsReel/$(MODE_DIR)/% : IDE_INCLUDES = -I$(WIND_BASE)/target/h -I$(WIND_BASE)/target/h/wrn/coreip 
-ProjetTempsReel/$(MODE_DIR)/% : IDE_LIBRARIES = 
-ProjetTempsReel/$(MODE_DIR)/% : PROJECT_TYPE = DKM
-ProjetTempsReel/$(MODE_DIR)/% : DEFINES = 
-ProjetTempsReel/$(MODE_DIR)/% : EXPAND_DBG = 0
-ProjetTempsReel/$(MODE_DIR)/% : VX_CPU_FAMILY = simlinux
-ProjetTempsReel/$(MODE_DIR)/% : CPU = SIMLINUX
-ProjetTempsReel/$(MODE_DIR)/% : TOOL_FAMILY = diab
-ProjetTempsReel/$(MODE_DIR)/% : TOOL = diab
-ProjetTempsReel/$(MODE_DIR)/% : TOOL_PATH = 
-ProjetTempsReel/$(MODE_DIR)/% : CC_ARCH_SPEC = -tX86LH:vxworks66
-ProjetTempsReel/$(MODE_DIR)/% : LIBPATH = 
-ProjetTempsReel/$(MODE_DIR)/% : LIBS = 
-ProjetTempsReel/$(MODE_DIR)/% : OBJ_DIR := ProjetTempsReel/$(MODE_DIR)
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : IDE_INCLUDES = -I$(WIND_BASE)/target/h -I$(WIND_BASE)/target/h/wrn/coreip 
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : IDE_LIBRARIES = 
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : PROJECT_TYPE = DKM
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : DEFINES = 
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : EXPAND_DBG = 0
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : VX_CPU_FAMILY = simlinux
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : CPU = SIMLINUX
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : TOOL_FAMILY = diab
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : TOOL = diab
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : TOOL_PATH = 
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : CC_ARCH_SPEC = -tX86LH:vxworks66
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : LIBPATH = 
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : LIBS = 
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/% : OBJ_DIR := Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)
 
-OBJECTS_ProjetTempsReel = ProjetTempsReel_partialImage/$(MODE_DIR)/ProjetTempsReel_partialImage.o
+OBJECTS_Temps_reel_Nokaya_Warlot_projet = Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Temps_reel_Nokaya_Warlot_projet_partialImage.o
 
-ProjetTempsReel/$(MODE_DIR)/ProjetTempsReel.out : $(OBJECTS_ProjetTempsReel)
-	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@";rm -f "$@";ddump -Ng $(OBJECTS_ProjetTempsReel) $(IDE_LIBRARIES) | tclsh $(WIND_BASE)/host/resource/hutils/tcl/munch.tcl -c pentium > $(OBJ_DIR)/ctdt.c; $(TOOL_PATH)dcc $(DEBUGFLAGS_Linker) $(CC_ARCH_SPEC) -Xdollar-in-ident -Xforce-declarations  $(ADDED_CFLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES)  -o $(OBJ_DIR)/ctdt.o -c $(OBJ_DIR)/ctdt.c; $(TOOL_PATH)dld -tX86LH:vxworks66 -X -r5 -f 0x90,1,1 -r4 -o "$@" $(OBJ_DIR)/ctdt.o $(OBJECTS_ProjetTempsReel) $(IDE_LIBRARIES) $(LIBPATH) $(LIBS) $(ADDED_LIBPATH) $(ADDED_LIBS) && if [ "$(EXPAND_DBG)" = "1" ]; then plink "$@";fi
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/Temps_reel_Nokaya_Warlot_projet.out : $(OBJECTS_Temps_reel_Nokaya_Warlot_projet)
+	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@";rm -f "$@";ddump -Ng $(OBJECTS_Temps_reel_Nokaya_Warlot_projet) $(IDE_LIBRARIES) | tclsh $(WIND_BASE)/host/resource/hutils/tcl/munch.tcl -c pentium > $(OBJ_DIR)/ctdt.c; $(TOOL_PATH)dcc $(DEBUGFLAGS_Linker) $(CC_ARCH_SPEC) -Xdollar-in-ident -Xforce-declarations  $(ADDED_CFLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES)  -o $(OBJ_DIR)/ctdt.o -c $(OBJ_DIR)/ctdt.c; $(TOOL_PATH)dld -tX86LH:vxworks66 -X -r5 -f 0x90,1,1 -r4 -o "$@" $(OBJ_DIR)/ctdt.o $(OBJECTS_Temps_reel_Nokaya_Warlot_projet) $(IDE_LIBRARIES) $(LIBPATH) $(LIBS) $(ADDED_LIBPATH) $(ADDED_LIBS) && if [ "$(EXPAND_DBG)" = "1" ]; then plink "$@";fi
 
-ProjetTempsReel/$(MODE_DIR)/ProjetTempsReel_compile_file : $(FILE) ;
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/Temps_reel_Nokaya_Warlot_projet_compile_file : $(FILE) ;
 
-_clean :: ProjetTempsReel/$(MODE_DIR)/ProjetTempsReel_clean
+_clean :: Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/Temps_reel_Nokaya_Warlot_projet_clean
 
-ProjetTempsReel/$(MODE_DIR)/ProjetTempsReel_clean : 
-	$(TRACE_FLAG)if [ -d "ProjetTempsReel" ]; then cd "ProjetTempsReel"; rm -rf $(MODE_DIR); fi
+Temps_reel_Nokaya_Warlot_projet/$(MODE_DIR)/Temps_reel_Nokaya_Warlot_projet_clean : 
+	$(TRACE_FLAG)if [ -d "Temps_reel_Nokaya_Warlot_projet" ]; then cd "Temps_reel_Nokaya_Warlot_projet"; rm -rf $(MODE_DIR); fi
 
 
-# ProjetTempsReel_partialImage
+# Temps_reel_Nokaya_Warlot_projet_partialImage
 ifeq ($(DEBUG_MODE),1)
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_C-Compiler = -g
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_C++-Compiler = -g
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_Linker = -g
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_Partial-Image-Linker = 
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_Librarian = 
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_Assembler = -g
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_C-Compiler = -g
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_C++-Compiler = -g
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_Linker = -g
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_Partial-Image-Linker = 
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_Librarian = 
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_Assembler = -g
 else
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_C-Compiler = -XO -Xsize-opt
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_C++-Compiler = -XO -Xsize-opt
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_Linker = -XO -Xsize-opt
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_Partial-Image-Linker = 
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_Librarian = 
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_Assembler = -XO -Xsize-opt
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_C-Compiler = -XO -Xsize-opt
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_C++-Compiler = -XO -Xsize-opt
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_Linker = -XO -Xsize-opt
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_Partial-Image-Linker = 
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_Librarian = 
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_Assembler = -XO -Xsize-opt
 endif
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : IDE_INCLUDES = -I$(WIND_BASE)/target/h -I$(WIND_BASE)/target/h/wrn/coreip 
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : IDE_LIBRARIES = 
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : PROJECT_TYPE = DKM
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : DEFINES = 
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : EXPAND_DBG = 0
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : VX_CPU_FAMILY = simlinux
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : CPU = SIMLINUX
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : TOOL_FAMILY = diab
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : TOOL = diab
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : TOOL_PATH = 
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : CC_ARCH_SPEC = -tX86LH:vxworks66
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : LIBPATH = 
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : LIBS = 
-ProjetTempsReel_partialImage/$(MODE_DIR)/% : OBJ_DIR := ProjetTempsReel_partialImage/$(MODE_DIR)
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : IDE_INCLUDES = -I$(WIND_BASE)/target/h -I$(WIND_BASE)/target/h/wrn/coreip 
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : IDE_LIBRARIES = 
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : PROJECT_TYPE = DKM
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : DEFINES = 
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : EXPAND_DBG = 0
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : VX_CPU_FAMILY = simlinux
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : CPU = SIMLINUX
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : TOOL_FAMILY = diab
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : TOOL = diab
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : TOOL_PATH = 
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : CC_ARCH_SPEC = -tX86LH:vxworks66
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : LIBPATH = 
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : LIBS = 
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : OBJ_DIR := Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)
 
-ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/accesTampons.o : /users/elo/jnokaya/ENSSAT2A/TPSREEL/WINDRIVER/ProjetTempsReel/accesTampons.c
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Objects/Temps_reel_Nokaya_Warlot_projet/accesTampons.o : /users/elo/pwarlot/Documents/temps_reel/workspace/Temps_reel_Nokaya_Warlot_projet/accesTampons.c
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only  -Xforce-declarations   -Xmake-dependency=0xd $(ADDED_CFLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/main.o : /users/elo/jnokaya/ENSSAT2A/TPSREEL/WINDRIVER/ProjetTempsReel/main.c
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Objects/Temps_reel_Nokaya_Warlot_projet/main.o : /users/elo/pwarlot/Documents/temps_reel/workspace/Temps_reel_Nokaya_Warlot_projet/main.c
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only  -Xforce-declarations   -Xmake-dependency=0xd $(ADDED_CFLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/signauxExterieur.o : /users/elo/jnokaya/ENSSAT2A/TPSREEL/WINDRIVER/ProjetTempsReel/signauxExterieur.c
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Objects/Temps_reel_Nokaya_Warlot_projet/signauxExterieur.o : /users/elo/pwarlot/Documents/temps_reel/workspace/Temps_reel_Nokaya_Warlot_projet/signauxExterieur.c
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only  -Xforce-declarations   -Xmake-dependency=0xd $(ADDED_CFLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/taches.o : /users/elo/jnokaya/ENSSAT2A/TPSREEL/WINDRIVER/ProjetTempsReel/taches.c
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Objects/Temps_reel_Nokaya_Warlot_projet/taches.o : /users/elo/pwarlot/Documents/temps_reel/workspace/Temps_reel_Nokaya_Warlot_projet/taches.c
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only  -Xforce-declarations   -Xmake-dependency=0xd $(ADDED_CFLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-OBJECTS_ProjetTempsReel_partialImage = ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/accesTampons.o \
-	 ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/main.o \
-	 ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/signauxExterieur.o \
-	 ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/taches.o
+OBJECTS_Temps_reel_Nokaya_Warlot_projet_partialImage = Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Objects/Temps_reel_Nokaya_Warlot_projet/accesTampons.o \
+	 Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Objects/Temps_reel_Nokaya_Warlot_projet/main.o \
+	 Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Objects/Temps_reel_Nokaya_Warlot_projet/signauxExterieur.o \
+	 Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Objects/Temps_reel_Nokaya_Warlot_projet/taches.o
 
-ProjetTempsReel_partialImage/$(MODE_DIR)/ProjetTempsReel_partialImage.o : $(OBJECTS_ProjetTempsReel_partialImage)
-	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dld -tX86LH:vxworks66 -X -r5 -f 0x90,1,1  -o "$@" $(OBJECTS_ProjetTempsReel_partialImage) $(ADDED_OBJECTS) $(IDE_LIBRARIES) $(LIBPATH) $(LIBS) $(ADDED_LIBPATH) $(ADDED_LIBS) && if [ "$(EXPAND_DBG)" = "1" ]; then plink "$@";fi
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Temps_reel_Nokaya_Warlot_projet_partialImage.o : $(OBJECTS_Temps_reel_Nokaya_Warlot_projet_partialImage)
+	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dld -tX86LH:vxworks66 -X -r5 -f 0x90,1,1  -o "$@" $(OBJECTS_Temps_reel_Nokaya_Warlot_projet_partialImage) $(ADDED_OBJECTS) $(IDE_LIBRARIES) $(LIBPATH) $(LIBS) $(ADDED_LIBPATH) $(ADDED_LIBS) && if [ "$(EXPAND_DBG)" = "1" ]; then plink "$@";fi
 
-ProjetTempsReel_partialImage/$(MODE_DIR)/ProjetTempsReel_partialImage_compile_file : $(FILE) ;
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Temps_reel_Nokaya_Warlot_projet_partialImage_compile_file : $(FILE) ;
 
-_clean :: ProjetTempsReel_partialImage/$(MODE_DIR)/ProjetTempsReel_partialImage_clean
+_clean :: Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Temps_reel_Nokaya_Warlot_projet_partialImage_clean
 
-ProjetTempsReel_partialImage/$(MODE_DIR)/ProjetTempsReel_partialImage_clean : 
-	$(TRACE_FLAG)if [ -d "ProjetTempsReel_partialImage" ]; then cd "ProjetTempsReel_partialImage"; rm -rf $(MODE_DIR); fi
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Temps_reel_Nokaya_Warlot_projet_partialImage_clean : 
+	$(TRACE_FLAG)if [ -d "Temps_reel_Nokaya_Warlot_projet_partialImage" ]; then cd "Temps_reel_Nokaya_Warlot_projet_partialImage"; rm -rf $(MODE_DIR); fi
 
-DEP_FILES := ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/accesTampons.d ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/main.d ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/signauxExterieur.d \
-	 ProjetTempsReel_partialImage/$(MODE_DIR)/Objects/ProjetTempsReel/taches.d
+DEP_FILES := Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Objects/Temps_reel_Nokaya_Warlot_projet/accesTampons.d Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Objects/Temps_reel_Nokaya_Warlot_projet/main.d Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Objects/Temps_reel_Nokaya_Warlot_projet/signauxExterieur.d \
+	 Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Objects/Temps_reel_Nokaya_Warlot_projet/taches.d
 -include $(DEP_FILES)
 
 

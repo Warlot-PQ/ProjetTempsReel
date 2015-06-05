@@ -36,6 +36,10 @@ void OuvrirVanne(char* vanne){
 					                0,0,0,0,0,0,0,0,0,0);
 		if (strcmp(vanne, cst_vanne_bas_agregat_1) == 0){
 			agregat_versement_en_cours[0] = valeur;
+			
+			printf("Semaphore ??\n");
+			
+			semGive(sem_fin_malaxeur);
 		} else if (strcmp(vanne, cst_vanne_bas_agregat_2) == 0){
 			agregat_versement_en_cours[1] = valeur;
 		} else if (strcmp(vanne, cst_vanne_bas_agregat_3) == 0){
