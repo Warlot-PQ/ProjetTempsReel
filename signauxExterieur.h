@@ -30,6 +30,10 @@
 #define cst_silo_eau "E"
 #define cst_malaxeur "M"
 
+/*
+ * Utilisation des signaux, signalInit(...) au debut de chaque tache
+*/
+
 /****************************************/
 /*************ACTIONNEURS****************/
 /****************************************/
@@ -68,12 +72,12 @@ void CommandeMalaxeur(int tension);
 *	Ouvre une balance BA ou BC
 *	vanne : Constante de la balance, utiliser les defines du .h
 **/
-void OuvrirBalance();
+void OuvrirBalance(char *balance);
 /**
 *	Ferme une balance BA ou BC
 *	vanne : Constante de la balance, utiliser les defines du .h
 **/
-void FermerBalance();
+void FermerBalance(char *balance);
 /**
  *  Allume la diode signalant que le malaxeur passe en phase de versement et que le camion doit se positionner.
  *  Est appelée quand le camion n'est pas en position
@@ -151,11 +155,13 @@ void interruptionMoins(char* element);
 /****************************************/
 /****************Taches******************/
 /****************************************/
-int driver_versement_agregat();
-int driver_versement_ciment();
-int driver_versement_eau();
+int driver_versement_silo_agregat();
+int driver_versement_silo_ciment();
+int driver_versement_silo_eau();
 int driver_versement_malaxeur();
-int driver_remplissage_agregat();
-int driver_remplissage_ciment();
-int driver_remplissage_eau();
+int driver_remplissage_silo_agregat();
+int driver_remplissage_silo_ciment();
+int driver_remplissage_silo_eau();
+int driver_versement_balance_agregat();
+int driver_versement_balance_ciment();
 //#endif

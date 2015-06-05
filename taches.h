@@ -49,11 +49,22 @@ int gestion_versement();
 int gestion_moteur();
 
 //----------------Collection de fonctions (ne sont pas des taches)
-int compteur_plus_balance_agregats();
-int compteur_moins_balance_agregats();
-int compteur_plus_balance_ciment();
-int compteur_moins_balance_ciment();
-int compteur_plus_eau();
-int compteur_moins_eau();
-
+void capteur_plein_silo_agregat_1();
+void capteur_vide_silo_agregat_1();
+void capteur_plein_silo_agregat_2();
+void capteur_vide_silo_agregat_2();
+void capteur_plein_silo_agregat_3();
+void capteur_vide_silo_agregat_3();
+void capteur_plein_silo_ciment_1();
+void capteur_vide_silo_ciment_1();
+void capteur_plein_silo_ciment_2();
+void capteur_vide_silo_ciment_2();
+void capteur_plus_balance_agregats();
+void capteur_moins_balance_agregats();
+void capteur_plus_balance_ciment();
+void capteur_moins_balance_ciment();
+void capteur_plein_eau();
+void capteur_vide_eau();
+void capteur_plus_eau();
+void capteur_moins_eau();
 //#endif

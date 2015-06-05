@@ -5,12 +5,13 @@
 #include <string.h>
 
 #define INACTIF -1
-#define ATTENTE_ENTRE_DEUX_INT 500
+#define ATTENTE_ENTRE_DEUX_INT 100
 
 int capacite_silo_agregat_courrante[3] = {0, 0, 0};
 int capacite_silo_ciment_courrante[2] = {0, 0};
 int capacite_silo_eau_courrante = 0;
 
+//PID des tâches
 //0 signifie inactif et le pid de la tache en cours sinon, l'index représente le numéro du silo
 int agregat_versement_en_cours[3] = {INACTIF, INACTIF, INACTIF};
 int agregat_remplissage_en_cours[3] = {INACTIF, INACTIF, INACTIF};
@@ -19,6 +20,8 @@ int ciment_remplissage_en_cours[2] = {INACTIF, INACTIF};
 int eau_versement_en_cours = INACTIF;
 int eau_remplissage_en_cours = INACTIF;
 int malaxeur_versement_en_cours = INACTIF;
+int balance_agregat_versement_en_cours = INACTIF;
+int balance_ciment_versement_en_cours = INACTIF;
 
 void OuvrirVanne(char* vanne){
 	int valeur;
@@ -32,14 +35,10 @@ void OuvrirVanne(char* vanne){
 		printf("tache versement agregat lancee\n");
 		
 		valeur = taskSpawn("driver_versement_agregat",200,
-					                0x100,2000,(FUNCPTR) driver_versement_agregat,
+					                0x100,2000,(FUNCPTR) driver_versement_silo_agregat,
 					                0,0,0,0,0,0,0,0,0,0);
 		if (strcmp(vanne, cst_vanne_bas_agregat_1) == 0){
 			agregat_versement_en_cours[0] = valeur;
-			
-			printf("Semaphore ??\n");
-			
-			semGive(sem_fin_malaxeur);
 		} else if (strcmp(vanne, cst_vanne_bas_agregat_2) == 0){
 			agregat_versement_en_cours[1] = valeur;
 		} else if (strcmp(vanne, cst_vanne_bas_agregat_3) == 0){
@@ -51,7 +50,7 @@ void OuvrirVanne(char* vanne){
 		printf("tache versement ciment lancee\n");
 		
 		valeur = taskSpawn("driver_versement_ciment",200,
-						                0x100,2000,(FUNCPTR) driver_versement_ciment,
+						                0x100,2000,(FUNCPTR) driver_versement_silo_ciment,
 						                0,0,0,0,0,0,0,0,0,0);
 		if (strcmp(vanne, cst_vanne_bas_ciment_1) == 0){
 			ciment_versement_en_cours[0] = valeur;
@@ -63,7 +62,7 @@ void OuvrirVanne(char* vanne){
 		printf("tache versement eau lancee%s\n");
 		
 		eau_versement_en_cours = taskSpawn("driver_versement_eau",200,
-						                0x100,2000,(FUNCPTR) driver_versement_eau,
+						                0x100,2000,(FUNCPTR) driver_versement_silo_eau,
 						                0,0,0,0,0,0,0,0,0,0);
 	} else if (strcmp(vanne, cst_vanne_malaxeur) == 0) {
 		//Simule le versement du malaxeur
@@ -79,7 +78,7 @@ void OuvrirVanne(char* vanne){
 				|| strcmp(vanne, cst_vanne_haut_agregat_3) == 0){
 			//Simule le remplissage des agregats
 			valeur = taskSpawn("driver_remplissage_agregat",200,
-						                0x100,2000,(FUNCPTR) driver_remplissage_agregat,
+						                0x100,2000,(FUNCPTR) driver_remplissage_silo_agregat,
 						                0,0,0,0,0,0,0,0,0,0);
 			if (strcmp(vanne, cst_vanne_haut_agregat_1) == 0){
 				agregat_remplissage_en_cours[0] = valeur;
@@ -92,7 +91,7 @@ void OuvrirVanne(char* vanne){
 				|| strcmp(vanne, cst_vanne_haut_ciment_2) == 0){
 			//Simule le remplissage du ciment
 			valeur = taskSpawn("driver_remplissage_ciment",200,
-							                0x100,2000,(FUNCPTR) driver_remplissage_ciment,
+							                0x100,2000,(FUNCPTR) driver_remplissage_silo_ciment,
 							                0,0,0,0,0,0,0,0,0,0);
 			if (strcmp(vanne, cst_vanne_haut_ciment_1) == 0){
 				ciment_remplissage_en_cours[0] = valeur;
@@ -102,7 +101,7 @@ void OuvrirVanne(char* vanne){
 		} else if (strcmp(vanne, cst_vanne_haut_eau) == 0){
 			//Simule le remplissage de l'eau
 			eau_remplissage_en_cours = taskSpawn("driver_versement_eau",200,
-									                0x100,2000,(FUNCPTR) driver_remplissage_eau,
+									                0x100,2000,(FUNCPTR) driver_remplissage_silo_eau,
 									                0,0,0,0,0,0,0,0,0,0);
 		} else {
 			printf("ERREUR, COMMANDE INCOMPRISE\n");
@@ -203,12 +202,42 @@ void CommandeMalaxeur(int tension){
 
 }
 
-void OuvrirBalance(){
-
+void OuvrirBalance(char *balance){
+	int valeur;
+	printf("Ouverture balance : %s\n", balance);
+	
+	//Balance
+	if (strcmp(balance, cst_balance_agregat) == 0){
+		valeur = taskSpawn("driver_versement_agregat",200,
+                0x100,2000,(FUNCPTR) driver_versement_balance_agregat,
+                0,0,0,0,0,0,0,0,0,0);
+		balance_agregat_versement_en_cours = valeur;
+	} else if(strcmp(balance, cst_balance_ciment) == 0) {
+		valeur = taskSpawn("driver_versement_agregat",200,
+		                0x100,2000,(FUNCPTR) driver_versement_balance_ciment,
+		                0,0,0,0,0,0,0,0,0,0);
+		balance_ciment_versement_en_cours = valeur;
+	} else {
+		printf("ERREUR, COMMANDE INCOMPRISE\n");
+	}
 }
 
-void FermerBalance(){
-
+void FermerBalance(char *balance){
+	int valeur;
+	printf("Fermeture balance : %s\n", balance);
+	
+	//Balance
+	if (strcmp(balance, cst_balance_agregat) == 0){
+		valeur = balance_agregat_versement_en_cours;
+		taskDelete(valeur);
+		balance_agregat_versement_en_cours = INACTIF;
+	} else if(strcmp(balance, cst_balance_ciment) == 0) {
+		valeur = balance_ciment_versement_en_cours;
+		taskDelete(valeur);
+		balance_ciment_versement_en_cours = INACTIF;
+	} else {
+		printf("ERREUR, COMMANDE INCOMPRISE\n");
+	}
 }
 
 void AllumerDiodePositionCamion(){
@@ -280,19 +309,17 @@ void interruptionMoins(char* element){
 }
 
 
-
-
-int driver_versement_agregat(){
+int driver_versement_silo_agregat(){
 	int i;
 	
 	while (1){
 		for (i = 0; i < sizeof(agregat_versement_en_cours); i += 1){
 			if (agregat_versement_en_cours[i] != INACTIF){
 				taskDelay(ATTENTE_ENTRE_DEUX_INT);
-				
-				printf("Silo agregat %d -1\n", i + 1);
 				//Decremente contenu silo
 				capacite_silo_agregat_courrante[i] -= 1;
+				//Simule IT plus balance agregat
+				capteur_plus_balance_agregats();
 				//Test silo vide, si oui envoie le signal du capteur silo vide
 				if (capacite_silo_agregat_courrante[i] <= 0){
 					switch(i){
@@ -312,25 +339,25 @@ int driver_versement_agregat(){
 	
 	return 0;
 }
-int driver_versement_ciment(){
+int driver_versement_silo_ciment(){
 	int i;
 	
 	while (1){
 		for (i = 0; i < sizeof(ciment_versement_en_cours); i += 1){
 			if (ciment_versement_en_cours[i] != INACTIF){
 				taskDelay(ATTENTE_ENTRE_DEUX_INT);
-				
-				printf("Silo agregat %d -1\n", i + 1);
 				//Decremente contenu silo
 				capacite_silo_ciment_courrante[i] -= 1;
+				//Simule IT plus balance agregat
+				capteur_plus_balance_ciment();
 				//Test silo vide, si oui envoie le signal du capteur silo vide
 				if (capacite_silo_ciment_courrante[i] <= 0){
 					switch(i){
 					case 0:
-						semGive(sem_int_min_cim_1);
+						capteur_vide_silo_ciment_1();
 						break;
 					default:
-						semGive(sem_int_min_cim_2);
+						capteur_vide_silo_ciment_2();
 					}
 				}
 			}
@@ -339,23 +366,110 @@ int driver_versement_ciment(){
 	
 	return 0;
 }
-int driver_versement_eau(){
+int driver_versement_silo_eau(){
+	while (1){
+		taskDelay(ATTENTE_ENTRE_DEUX_INT);
+		//Decremente contenu silo
+		capacite_silo_eau_courrante -= 1;
+		//Test silo vide, si oui envoie le signal du capteur silo vide
+		if (capacite_silo_eau_courrante <= 0){
+			capteur_vide_eau();
+		}
+	}
 	
 	return 0;
 }
 int driver_versement_malaxeur(){
+	//TODO driver_versement_malaxeur()
 	
 	return 0;
 }
-int driver_remplissage_agregat(){
+int driver_remplissage_silo_agregat(){
+	int i;
+		
+	while (1){
+		for (i = 0; i < sizeof(agregat_remplissage_en_cours); i += 1){
+			if (agregat_remplissage_en_cours[i] != INACTIF){
+				taskDelay(ATTENTE_ENTRE_DEUX_INT);
+				//Decremente contenu silo
+				capacite_silo_agregat_courrante[i] += 1;
+				//Test silo vide, si oui envoie le signal du capteur silo vide
+				if (capacite_silo_agregat_courrante[i] >= NIVEAU_AGREGAT_MAX){
+					switch(i){
+					case 0:
+						capteur_plein_silo_agregat_1();
+						break;
+					case 1:
+						capteur_plein_silo_agregat_2();
+						break;
+					default:
+						capteur_plein_silo_agregat_3();
+					}
+				}
+			}
+		}
+	}
 	
 	return 0;
 }
-int driver_remplissage_ciment(){
+int driver_remplissage_silo_ciment(){
+	int i;
+		
+	while (1){
+		for (i = 0; i < sizeof(ciment_remplissage_en_cours); i += 1){
+			if (ciment_remplissage_en_cours[i] != INACTIF){
+				taskDelay(ATTENTE_ENTRE_DEUX_INT);
+				//Decremente contenu silo
+				capacite_silo_ciment_courrante[i] += 1;
+				//Test silo vide, si oui envoie le signal du capteur silo vide
+				if (capacite_silo_ciment_courrante[i] >= NIVEAU_CIMENT_MAX){
+					switch(i){
+					case 0:
+						capteur_plein_silo_ciment_1();
+						break;
+					default:
+						capteur_plein_silo_ciment_2();
+					}
+				}
+			}
+		}
+	}
+	
+	return 0;
+}
+int driver_remplissage_silo_eau(){
+	while (1){
+		taskDelay(ATTENTE_ENTRE_DEUX_INT);
+		
+		//Decremente contenu silo
+		capacite_silo_eau_courrante += 1;
+		//Test silo vide, si oui envoie le signal du capteur silo vide
+		if (capacite_silo_eau_courrante >= NIVEAU_EAU_MAX){
+			capteur_plein_eau();
+		}
+	}
+	
+	return 0;
+}
 
+int driver_versement_balance_agregat(){
+	while(1){
+		taskDelay(ATTENTE_ENTRE_DEUX_INT);
+		
+		//Simule une IT balance moins
+		capteur_moins_balance_agregats();
+	}
+	
 	return 0;
 }
-int driver_remplissage_eau(){
+
+int driver_versement_balance_ciment(){
+	while(1){
+		taskDelay(ATTENTE_ENTRE_DEUX_INT);
+		
+		//Simule une IT balance moins
+		capteur_moins_balance_ciment();
+	}
 	
 	return 0;
 }

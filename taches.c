@@ -2,19 +2,20 @@
 #include "accesTampons.h"
 #include "taches.h"
 #include "signauxExterieur.h"
+#include <stdio.h>
+
+/*
+ *	Vider le terminal : printf("\33[2J"); 
+*/
 
 int gestion_IHM(){
-	char valeur_volume;
-	char valeur_beton;
-	char valeur_distance;
+	char valeur_volume[20];
+	char valeur_beton[20];
+	char valeur_distance[20];
 	
 	while(1){
-		printf("Entrez le volume de béton souhaité :\n");
-		valeur_volume = getchar();
-		printf("Entrez le type de béton souhaité (1,2,3) :\n");
-		valeur_beton = getchar();
-		printf("Entrez la distance à parcourir :\n");
-		valeur_distance = getchar();
+		printf("Entrez le volume de béton, le type souhaité (1, 2 ou 3) et la distance à parcourir (séparé par les espaces, ex : 50 2 10) :\n");
+		scanf("%d %d %d", &valeur_volume, &valeur_beton, &valeur_distance);
 		
 		if (tampon_fonct_calcul_plein() == PB){
 			printf("Nombre maximum de commande en cours de traitement atteint !\n");
@@ -22,16 +23,24 @@ int gestion_IHM(){
 			//Signale que l'arrivée d'une commande plus recente
 			incremente_tampon_fonct_calcul_cmd_plus_recente();
 			//Remplie les caractéristiques de la commande la plus recente
-			ecrire_tampon_cmd_cmd_plus_recent_volume((int) valeur_volume);
-			ecrire_tampon_cmd_cmd_plus_recent_beton((int) valeur_beton);
-			ecrire_tampon_cmd_cmd_plus_recent_distance((int) valeur_distance);
-			
+			//ecrire_tampon_cmd_cmd_plus_recent_volume(atoi(valeur_volume));
+			//ecrire_tampon_cmd_cmd_plus_recent_beton(atoi(valeur_beton));
+			//ecrire_tampon_cmd_cmd_plus_recent_distance(atoi(valeur_distance));
+			ecrire_tampon_cmd_cmd_plus_recent_volume(20);
+			ecrire_tampon_cmd_cmd_plus_recent_beton(2);
+			ecrire_tampon_cmd_cmd_plus_recent_distance(30);
 			//Test toute première commande
 			if (is_tampon_fonct_calcul_premiere_cmd() != PB){
 				//Fixe la commande en cours comme étant la première
 				set_tampon_fonct_calcul_premiere_cmd();
 				
-				//TODO lance calcul_eau, calcul_agr et calcul_cim
+				printf("Volume : %s, Béton : %s, Distance : %s\n", valeur_volume, valeur_beton, valeur_distance);
+				printf("Lancement de la commande !\n");
+				semGive(sem_calcul_agregat);
+				semGive(sem_calcul_ciment);
+				semGive(sem_calcul_eau);
+			} else {
+				printf("ERREUR %d\n", is_tampon_fonct_calcul_premiere_cmd());
 			}
 		}
 	}
@@ -61,11 +70,11 @@ int gestion_evenement_malax(){
 					tampon_qte_silos[index_boucle] = 0;
 			}
 				
-				tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_plus_recente] = -1;
-				tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_en_cours] = -1;
-				tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_eau_en_cours] = 0;
-				tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_agregat_en_cours] = 0;
-				tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_ciment_en_cours] = 0;
+			tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_plus_recente] = -1;
+			tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_en_cours] = -1;
+			tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_eau_en_cours] = 0;
+			tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_agregat_en_cours] = 0;
+			tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_ciment_en_cours] = 0;
 		}
 	}
 	return 0;
@@ -241,18 +250,20 @@ int calcul_qte_ciment(){
 
 int versement_agregat(){
 	//Numéro du silo à ouvrir
-	int num_silo = 0;
+	int num_silo_entier;
+	char num_silo[15];
 	
 	while(1){
 		//Attente de la demande de versement d'agregat
 		semTake(sem_demande_versement_agregat, WAIT_FOREVER);
 		
-		for (num_silo = 1; num_silo <= 3; num_silo += 1) {
+		for (num_silo_entier = 1; num_silo_entier <= 3; num_silo_entier += 1) {
+			sprintf(num_silo, "%d", num_silo_entier);
 			//Signal de début de versement à la balance
-			msgQSend(file_debut_remplissage_balance_agregat, (char *) num_silo, 1, WAIT_FOREVER, MSG_PRI_NORMAL);
+			msgQSend(file_debut_remplissage_balance_agregat, num_silo, sizeof(num_silo), WAIT_FOREVER, MSG_PRI_NORMAL);
 			
 			//Ouverture du silo num_silo
-			switch (num_silo){
+			switch (num_silo_entier){
 			case 1:
 				OuvrirVanne(cst_vanne_bas_agregat_1);
 				break;
@@ -266,7 +277,7 @@ int versement_agregat(){
 			semTake(sem_fin_remplissage_balance_agregat, WAIT_FOREVER);
 			
 			//Fermeture du silo num_silo
-			switch (num_silo){
+			switch (num_silo_entier){
 			case 1:
 				FermerVanne(cst_vanne_bas_agregat_1);
 				break;
@@ -353,18 +364,21 @@ int remplissage_agregat_3(){
 
 int versement_ciment(){
 	//Numéro du silo à ouvrir
-	int num_silo = 0;
+	int num_silo_entier;
+	char num_silo[15];
 	
 	while(1){
 		//Attente de la demande de versement d'agregat
 		semTake(sem_demande_versement_ciment, WAIT_FOREVER);
 		
-		for (num_silo = 1; num_silo <= 2; num_silo += 1) {
+		for (num_silo_entier = 1; num_silo_entier <= 2; num_silo_entier += 1) {
+			sprintf(num_silo, "%d", num_silo_entier);
+			
 			//Signal de début de versement à la balance
-			msgQSend(file_debut_remplissage_balance_ciment, (char *) num_silo, 1, WAIT_FOREVER, MSG_PRI_NORMAL);
+			msgQSend(file_debut_remplissage_balance_ciment, num_silo, sizeof(num_silo), WAIT_FOREVER, MSG_PRI_NORMAL);
 			
 			//Ouverture du silo num_silo
-			switch (num_silo){
+			switch (num_silo_entier){
 			case 1:
 				OuvrirVanne(cst_vanne_bas_ciment_1);
 				break;
@@ -376,7 +390,7 @@ int versement_ciment(){
 			semTake(sem_fin_remplissage_balance_ciment, WAIT_FOREVER);
 			
 			//Fermeture du silo num_silo
-			switch (num_silo){
+			switch (num_silo_entier){
 			case 1:
 				FermerVanne(cst_vanne_bas_ciment_1);
 				break;
@@ -438,69 +452,49 @@ int remplissage_ciment_2(){
 }
 
 int gestion_balance_agregats(){
-	int num_silo = 0;	//Numéro du silo en cours de versement
-	ecrire_quantite_agregat_totale_nulle();
-	
+	int num_silo = 0;		//Numéro du silo en cours de versement
+	int versement = 1;
+
 	while (1){
-		msgQReceive(file_debut_remplissage_balance_agregat, (char*) num_silo, 1, WAIT_FOREVER);
+		msgQReceive(file_debut_remplissage_balance_agregat, (char*) num_silo, sizeof(num_silo), WAIT_FOREVER);
+		versement = 1;
 		
-		ajouter_quantite_agregat_totale(lire_tampon_qte_silos_agregat(num_silo));
-		ecrire_quantite_agregat_restante(lire_tampon_qte_silos_agregat(num_silo));
+		while(versement == 1){
+			semTake(sem_int_plus_bal_agr, WAIT_FOREVER);
+			
+			//Decremente
+			decremente_tampon_qte_silos_agregat(num_silo);
+			
+			if (is_tampon_qte_silos_agregat_nulle(num_silo)){
+				versement = 0;
+				semGive(sem_fin_remplissage_balance_agregat);
+			}
+		}
 	}
 	return 0;
-}
-int compteur_plus_balance_agregats(){
-	decremente_quantite_agregat_restante();
-	
-	if (is_quantite_agregat_restante_nulle()){
-		semGive(sem_fin_remplissage_balance_agregat);
-	}
-}
-int compteur_moins_balance_agregats(){
-	decremente_quantite_agregat_totale();
-	
-	if (is_quantite_agregat_totale_nulle()){
-		FermerBalance(cst_balance_agregat);
-		
-		//TODO tampo de 120s
-		
-		DemarrageTapis(cst_tapis_agregat);
-		semGive(sem_fin_vers_balance_agregat);
-	}
-	
 }
 int gestion_balance_ciment(){
 	int num_silo = 0;		//Numéro du silo en cours de versement
-	ecrire_quantite_ciment_totale_nulle();
+	int versement = 1;
 
 	while (1){
-		msgQReceive(file_debut_remplissage_balance_ciment, (char*) num_silo, 1, WAIT_FOREVER);
+		msgQReceive(file_debut_remplissage_balance_ciment, (char*) num_silo, sizeof(num_silo), WAIT_FOREVER);
+		versement = 1;
 		
-		ajouter_quantite_ciment_totale(lire_tampon_qte_silos_ciment(num_silo));
-		ecrire_quantite_ciment_restante(lire_tampon_qte_silos_ciment(num_silo));
+		while(versement == 1){
+			semTake(sem_int_plus_bal_cim, WAIT_FOREVER);
+			
+			//Decremente
+			decremente_tampon_qte_silos_ciment(num_silo);
+			
+			if (is_tampon_qte_silos_ciment_nulle(num_silo)){
+				versement = 0;
+				semGive(sem_fin_remplissage_balance_ciment);
+			}
+		}
 	}
 	return 0;
 }
-int compteur_plus_balance_ciment(){
-	decremente_quantite_ciment_restante();
-	
-	if (is_quantite_ciment_restant_nulle()){
-		semGive(sem_fin_remplissage_balance_ciment);
-	}
-}
-int compteur_moins_balance_ciment(){
-	decremente_quantite_ciment_totale();
-	
-	if (is_quantite_ciment_totale_nulle()){
-		FermerBalance(cst_balance_ciment);
-		
-		//TODO tampo de 120s
-		
-		ArretTapis(cst_tapis_ciment);
-		semGive(sem_fin_vers_balance_ciment);
-	}
-}
-
 int gestion_synchro(){
 	int cmd_agr_en_cours, cmd_cim_en_cours, cmd_en_cours;
 	
@@ -540,29 +534,38 @@ int gestion_synchro(){
 }
 
 int versement_eau(){
+	int versement = 0;
 	versement_eau_en_cours = 0;
 	
 	while(1){
 		// Attend une demande de versement
 		semTake(sem_demande_versement_eau, WAIT_FOREVER);
-		
+		versement = 1;
 		versement_eau_en_cours = 1;
 		
 		// Lance le calcul de la quantité d'eau
 		semGive(sem_calcul_eau);
 		
-		ecrire_quantite_eau_restante(lire_tampon_qte_silos_eau());
-		
 		// Début versement dès que c'est possible, attente si impossible
 		while(!is_versement_eau_possible());
 		OuvrirRobinet(cst_vanne_bas_eau, 100);
+		
+		while(versement == 1){
+			semTake(sem_int_moins_eau, WAIT_FOREVER);
+						
+			//Decremente
+			decremente_tampon_qte_silos_eau();
+			
+			if (is_tampon_qte_silos_eau_nulle()){
+				versement = 0;
+				semGive(sem_fin_eau);
+			}
+		}
 	}
 	
 	return 0;
 }
 int remplissage_eau(){
-	ecrire_niveau_eau_nul();
-	
 	// Initialisation du système, remplissage du silo
 	//Rupture versement
 	OuvrirRobinet(cst_vanne_bas_eau, 0);
@@ -574,7 +577,6 @@ int remplissage_eau(){
 	semTake(sem_int_max_eau, WAIT_FOREVER);
 	
 	FermerVanne(cst_vanne_haut_eau);
-	ecrire_niveau_eau_max();
 	//Autorise le versement
 	set_versement_eau_possible(1);
 	
@@ -593,7 +595,6 @@ int remplissage_eau(){
 		
 		//*************Fin du remplissage
 		FermerVanne(cst_vanne_haut_eau);
-		ecrire_niveau_eau_max();
 		
 		//*************Reprise du versement
 		set_versement_eau_possible(1);
@@ -603,19 +604,6 @@ int remplissage_eau(){
 	}
 	
 	return 0;
-}
-
-int compteur_plus_eau(){
-	incremente_niveau_eau();
-}
-
-int compteur_moins_eau(){
-	decremente_niveau_eau();
-	decremente_quantite_eau_restante();
-	
-	if(is_quantite_eau_restante_nulle() == 1) {
-		OuvrirRobinet(cst_vanne_bas_eau, 0);
-	}
 }
 
 int gestion_position_camion(){
@@ -712,3 +700,81 @@ int gestion_moteur(){
 	
 	return 0;
 }
+
+
+
+void capteur_plein_silo_agregat_1(){
+	semGive(sem_int_max_agr_1);
+}
+void capteur_vide_silo_agregat_1(){
+	semGive(sem_int_min_agr_1);
+}
+void capteur_plein_silo_agregat_2(){
+	semGive(sem_int_max_agr_2);
+}
+void capteur_vide_silo_agregat_2(){
+	semGive(sem_int_min_agr_2);
+}
+void capteur_plein_silo_agregat_3(){
+	semGive(sem_int_max_agr_3);
+}
+void capteur_vide_silo_agregat_3(){
+	semGive(sem_int_min_agr_3);
+}
+void capteur_plein_silo_ciment_1(){
+	semGive(sem_int_max_cim_1);
+}
+void capteur_vide_silo_ciment_1(){
+	semGive(sem_int_min_cim_1);
+}
+void capteur_plein_silo_ciment_2(){
+	semGive(sem_int_max_cim_2);
+}
+void capteur_vide_silo_ciment_2(){
+	semGive(sem_int_min_cim_2);
+}
+void capteur_plus_balance_agregats(){
+	qte_contenu_balance_agregat += 1;
+	
+	semGive(sem_int_plus_bal_agr);
+}
+void capteur_moins_balance_agregats(){
+	qte_contenu_balance_agregat -= 1;
+	
+	//semGive(sem_int_moins_bal_agr);
+	if (qte_contenu_balance_agregat <= 0){
+		qte_contenu_balance_agregat = 0;
+		semGive(sem_fin_vers_balance_agregat);
+	}
+}
+void capteur_plus_balance_ciment(){
+	qte_contenu_balance_ciment += 1;
+		
+	semGive(sem_int_plus_bal_cim);
+}
+void capteur_moins_balance_ciment(){
+	qte_contenu_balance_ciment -= 1;
+		
+	//semGive(sem_int_moins_bal_cim);
+	if (qte_contenu_balance_ciment <= 0){
+		qte_contenu_balance_ciment = 0;
+		semGive(sem_fin_vers_balance_ciment);
+	}
+}
+void capteur_plein_eau(){
+	semGive(sem_int_max_eau);
+}
+
+void capteur_vide_eau(){
+	semGive(sem_int_min_eau);
+}
+
+void capteur_plus_eau(){
+	//semGive(sem_int_plus_eau);
+}
+
+void capteur_moins_eau(){
+	semGive(sem_int_moins_eau);
+}
+
+
