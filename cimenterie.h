@@ -136,6 +136,10 @@ SEM_ID sem_vitesse_moteur;
 
 MSG_Q_ID file_intensite;
 
+//TEST
+SEM_ID sem_stupide;
+//TEST
+
 typedef struct type_beton{
 	int agregat_1;
 	int agregat_2;

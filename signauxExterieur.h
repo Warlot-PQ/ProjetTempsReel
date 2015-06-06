@@ -39,6 +39,7 @@
 
 //----------------Constantes pour l'hygronométrie
 #define k_hygronometrie										0.5
+#define HYGROMETRIE											38	
 
 int vitesse_moteur;
 
@@ -55,6 +56,7 @@ int timer_versement_malaxeur;
 #define INACTIF -1
 #define ACTIF 0
 #define ATTENTE_ENTRE_DEUX_INT 100
+#define UNITE_VOLUME 50
 
 int capacite_silo_agregat_courrante[3] = {0, 0, 0};
 int capacite_silo_ciment_courrante[2] = {0, 0};
@@ -203,5 +205,4 @@ int driver_versement_balance_agregat();
 int driver_versement_balance_ciment();
 //----------------Affichage du système dans la console
 int driver_affichage_test();
-
 //#endif

@@ -60,11 +60,11 @@ int main(){
 	sem_fin_ciment = semBCreate(SEM_Q_FIFO, 0);
 	sem_fin_eau = semBCreate(SEM_Q_FIFO, 0);
 	sem_fin_malaxeur = semBCreate(SEM_Q_FIFO, 0);
-	sem_debut_malaxeur = semBCreate(SEM_Q_FIFO, SEM_FULL);
+	sem_debut_malaxeur = semBCreate(SEM_Q_FIFO, 0);
 
-	sem_calcul_agregat = semBCreate(SEM_Q_FIFO, SEM_FULL);
-	sem_calcul_ciment = semBCreate(SEM_Q_FIFO, SEM_FULL);
-	sem_calcul_eau = semBCreate(SEM_Q_FIFO, SEM_FULL);
+	sem_calcul_agregat = semBCreate(SEM_Q_FIFO, 0);
+	sem_calcul_ciment = semBCreate(SEM_Q_FIFO, 0);
+	sem_calcul_eau = semBCreate(SEM_Q_FIFO, 0);
 
 	sem_int_min_agr_1 = semBCreate(SEM_Q_FIFO, 0);
 	sem_int_min_agr_2 = semBCreate(SEM_Q_FIFO, 0);
@@ -109,12 +109,13 @@ int main(){
 	sem_agregat_et_ciment_suivant = semBCreate(SEM_Q_FIFO, 0);
 
 	sem_debut_moteur = semBCreate(SEM_Q_FIFO, 0);
-
-	sem_vitesse_moteur = semBCreate(SEM_Q_FIFO, SEM_FULL);
-	sem_debut_camion = semBCreate(SEM_Q_FIFO, SEM_FULL);
+	sem_vitesse_moteur = semBCreate(SEM_Q_FIFO, 0);
+	sem_debut_camion = semBCreate(SEM_Q_FIFO, 0);
 	sem_diode_allumer_camion = semBCreate(SEM_Q_FIFO, 0);
 	sem_diode_eteindre_camion = semBCreate(SEM_Q_FIFO, 0);
 	sem_position_camion_ok = semBCreate(SEM_Q_FIFO, 0);
+	sem_position_camion_ok = semBCreate(SEM_Q_FIFO, 0);
+	sem_arret_rotation_moteur = semBCreate(SEM_Q_FIFO, 0);
 	sem_vide_malaxeur = semBCreate(SEM_Q_FIFO, 0);
 
 	sem_van_ferme_malaxeur = semBCreate(SEM_Q_FIFO, 0);
@@ -141,29 +142,12 @@ int main(){
 		
 	//Empeche la réquisition (préemption)
 	taskLock();
-	
-	//********************TEST
-	
-	/*OuvrirVanne("VA1.2");
-	
-	taskDelay(1500);
-	FermerVanne("VA1.2");*/
-	
-	//********************TEST
-	tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_plus_recente] = 0;
-	ecrire_tampon_cmd_cmd_plus_recent_beton(1);
-	ecrire_tampon_cmd_cmd_plus_recent_volume(150);
-	ecrire_tampon_cmd_cmd_plus_recent_distance(200);
-	
-	taskSpawn("gestion_position_camion",200,
-				                0x100,2000,(FUNCPTR) gestion_position_camion,
-				                0,0,0,0,0,0,0,0,0,0);
-	taskSpawn("gestion_versement",200,
-			                0x100,2000,(FUNCPTR) gestion_versement,
-			                0,0,0,0,0,0,0,0,0,0);
-	
-	//Lance les tâches
+
 	/*
+	taskSpawn("driver_affichage_test",150,
+						0x100,2000,(FUNCPTR) driver_affichage_test,
+						0,0,0,0,0,0,0,0,0,0);
+	*/
 	taskSpawn("gestion_IHM",200,
 		                0x100,2000,(FUNCPTR) gestion_IHM,
 		                0,0,0,0,0,0,0,0,0,0);
@@ -242,7 +226,6 @@ int main(){
 	taskSpawn("gestion_moteur",200,
 			                0x100,2000,(FUNCPTR) gestion_moteur,
 			                0,0,0,0,0,0,0,0,0,0);
-	*/
 	//Réautorise la réquisition
 	taskUnlock();
 	
