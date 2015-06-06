@@ -50,6 +50,9 @@ int diode_malaxeur;
 //----------------getPresence
 int timer_getPresence;
 
+//----------------driver_versement_malaxeur
+int timer_versement_malaxeur;
+
 #define INACTIF -1
 #define ACTIF 0
 #define ATTENTE_ENTRE_DEUX_INT		100
@@ -63,6 +66,8 @@ int capacite_silo_eau_courrante = 0;
 SEM_ID sem_capacite_silo_agregat_courrante;
 SEM_ID sem_capacite_silo_ciment_courrante;
 SEM_ID sem_capacite_silo_eau_courrante;
+SEM_ID sem_vitesse_moteur;
+
 
 /*
  * Utilisation des signaux, signalInit(...) au debut de chaque tache

@@ -671,7 +671,7 @@ int gestion_position_camion(){
 		
 		while(position_camion_ok == 0){
 			while(getPresence() == 0){
-				//printf("\n******** Camion non positionné ! ********\n");
+				printf("\n******** Camion non positionné ! ********\n");
 			}
 			EteindreDiodePositionCamion();
 			timer_camion_present = 0;
@@ -679,7 +679,7 @@ int gestion_position_camion(){
 			while((timer_camion_present < 5) && (getPresence() == 1)){
 				taskDelay(100);
 				timer_camion_present = timer_camion_present +1;
-				//printf("\n *** CAMION EN POSITION *** \n");
+				printf("\n *** CAMION EN POSITION *** \n");
 				//printf("timer_camion_present : %d\n", timer_camion_present);
 				//printf("\n ************************** \n");
 			}
@@ -695,20 +695,14 @@ int gestion_position_camion(){
 	return 0;
 }
 int gestion_versement(){
-	int timer_versement;
-	
+	//printf("\n*************** TEST GESTION_VERSEMENT MALAXEUR ***************\n");
 	while(1){
-		timer_versement = 0;
 		semTake(sem_position_camion_ok, WAIT_FOREVER);
-		semGive(sem_van_ouvre_malaxeur);
-		
-		while(timer_versement < cste_temps_versement){
-			sleep(1);
-			timer_versement += 1;
-		}
-		semGive(sem_arret_rotation_moteur);
+		OuvrirVanne(cst_vanne_malaxeur);
 		semTake(sem_vide_malaxeur, WAIT_FOREVER);
-		semGive(sem_van_ferme_malaxeur);
+		FermerVanne(cst_vanne_malaxeur);
+		//printf("\n*************** FIN TEST GESTION_VERSEMENT MALAXEUR ***************\n");
+		printf("FINIIIIIIIII\n");
 		semGive(sem_fin_malaxeur);
 	}
 	
@@ -727,13 +721,16 @@ int gestion_moteur(){
 		temps_sans_fluctuation = 0;
 		intensite_avant = 0;
 		if(getVmot() == 0){
-			sleep(5);
+			taskDelay(500);
 		}
 		while(temps_sans_fluctuation < cste_temps_cst && getVmot() > 0){
 			vitesse = getVmot();
 			intensite  = getImot();
+			
+			printf("Vitesse moteur : %d\n", vitesse);
+			
 			sprintf(buffer_file_intensite, "%f", intensite);
-			msgQSend(file_intensite, buffer_file_intensite, 10, WAIT_FOREVER, MSG_PRI_NORMAL);
+			//msgQSend(file_intensite, buffer_file_intensite, 10, WAIT_FOREVER, MSG_PRI_NORMAL);
 			
 			if(intensite < cste_Imax){
 				//printf("intensite_avant : %f\n", intensite_avant);
@@ -764,10 +761,10 @@ int gestion_moteur(){
 		}
 		
 		if(temps_sans_fluctuation == cste_temps_cst){
+			consigne_moteur(0);
 			//printf("temps_sans_fluctuation (fin) : %d \n",temps_sans_fluctuation);
 			//printf("\n*************** FIN TEST GESTION_MOTEUR ***************\n");
 			semGive(sem_debut_camion);
-			taskDelete(taskIdSelf());
 		}
 	}
 	

@@ -34,10 +34,11 @@ int main(){
 	versement_eau_possible = 1;
 	versement_eau_en_cours = 0;
 	
-	//Semaphore de test
+	//Semaphore de test (driver)
 	sem_capacite_silo_agregat_courrante = semMCreate(SEM_Q_FIFO);
 	sem_capacite_silo_ciment_courrante = semMCreate(SEM_Q_FIFO);
 	sem_capacite_silo_eau_courrante = semMCreate(SEM_Q_FIFO);
+	sem_vitesse_moteur = semMCreate(SEM_Q_FIFO);
 	
 	//Initialise les sémaphores d'exclusion mutulle
 	sem_tampon_cmd = semMCreate(SEM_Q_FIFO);
@@ -108,7 +109,6 @@ int main(){
 
 	sem_agregat_et_ciment_suivant = semBCreate(SEM_Q_FIFO, 0);
 
-	sem_vitesse_moteur = semBCreate(SEM_Q_FIFO, 0);
 	sem_debut_camion = semBCreate(SEM_Q_FIFO, 0);
 	sem_diode_allumer_camion = semBCreate(SEM_Q_FIFO, 0);
 	sem_diode_eteindre_camion = semBCreate(SEM_Q_FIFO, 0);
@@ -141,7 +141,7 @@ int main(){
 		
 	//Empeche la réquisition (préemption)
 	taskLock();
-	
+
 	taskSpawn("driver_affichage_test",150,
 						0x100,2000,(FUNCPTR) driver_affichage_test,
 						0,0,0,0,0,0,0,0,0,0);
@@ -224,7 +224,6 @@ int main(){
 	taskSpawn("gestion_moteur",200,
 			                0x100,2000,(FUNCPTR) gestion_moteur,
 			                0,0,0,0,0,0,0,0,0,0);
-	
 	//Réautorise la réquisition
 	taskUnlock();
 	

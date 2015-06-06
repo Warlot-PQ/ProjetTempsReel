@@ -131,8 +131,6 @@ SEM_ID sem_van_ouvre_malaxeur;
 SEM_ID sem_stop_bal_tapis_agrEtCim;
 SEM_ID sem_reprise_bal_tapis_agrEtCim;
 
-SEM_ID sem_vitesse_moteur;
-
 MSG_Q_ID file_intensite;
 
 //TEST
