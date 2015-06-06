@@ -31,8 +31,8 @@ else
 MODE_DIR := NonDebug
 endif
 OBJ_DIR := .
-PRJ_ROOT_DIR := /users/elo/pwarlot/Documents/temps_reel/workspace/Temps_reel_Nokaya_Warlot_projet
-WS_ROOT_DIR := /users/elo/pwarlot/Documents/temps_reel/workspace
+PRJ_ROOT_DIR := /users/elo/jnokaya/ENSSAT2A/TPSREEL/WINDRIVER/ProjetTempsReel
+WS_ROOT_DIR := /users/elo/jnokaya/ENSSAT2A/TPSREEL
 
 
 
@@ -158,19 +158,19 @@ Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : LIBPATH =
 Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : LIBS = 
 Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/% : OBJ_DIR := Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)
 
-Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Objects/Temps_reel_Nokaya_Warlot_projet/accesTampons.o : /users/elo/pwarlot/Documents/temps_reel/workspace/Temps_reel_Nokaya_Warlot_projet/accesTampons.c
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Objects/Temps_reel_Nokaya_Warlot_projet/accesTampons.o : /users/elo/jnokaya/ENSSAT2A/TPSREEL/WINDRIVER/ProjetTempsReel/accesTampons.c
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only  -Xforce-declarations   -Xmake-dependency=0xd $(ADDED_CFLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Objects/Temps_reel_Nokaya_Warlot_projet/main.o : /users/elo/pwarlot/Documents/temps_reel/workspace/Temps_reel_Nokaya_Warlot_projet/main.c
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Objects/Temps_reel_Nokaya_Warlot_projet/main.o : /users/elo/jnokaya/ENSSAT2A/TPSREEL/WINDRIVER/ProjetTempsReel/main.c
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only  -Xforce-declarations   -Xmake-dependency=0xd $(ADDED_CFLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Objects/Temps_reel_Nokaya_Warlot_projet/signauxExterieur.o : /users/elo/pwarlot/Documents/temps_reel/workspace/Temps_reel_Nokaya_Warlot_projet/signauxExterieur.c
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Objects/Temps_reel_Nokaya_Warlot_projet/signauxExterieur.o : /users/elo/jnokaya/ENSSAT2A/TPSREEL/WINDRIVER/ProjetTempsReel/signauxExterieur.c
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only  -Xforce-declarations   -Xmake-dependency=0xd $(ADDED_CFLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Objects/Temps_reel_Nokaya_Warlot_projet/taches.o : /users/elo/pwarlot/Documents/temps_reel/workspace/Temps_reel_Nokaya_Warlot_projet/taches.c
+Temps_reel_Nokaya_Warlot_projet_partialImage/$(MODE_DIR)/Objects/Temps_reel_Nokaya_Warlot_projet/taches.o : /users/elo/jnokaya/ENSSAT2A/TPSREEL/WINDRIVER/ProjetTempsReel/taches.c
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only  -Xforce-declarations   -Xmake-dependency=0xd $(ADDED_CFLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 

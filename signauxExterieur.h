@@ -30,6 +30,24 @@
 #define cst_silo_eau "E"
 #define cst_malaxeur "M"
 
+//----------------Constantes pour le moteur
+#define cste_Imax											10.0
+#define cste_vitesse_moteur_max								10
+#define couple_moteur										50
+#define tension_moteur										100
+
+//----------------Constantes pour l'hygronométrie
+#define k_hygronometrie										0.5
+
+int vitesse_moteur;
+
+//----------------Diodes
+int diode_position_camion;
+int diode_malaxeur;
+
+//----------------getPresence
+int timer_getPresence;
+
 /****************************************/
 /*************ACTIONNEURS****************/
 /****************************************/
@@ -95,7 +113,7 @@ void EteindreDiodeMalaxeur();
 /**
  * 	Envoie la consigne de vitesse au moteur
 **/
-void consigne_moteur(float);
+void consigne_moteur(int);
 /****************************************/
 /***************CAPTEURS*****************/
 /****************************************/
@@ -119,7 +137,7 @@ int getTypeBeton();
 
 int getHygrometrie();
 
-float getVmot();
+int getVmot();
 
 float getImot();
 
@@ -158,4 +176,6 @@ int driver_versement_malaxeur();
 int driver_remplissage_agregat();
 int driver_remplissage_ciment();
 int driver_remplissage_eau();
+int driver_moteur(int vitesse_voulue);
+
 //#endif

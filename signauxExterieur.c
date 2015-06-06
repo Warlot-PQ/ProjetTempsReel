@@ -3,9 +3,12 @@
 #include "taches.h"
 #include <taskLib.h>
 #include <string.h>
+#include <wdLib.h>
 
 #define INACTIF -1
 #define ATTENTE_ENTRE_DEUX_INT 500
+
+//int moteur_task_id;
 
 int capacite_silo_agregat_courrante[3] = {0, 0, 0};
 int capacite_silo_ciment_courrante[2] = {0, 0};
@@ -29,7 +32,6 @@ void OuvrirVanne(char* vanne){
 			|| strcmp(vanne, cst_vanne_bas_agregat_2) == 0
 			|| strcmp(vanne, cst_vanne_bas_agregat_3) == 0){
 		//Simule le versement des agregats
-		printf("tache versement agregat lancee\n");
 		
 		valeur = taskSpawn("driver_versement_agregat",200,
 					                0x100,2000,(FUNCPTR) driver_versement_agregat,
@@ -212,11 +214,13 @@ void FermerBalance(){
 }
 
 void AllumerDiodePositionCamion(){
-	
+	diode_position_camion = 1;
+	printf("\n********** diode_position_camion allumée *************\n");
 }
 
 void EteindreDiodePositionCamion(){
-	
+	diode_position_camion = 0;
+	printf("\n********** diode_position_camion éteinte *************\n");
 }
 
 void AllumerDiodeMalaxeur(){
@@ -227,12 +231,27 @@ void EteindreDiodeMalaxeur(){
 	
 }
 
-void consigne_moteur(float intensite){
+void consigne_moteur(int vitesse_voulue){
+	int moteur_task_id;
 	
+	if(vitesse_voulue>0 && vitesse_voulue != vitesse_moteur){
+		printf("\n consigne_moteur : taskSpawn \n");
+		moteur_task_id = taskSpawn("driver_moteur",100, 0x100,2000,(FUNCPTR) driver_moteur, vitesse_voulue,0,0,0,0,0,0,0,0,0);
+	}else{
+		printf("\n vitesse_voulue = vitesse_moteur : driver non lancé \n");
+	}
 }
 
 int getPresence(){
-
+	if(timer_getPresence < 5){
+		taskDelay(100);
+		timer_getPresence = timer_getPresence + 1;
+		printf("timer_getPresence : %d\n", timer_getPresence);
+		return 0;
+	}else{
+		printf("timer_getPresence : %d\n", timer_getPresence);
+		return 1;
+	}
 }
 
 int getVolume(){
@@ -248,15 +267,27 @@ int getTypeBeton(){
 }
 
 int getHygrometrie(){
-	
+	return (rand()%100);
 }
 
-float getVmot(){
-
+int getVmot(){
+	int vitesse;
+	semTake(sem_vitesse_moteur, WAIT_FOREVER);
+	vitesse = vitesse_moteur;
+	printf("vitesse_moteur : %d\n", vitesse);
+	semGive(sem_vitesse_moteur);
+	
+	return vitesse;
 }
 
 float getImot(){
-
+	float intensite;
+	int vitesse;
+	
+	vitesse = getVmot();
+	intensite = (float)(couple_moteur*vitesse)/tension_moteur;
+	printf("intensite du moteur : %f\n", intensite);
+	return intensite;
 }
 
 int getEtatBmal(){
@@ -280,7 +311,37 @@ void interruptionMoins(char* element){
 }
 
 
-
+int driver_moteur(int vitesse_voulue){
+	float coefficient_directeur;
+	printf("driver_moteur\n");
+	coefficient_directeur = (vitesse_voulue-vitesse_moteur)/5.0;
+	while(1){
+		
+		while(vitesse_moteur != vitesse_voulue){
+			printf("VITESSE VOULUE : %d\n\n", vitesse_voulue);
+			taskDelay(100);
+			semTake(sem_vitesse_moteur, WAIT_FOREVER);
+			printf("driver_moteur : prise du jeton \n");
+			if (vitesse_voulue > vitesse_moteur){
+				vitesse_moteur = vitesse_moteur + coefficient_directeur;
+			}
+			
+			if (vitesse_voulue < vitesse_moteur){
+							vitesse_moteur = vitesse_moteur - coefficient_directeur;
+			}
+			semGive(sem_vitesse_moteur);
+			printf("driver_moteur : vitesse moteur = %d \n", vitesse_moteur);
+			printf("driver_moteur : vitesse voulue = %d \n", vitesse_voulue);
+			printf("driver_moteur : rend le jeton \n");
+		}
+		
+		if(vitesse_voulue == vitesse_moteur){
+			printf("driver_moteur : taskDelete\n");
+			taskDelete(taskIdSelf());
+		}
+	}
+	return 0;
+}
 
 int driver_versement_agregat(){
 	int i;
