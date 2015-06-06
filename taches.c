@@ -13,9 +13,17 @@ int gestion_IHM(){
 	char valeur_beton[20];
 	char valeur_distance[20];
 	
-	while(1){
+	//while(1){
+		printf("Initialisation de la cimenterie, remplissage des silos\n");
+		semTake(sem_init_remplissage_silo_agr_1, WAIT_FOREVER);
+		semTake(sem_init_remplissage_silo_agr_2, WAIT_FOREVER);
+		semTake(sem_init_remplissage_silo_agr_3, WAIT_FOREVER);
+		semTake(sem_init_remplissage_silo_cim_1, WAIT_FOREVER);
+		semTake(sem_init_remplissage_silo_cim_2, WAIT_FOREVER);
+		semTake(sem_init_remplissage_silo_eau, WAIT_FOREVER);
+			
 		printf("Entrez le volume de béton, le type souhaité (1, 2 ou 3) et la distance à parcourir (séparé par les espaces, ex : 50 2 10) :\n");
-		scanf("%d %d %d", &valeur_volume, &valeur_beton, &valeur_distance);
+		//scanf("%d %d %d", &valeur_volume, &valeur_beton, &valeur_distance);
 		
 		if (tampon_fonct_calcul_plein() == PB){
 			printf("Nombre maximum de commande en cours de traitement atteint !\n");
@@ -42,7 +50,7 @@ int gestion_IHM(){
 			} else {
 				printf("ERREUR %d\n", is_tampon_fonct_calcul_premiere_cmd());
 			}
-		}
+		//}
 	}
 	return 0;
 }
@@ -307,6 +315,7 @@ int remplissage_agregat_1(){
 	
 	FermerVanne(cst_vanne_haut_agregat_1);
 	
+	semGive(sem_init_remplissage_silo_agr_1);
 	while(1){
 		semTake(sem_int_min_agr_1, WAIT_FOREVER);
 		
@@ -328,6 +337,8 @@ int remplissage_agregat_2(){
 	
 	FermerVanne(cst_vanne_haut_agregat_2);
 	
+	semGive(sem_init_remplissage_silo_agr_2);
+	
 	while(1){
 		semTake(sem_int_min_agr_2, WAIT_FOREVER);
 		
@@ -348,6 +359,8 @@ int remplissage_agregat_3(){
 	semTake(sem_int_max_agr_3, WAIT_FOREVER);
 	
 	FermerVanne(cst_vanne_haut_agregat_3);
+	
+	semGive(sem_init_remplissage_silo_agr_3);
 	
 	while(1){
 		semTake(sem_int_min_agr_3, WAIT_FOREVER);
@@ -417,6 +430,8 @@ int remplissage_ciment_1(){
 	
 	FermerVanne(cst_vanne_haut_ciment_1);
 	
+	semGive(sem_init_remplissage_silo_cim_1);
+	
 	while(1){
 		semTake(sem_int_min_cim_1, WAIT_FOREVER);
 		
@@ -437,6 +452,8 @@ int remplissage_ciment_2(){
 	semTake(sem_int_max_cim_2, WAIT_FOREVER);
 	
 	FermerVanne(cst_vanne_haut_ciment_2);
+	
+	semGive(sem_init_remplissage_silo_cim_2);
 	
 	while(1){
 		semTake(sem_int_min_cim_2, WAIT_FOREVER);
@@ -579,6 +596,8 @@ int remplissage_eau(){
 	FermerVanne(cst_vanne_haut_eau);
 	//Autorise le versement
 	set_versement_eau_possible(1);
+	
+	semGive(sem_init_remplissage_silo_eau);
 	
 	while(1){
 		semTake(sem_int_min_eau, WAIT_FOREVER);		// silo eau vide
@@ -776,5 +795,4 @@ void capteur_plus_eau(){
 void capteur_moins_eau(){
 	semGive(sem_int_moins_eau);
 }
-
 

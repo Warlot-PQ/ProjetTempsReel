@@ -12,9 +12,9 @@
 #define PB 													-1
 
 //----------------Capacité silo en litre
-#define NIVEAU_EAU_MAX										5
-#define NIVEAU_AGREGAT_MAX									5
-#define NIVEAU_CIMENT_MAX									5
+#define NIVEAU_EAU_MAX										10
+#define NIVEAU_AGREGAT_MAX									8
+#define NIVEAU_CIMENT_MAX									8
 
 //----------------Index des tampons
 #define index_tampon_cmd_distance							0
@@ -62,6 +62,15 @@ SEM_ID sem_tampon_cmd;
 SEM_ID sem_tampon_fonct_calcul;
 SEM_ID sem_tampon_qte_silos;
 SEM_ID sem_versement_eau_possible;
+
+//----------------Sémaphores d'initialisation
+SEM_ID sem_init_remplissage_silo_agr_1;
+SEM_ID sem_init_remplissage_silo_agr_2;
+SEM_ID sem_init_remplissage_silo_agr_3;
+SEM_ID sem_init_remplissage_silo_cim_1;
+SEM_ID sem_init_remplissage_silo_cim_2;
+SEM_ID sem_init_remplissage_silo_eau;
+
 
 //----------------Sémaphore de synchronisation des tâches entre elles
 SEM_ID sem_fin_agregat;

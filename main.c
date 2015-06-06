@@ -33,11 +33,26 @@ int main(){
 	versement_eau_possible = 1;
 	versement_eau_en_cours = 0;
 	
+	//Semaphore de test
+	sem_capacite_silo_agregat_courrante = semMCreate(SEM_Q_FIFO);
+	sem_capacite_silo_ciment_courrante = semMCreate(SEM_Q_FIFO);
+	sem_capacite_silo_eau_courrante = semMCreate(SEM_Q_FIFO);
+	
 	//Initialise les sémaphores d'exclusion mutulle
 	sem_tampon_cmd = semMCreate(SEM_Q_FIFO);
 	sem_tampon_fonct_calcul = semMCreate(SEM_Q_FIFO);
 	sem_tampon_qte_silos = semMCreate(SEM_Q_FIFO);
 	sem_versement_eau_possible = semMCreate(SEM_Q_FIFO);
+	
+	//Initialise les sémaphores d'initialisation de la cimenterie	
+	sem_init_remplissage_silo_agr_1 = semBCreate(SEM_Q_FIFO, 0);
+	sem_init_remplissage_silo_agr_2 = semBCreate(SEM_Q_FIFO, 0);
+	sem_init_remplissage_silo_agr_3 = semBCreate(SEM_Q_FIFO, 0);
+	sem_init_remplissage_silo_cim_1 = semBCreate(SEM_Q_FIFO, 0);
+	sem_init_remplissage_silo_cim_2 = semBCreate(SEM_Q_FIFO, 0);
+	sem_init_remplissage_silo_eau = semBCreate(SEM_Q_FIFO, 0);
+	
+	
 	
 	//Initialise les sémaphores de synchronisation des tâches
 	sem_fin_agregat = semBCreate(SEM_Q_FIFO, 0);
@@ -127,6 +142,10 @@ int main(){
 	
 	//Lance les tâches
 	
+	taskSpawn("driver_affichage_test",150,
+            0x100,2000,(FUNCPTR) driver_affichage_test,
+            0,0,0,0,0,0,0,0,0,0);
+	
 	taskSpawn("gestion_IHM",200,
 		                0x100,2000,(FUNCPTR) gestion_IHM,
 		                0,0,0,0,0,0,0,0,0,0);
@@ -152,6 +171,7 @@ int main(){
 	taskSpawn("calcul_qte_ciment",200,
 			                0x100,2000,(FUNCPTR) calcul_qte_ciment,
 			                0,0,0,0,0,0,0,0,0,0);
+	
 	taskSpawn("versement_agregat",200,
 			                0x100,2000,(FUNCPTR) versement_agregat,
 			                0,0,0,0,0,0,0,0,0,0);
@@ -169,12 +189,15 @@ int main(){
 	taskSpawn("versement_ciment",200,
 			                0x100,2000,(FUNCPTR) versement_ciment,
 			                0,0,0,0,0,0,0,0,0,0);
+	 
 	taskSpawn("remplissage_ciment_1",200,
 			                0x100,2000,(FUNCPTR) remplissage_ciment_1,
 			                0,0,0,0,0,0,0,0,0,0);
+	
 	taskSpawn("remplissage_ciment_2",200,
 			                0x100,2000,(FUNCPTR) remplissage_ciment_2,
 			                0,0,0,0,0,0,0,0,0,0);
+	
 	taskSpawn("gestion_balance_agregats",200,
 			                0x100,2000,(FUNCPTR) gestion_balance_agregats,
 			                0,0,0,0,0,0,0,0,0,0);

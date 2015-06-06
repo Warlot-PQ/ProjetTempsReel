@@ -1,5 +1,6 @@
 //#ifndef SIGNAUX_EXTERIEUR_H
 //#define SIGNAUX_EXTERIEUR_H
+#include <semLib.h>
 
 //----------------Emission
 #define cst_vanne_haut_agregat_1 "VA1.1"
@@ -29,6 +30,18 @@
 #define cst_silo_ciment_2 "C2"
 #define cst_silo_eau "E"
 #define cst_malaxeur "M"
+
+#define INACTIF -1
+#define ACTIF 0
+#define ATTENTE_ENTRE_DEUX_INT 100
+
+int capacite_silo_agregat_courrante[3] = {0, 0, 0};
+int capacite_silo_ciment_courrante[2] = {0, 0};
+int capacite_silo_eau_courrante = 0;
+
+SEM_ID sem_capacite_silo_agregat_courrante;
+SEM_ID sem_capacite_silo_ciment_courrante;
+SEM_ID sem_capacite_silo_eau_courrante;
 
 /*
  * Utilisation des signaux, signalInit(...) au debut de chaque tache
@@ -164,4 +177,6 @@ int driver_remplissage_silo_ciment();
 int driver_remplissage_silo_eau();
 int driver_versement_balance_agregat();
 int driver_versement_balance_ciment();
+//----------------Affichage du système dans la console
+int driver_affichage_test();
 //#endif
