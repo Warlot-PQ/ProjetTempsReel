@@ -65,14 +65,6 @@ void OuvrirVanne(char* vanne){
 				&& ciment_versement_en_cours[0] == INACTIF){
 			ciment_versement_en_cours[1] = ACTIF;
 		}
-	} else if (strcmp(vanne, cst_vanne_bas_eau) == 0){
-		//Simule le versement de l'eau
-		if (eau_versement_en_cours == INACTIF){
-			tache_versement_eau = taskSpawn("driver_versement_eau",200,
-						                0x100,2000,(FUNCPTR) driver_versement_silo_eau,
-						                0,0,0,0,0,0,0,0,0,0);
-			eau_versement_en_cours = ACTIF;
-		}
 	} else if (strcmp(vanne, cst_vanne_malaxeur) == 0) {
 		//Simule le versement du malaxeur
 		if (malaxeur_versement_en_cours == INACTIF){
@@ -219,7 +211,18 @@ void FermerVanne(char* vanne){
 }
 
 void OuvrirRobinet(char *vanne, int ouverture){
-
+	if (strcmp(vanne, cst_vanne_bas_eau) == 0){
+		if (ouverture > 0) {
+			if (eau_versement_en_cours == INACTIF){
+				tache_versement_eau = taskSpawn("driver_versement_eau",200,
+							                0x100,2000,(FUNCPTR) driver_versement_silo_eau,
+							                0,0,0,0,0,0,0,0,0,0);
+				eau_versement_en_cours = ACTIF;
+			}
+		} else {
+			FermerVanne(cst_vanne_bas_eau);
+		}
+	}
 }
 
 void DemarrageTapis(char *tapis){
@@ -415,7 +418,7 @@ int driver_versement_silo_agregat(){
 				taskDelay(ATTENTE_ENTRE_DEUX_INT);
 				//Decremente contenu silo
 				semTake(sem_capacite_silo_agregat_courrante, WAIT_FOREVER);
-				capacite_silo_agregat_courrante[i] -= UNITE_VOLUME;
+				capacite_silo_agregat_courrante[i] -= UNITE_VOLUME_VERSEMENT;
 				//Simule IT plus balance agregat
 				capteur_plus_balance_agregats();
 				//Test silo vide, si oui envoie le signal du capteur silo vide
@@ -447,7 +450,7 @@ int driver_versement_silo_ciment(){
 				taskDelay(ATTENTE_ENTRE_DEUX_INT);
 				//Decremente contenu silo
 				semTake(sem_capacite_silo_ciment_courrante, WAIT_FOREVER);
-				capacite_silo_ciment_courrante[i] -= UNITE_VOLUME;
+				capacite_silo_ciment_courrante[i] -= UNITE_VOLUME_VERSEMENT;
 				//Simule IT plus balance agregat
 				capteur_plus_balance_ciment();
 				//Test silo vide, si oui envoie le signal du capteur silo vide
@@ -469,10 +472,12 @@ int driver_versement_silo_ciment(){
 }
 int driver_versement_silo_eau(){
 	while (1){
-		taskDelay(ATTENTE_ENTRE_DEUX_INT);
+		taskDelay(ATTENTE_ENTRE_DEUX_INT /2);
 		//Decremente contenu silo
 		semTake(sem_capacite_silo_eau_courrante, WAIT_FOREVER);
-		capacite_silo_eau_courrante -= UNITE_VOLUME;
+		capacite_silo_eau_courrante -= UNITE_VOLUME_VERSEMENT;
+		//Simule IT moins silo eau
+		capteur_moins_eau();
 		//Test silo vide, si oui envoie le signal du capteur silo vide
 		if (capacite_silo_eau_courrante <= 0){
 			capteur_vide_eau();
@@ -496,7 +501,7 @@ int driver_remplissage_silo_agregat(){
 				taskDelay(ATTENTE_ENTRE_DEUX_INT / 2);
 				//Decremente contenu silo
 				semTake(sem_capacite_silo_agregat_courrante, WAIT_FOREVER);
-				capacite_silo_agregat_courrante[i] += UNITE_VOLUME;
+				capacite_silo_agregat_courrante[i] += UNITE_VOLUME_REMPLISSAGE;
 				//Test silo vide, si oui envoie le signal du capteur silo vide
 				if (capacite_silo_agregat_courrante[i] >= NIVEAU_AGREGAT_MAX){
 					//printf("Capa max agregat %d : %d/%d ", i, capacite_silo_agregat_courrante[i],NIVEAU_AGREGAT_MAX);
@@ -527,7 +532,7 @@ int driver_remplissage_silo_ciment(){
 				taskDelay(ATTENTE_ENTRE_DEUX_INT / 2);
 				//Decremente contenu silo
 				semTake(sem_capacite_silo_ciment_courrante, WAIT_FOREVER);
-				capacite_silo_ciment_courrante[i] += UNITE_VOLUME;
+				capacite_silo_ciment_courrante[i] += UNITE_VOLUME_REMPLISSAGE;
 				//Test silo vide, si oui envoie le signal du capteur silo vide
 				if (capacite_silo_ciment_courrante[i] >= NIVEAU_CIMENT_MAX){
 					//printf("Capa max ciment %d : %d/%d ", i, capacite_silo_ciment_courrante[i],NIVEAU_CIMENT_MAX);
@@ -552,7 +557,9 @@ int driver_remplissage_silo_eau(){
 		
 		//Decremente contenu silo
 		semTake(sem_capacite_silo_eau_courrante, WAIT_FOREVER);
-		capacite_silo_eau_courrante += UNITE_VOLUME;
+		capacite_silo_eau_courrante += UNITE_VOLUME_REMPLISSAGE;
+		//Simule IT plus silo eau
+		capteur_plus_eau();
 		//Test silo vide, si oui envoie le signal du capteur silo vide
 		if (capacite_silo_eau_courrante >= NIVEAU_EAU_MAX){
 			//printf("Capa max eau : %d/%d ", capacite_silo_eau_courrante, NIVEAU_EAU_MAX);
@@ -566,7 +573,7 @@ int driver_remplissage_silo_eau(){
 
 int driver_versement_balance_agregat(){
 	while(1){
-		taskDelay(ATTENTE_ENTRE_DEUX_INT);
+		taskDelay(ATTENTE_ENTRE_DEUX_INT /2);
 		
 		//Simule une IT balance moins
 		capteur_moins_balance_agregats();
@@ -577,7 +584,7 @@ int driver_versement_balance_agregat(){
 
 int driver_versement_balance_ciment(){
 	while(1){
-		taskDelay(ATTENTE_ENTRE_DEUX_INT);
+		taskDelay(ATTENTE_ENTRE_DEUX_INT /2);
 		
 		//Simule une IT balance moins
 		capteur_moins_balance_ciment();

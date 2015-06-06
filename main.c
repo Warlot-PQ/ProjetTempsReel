@@ -92,10 +92,10 @@ int main(){
 	sem_demande_versement_ciment = semBCreate(SEM_Q_FIFO, 0);
 	sem_demande_versement_eau = semBCreate(SEM_Q_FIFO, 0);
 
-	file_debut_remplissage_balance_agregat = msgQCreate(10, 10, MSG_Q_FIFO);
+	file_debut_remplissage_balance_agregat = msgQCreate(10, 512, MSG_Q_FIFO);
 	sem_fin_remplissage_balance_agregat = semBCreate(SEM_Q_FIFO, 0);
 	
-	file_debut_remplissage_balance_ciment = msgQCreate(10, 10, MSG_Q_FIFO);
+	file_debut_remplissage_balance_ciment = msgQCreate(10, 512, MSG_Q_FIFO);
 	sem_fin_remplissage_balance_ciment = semBCreate(SEM_Q_FIFO, 0);
 
 	//sémaphore de synchro des balances
@@ -108,7 +108,6 @@ int main(){
 
 	sem_agregat_et_ciment_suivant = semBCreate(SEM_Q_FIFO, 0);
 
-	sem_debut_moteur = semBCreate(SEM_Q_FIFO, 0);
 	sem_vitesse_moteur = semBCreate(SEM_Q_FIFO, 0);
 	sem_debut_camion = semBCreate(SEM_Q_FIFO, 0);
 	sem_diode_allumer_camion = semBCreate(SEM_Q_FIFO, 0);
@@ -142,11 +141,11 @@ int main(){
 		
 	//Empeche la réquisition (préemption)
 	taskLock();
-	/*
+	
 	taskSpawn("driver_affichage_test",150,
 						0x100,2000,(FUNCPTR) driver_affichage_test,
 						0,0,0,0,0,0,0,0,0,0);
-	*/
+	
 	taskSpawn("gestion_IHM",200,
 		                0x100,2000,(FUNCPTR) gestion_IHM,
 		                0,0,0,0,0,0,0,0,0,0);

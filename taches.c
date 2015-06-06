@@ -3,6 +3,8 @@
 #include "taches.h"
 #include "signauxExterieur.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
 
 /*
  *	Vider le terminal : printf("\33[2J"); 
@@ -141,8 +143,8 @@ int calcul_qte_eau(){
 		//printf("hygronometrie : %d\n", hygrometrie);
 //----------------Lecture des valeurs B, V, D dans le tampon_cmd		
 	
-		printf("cmd en cours : %d\n\n", lire_tampon_fonct_calcul_cmd_en_cours());
-		printf("type de béton : %d\n\n", lire_tampon_cmd_cmd_plus_recent_beton());
+		//printf("cmd en cours : %d\n\n", lire_tampon_fonct_calcul_cmd_en_cours());
+		//printf("type de béton : %d\n\n", lire_tampon_cmd_cmd_plus_recent_beton());
 		
 		
 		B = lire_tampon_cmd_cmd_plus_recent_beton();
@@ -171,7 +173,7 @@ int calcul_qte_eau(){
 //----------------Ecriture dans tampon_qte
 		ecrire_tampon_qte_silos_eau(qte_eau);
 		
-		printf("Quantité eau: %f\n", qte_eau);
+		//printf("Quantité eau: %f\n", qte_eau);
 		
 //----------------Signale la tache "gestion synchro" que le système traite la commande suivante 	
 		semGive(sem_agregat_et_ciment_suivant);
@@ -220,9 +222,9 @@ int calcul_qte_agregat(){
 		ecrire_tampon_qte_silos_agregat(2, agregat_2);
 		ecrire_tampon_qte_silos_agregat(3, agregat_3);
 	
-		printf("Quantité agregat 1: %f\n", agregat_1);
-		printf("Quantité agregat 2: %f\n", agregat_2);
-		printf("Quantité agregat 3: %f\n", agregat_3);
+		//printf("Quantité agregat 1: %f\n", agregat_1);
+		//printf("Quantité agregat 2: %f\n", agregat_2);
+		//printf("Quantité agregat 3: %f\n", agregat_3);
 		
 //----------------Signale la tache "gestion remplissage et versement silos" que le tampon_qte a été mis à jour
 		semGive(sem_demande_versement_agregat);
@@ -267,8 +269,8 @@ int calcul_qte_ciment(){
 		ecrire_tampon_qte_silos_ciment(1, ciment_1);
 		ecrire_tampon_qte_silos_ciment(2, ciment_2);
 	
-		printf("Quantité ciment 1: %f\n", ciment_1);
-		printf("Quantité ciment 2: %f\n", ciment_2);
+		//printf("Quantité ciment 1: %f\n", ciment_1);
+		//printf("Quantité ciment 2: %f\n", ciment_2);
 			
 //----------------Signale la tache "gestion remplissage et versement silos" que le tampon_qte a été mis à jour
 		semGive(sem_demande_versement_ciment);
@@ -280,7 +282,7 @@ int calcul_qte_ciment(){
 int versement_agregat(){
 	//Numéro du silo à ouvrir
 	int num_silo_entier;
-	char num_silo[15];
+	char num_silo[256];
 	
 	while(1){
 		//Attente de la demande de versement d'agregat
@@ -289,7 +291,7 @@ int versement_agregat(){
 		for (num_silo_entier = 1; num_silo_entier <= 3; num_silo_entier += 1) {
 			sprintf(num_silo, "%d", num_silo_entier);
 			//Signal de début de versement à la balance
-			msgQSend(file_debut_remplissage_balance_agregat, num_silo, sizeof(num_silo), WAIT_FOREVER, MSG_PRI_NORMAL);
+			msgQSend(file_debut_remplissage_balance_agregat, num_silo, sizeof num_silo, WAIT_FOREVER, MSG_PRI_NORMAL);
 			
 			//Ouverture du silo num_silo
 			switch (num_silo_entier){
@@ -305,6 +307,8 @@ int versement_agregat(){
 			}
 			semTake(sem_fin_remplissage_balance_agregat, WAIT_FOREVER);
 			
+			printf("Fin versement silo agregat %d.\n", num_silo_entier);
+						
 			//Fermeture du silo num_silo
 			switch (num_silo_entier){
 			case 1:
@@ -399,7 +403,7 @@ int remplissage_agregat_3(){
 int versement_ciment(){
 	//Numéro du silo à ouvrir
 	int num_silo_entier;
-	char num_silo[15];
+	char num_silo[256];
 	
 	while(1){
 		//Attente de la demande de versement d'agregat
@@ -409,7 +413,7 @@ int versement_ciment(){
 			sprintf(num_silo, "%d", num_silo_entier);
 			
 			//Signal de début de versement à la balance
-			msgQSend(file_debut_remplissage_balance_ciment, num_silo, sizeof(num_silo), WAIT_FOREVER, MSG_PRI_NORMAL);
+			msgQSend(file_debut_remplissage_balance_ciment, num_silo, sizeof num_silo, WAIT_FOREVER, MSG_PRI_NORMAL);
 			
 			//Ouverture du silo num_silo
 			switch (num_silo_entier){
@@ -490,20 +494,22 @@ int remplissage_ciment_2(){
 }
 
 int gestion_balance_agregats(){
-	int num_silo = 0;		//Numéro du silo en cours de versement
+	int num_silo_entier = 0;		//Numéro du silo en cours de versement
+	char num_silo[256];
 	int versement = 1;
 
 	while (1){
-		msgQReceive(file_debut_remplissage_balance_agregat, (char*) num_silo, sizeof(num_silo), WAIT_FOREVER);
+		msgQReceive(file_debut_remplissage_balance_agregat, num_silo, sizeof num_silo, WAIT_FOREVER);
+		num_silo_entier = atoi(num_silo);
 		versement = 1;
-		
+
 		while(versement == 1){
 			semTake(sem_int_plus_bal_agr, WAIT_FOREVER);
-			
+
 			//Decremente
-			decremente_tampon_qte_silos_agregat(num_silo);
-			
-			if (is_tampon_qte_silos_agregat_nulle(num_silo)){
+			decremente_tampon_qte_silos_agregat(num_silo_entier);
+
+			if (is_tampon_qte_silos_agregat_nulle(num_silo_entier)){
 				versement = 0;
 				semGive(sem_fin_remplissage_balance_agregat);
 			}
@@ -512,20 +518,22 @@ int gestion_balance_agregats(){
 	return 0;
 }
 int gestion_balance_ciment(){
-	int num_silo = 0;		//Numéro du silo en cours de versement
+	int num_silo_entier = 0;		//Numéro du silo en cours de versement
+	char num_silo[256];
 	int versement = 1;
 
 	while (1){
-		msgQReceive(file_debut_remplissage_balance_ciment, (char*) num_silo, sizeof(num_silo), WAIT_FOREVER);
+		msgQReceive(file_debut_remplissage_balance_ciment, num_silo, sizeof num_silo, WAIT_FOREVER);
+		num_silo_entier = atoi(num_silo);
 		versement = 1;
 		
 		while(versement == 1){
 			semTake(sem_int_plus_bal_cim, WAIT_FOREVER);
 			
 			//Decremente
-			decremente_tampon_qte_silos_ciment(num_silo);
+			decremente_tampon_qte_silos_ciment(num_silo_entier);
 			
-			if (is_tampon_qte_silos_ciment_nulle(num_silo)){
+			if (is_tampon_qte_silos_ciment_nulle(num_silo_entier)){
 				versement = 0;
 				semGive(sem_fin_remplissage_balance_ciment);
 			}
@@ -540,7 +548,7 @@ int gestion_synchro(){
 		//Synchro ouverture des balances
 		semTake(sem_pret_balance_agregat, WAIT_FOREVER);
 		semTake(sem_pret_balance_ciment, WAIT_FOREVER);
-		
+
 		cmd_agr_en_cours = lire_tampon_fonct_calcul_cmd_agregat();
 		cmd_cim_en_cours = lire_tampon_fonct_calcul_cmd_ciment();
 		cmd_en_cours = lire_tampon_fonct_calcul_cmd_en_cours();
@@ -553,6 +561,8 @@ int gestion_synchro(){
 			semTake(sem_agregat_et_ciment_suivant, WAIT_FOREVER);
 		}
 
+		printf("Ouverture des balances, debut versement !\n");
+		
 		//Ici, le contenu des balances correspond à la cmd en cours
 		//Démarrage du versement des balances
 		semGive(sem_ouverture_balance_agregat);
@@ -562,10 +572,12 @@ int gestion_synchro(){
 		semTake(sem_fin_vers_balance_agregat, WAIT_FOREVER);
 		semTake(sem_fin_vers_balance_ciment, WAIT_FOREVER);
 		
+		printf("Fermeture des balances, fin versement !\n");
+		
 		//Lancement de l'eau
 		semGive(sem_demande_versement_eau);
 		//Lancement du malaxeur
-		semGive(sem_debut_moteur);
+		semGive(sem_debut_malaxeur);
 	}
 	
 	return 0;
@@ -582,7 +594,7 @@ int versement_eau(){
 		versement_eau_en_cours = 1;
 		
 		// Lance le calcul de la quantité d'eau
-		semGive(sem_calcul_eau);
+		//semGive(sem_calcul_eau);
 		
 		// Début versement dès que c'est possible, attente si impossible
 		while(!is_versement_eau_possible());
@@ -590,12 +602,13 @@ int versement_eau(){
 		
 		while(versement == 1){
 			semTake(sem_int_moins_eau, WAIT_FOREVER);
-						
+					
 			//Decremente
 			decremente_tampon_qte_silos_eau();
 			
 			if (is_tampon_qte_silos_eau_nulle()){
 				versement = 0;
+				OuvrirRobinet(cst_vanne_bas_eau, 0);
 				semGive(sem_fin_eau);
 			}
 		}
@@ -794,12 +807,12 @@ void capteur_vide_silo_ciment_2(){
 	semGive(sem_int_min_cim_2);
 }
 void capteur_plus_balance_agregats(){
-	qte_contenu_balance_agregat += 1;
+	qte_contenu_balance_agregat += UNITE_VOLUME_VERSEMENT;
 	
 	semGive(sem_int_plus_bal_agr);
 }
 void capteur_moins_balance_agregats(){
-	qte_contenu_balance_agregat -= 1;
+	qte_contenu_balance_agregat -= UNITE_VOLUME_VERSEMENT;
 	
 	//semGive(sem_int_moins_bal_agr);
 	if (qte_contenu_balance_agregat <= 0){
@@ -808,12 +821,12 @@ void capteur_moins_balance_agregats(){
 	}
 }
 void capteur_plus_balance_ciment(){
-	qte_contenu_balance_ciment += 1;
+	qte_contenu_balance_ciment += UNITE_VOLUME_VERSEMENT;
 		
 	semGive(sem_int_plus_bal_cim);
 }
 void capteur_moins_balance_ciment(){
-	qte_contenu_balance_ciment -= 1;
+	qte_contenu_balance_ciment -= UNITE_VOLUME_VERSEMENT;
 		
 	//semGive(sem_int_moins_bal_cim);
 	if (qte_contenu_balance_ciment <= 0){

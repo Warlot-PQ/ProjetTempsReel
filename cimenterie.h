@@ -119,7 +119,6 @@ SEM_ID sem_fin_vers_balance_ciment;
 
 SEM_ID sem_agregat_et_ciment_suivant;
 
-SEM_ID sem_debut_moteur;
 SEM_ID sem_debut_camion;
 SEM_ID sem_position_camion_ok;
 SEM_ID sem_diode_allumer_camion;
