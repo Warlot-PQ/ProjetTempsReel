@@ -60,11 +60,11 @@ int main(){
 	sem_fin_ciment = semBCreate(SEM_Q_FIFO, 0);
 	sem_fin_eau = semBCreate(SEM_Q_FIFO, 0);
 	sem_fin_malaxeur = semBCreate(SEM_Q_FIFO, 0);
-	sem_debut_malaxeur = semBCreate(SEM_Q_FIFO, SEM_FULL);
+	sem_debut_malaxeur = semBCreate(SEM_Q_FIFO, 0);
 
-	sem_calcul_agregat = semBCreate(SEM_Q_FIFO, SEM_FULL);
-	sem_calcul_ciment = semBCreate(SEM_Q_FIFO, SEM_FULL);
-	sem_calcul_eau = semBCreate(SEM_Q_FIFO, SEM_FULL);
+	sem_calcul_agregat = semBCreate(SEM_Q_FIFO, 0);
+	sem_calcul_ciment = semBCreate(SEM_Q_FIFO, 0);
+	sem_calcul_eau = semBCreate(SEM_Q_FIFO, 0);
 
 	sem_int_min_agr_1 = semBCreate(SEM_Q_FIFO, 0);
 	sem_int_min_agr_2 = semBCreate(SEM_Q_FIFO, 0);
@@ -109,8 +109,8 @@ int main(){
 	sem_agregat_et_ciment_suivant = semBCreate(SEM_Q_FIFO, 0);
 
 	sem_debut_moteur = semBCreate(SEM_Q_FIFO, 0);
-	sem_vitesse_moteur = semBCreate(SEM_Q_FIFO, SEM_FULL);
-	sem_debut_camion = semBCreate(SEM_Q_FIFO, SEM_FULL);
+	sem_vitesse_moteur = semBCreate(SEM_Q_FIFO, 0);
+	sem_debut_camion = semBCreate(SEM_Q_FIFO, 0);
 	sem_diode_allumer_camion = semBCreate(SEM_Q_FIFO, 0);
 	sem_diode_eteindre_camion = semBCreate(SEM_Q_FIFO, 0);
 	sem_position_camion_ok = semBCreate(SEM_Q_FIFO, 0);
@@ -142,11 +142,11 @@ int main(){
 		
 	//Empeche la réquisition (préemption)
 	taskLock();
-	
+	/*
 	taskSpawn("driver_affichage_test",150,
 						0x100,2000,(FUNCPTR) driver_affichage_test,
 						0,0,0,0,0,0,0,0,0,0);
-
+	*/
 	taskSpawn("gestion_IHM",200,
 		                0x100,2000,(FUNCPTR) gestion_IHM,
 		                0,0,0,0,0,0,0,0,0,0);

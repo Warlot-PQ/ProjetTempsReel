@@ -43,7 +43,6 @@ int ecrire_tampon_cmd_cmd_plus_recent_beton(float beton){
 	semTake(sem_tampon_cmd, WAIT_FOREVER);
 	tampon_cmd[index_cmd_plus_recente + index_tampon_cmd_beton] = beton;
 	semGive(sem_tampon_cmd);
-		    
 	return 0;
 }
 int efface_commande_traitee(){
@@ -92,7 +91,6 @@ int lire_tampon_cmd_cmd_plus_recent_beton(){
 	semTake(sem_tampon_cmd, WAIT_FOREVER);
 	value = (int) tampon_cmd[index_cmd_plus_recente + index_tampon_cmd_beton];
 	semGive(sem_tampon_cmd);
-	
 	return value;
 }
 

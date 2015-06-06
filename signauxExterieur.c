@@ -5,21 +5,6 @@
 #include <string.h>
 #include <wdLib.h>
 
-<<<<<<< HEAD
-#define INACTIF -1
-#define ATTENTE_ENTRE_DEUX_INT 500
-
-//int moteur_task_id;
-
-int capacite_silo_agregat_courrante[3] = {0, 0, 0};
-int capacite_silo_ciment_courrante[2] = {0, 0};
-int capacite_silo_eau_courrante = 0;
-
-//0 signifie inactif et le pid de la tache en cours sinon, l'index représente le numéro du silo
-=======
-//PID des tâches
-//Indique les silo actif
->>>>>>> 38ea4f4310c7c765b43f23448e15dc6d1b283be0
 int agregat_versement_en_cours[3] = {INACTIF, INACTIF, INACTIF};
 int agregat_remplissage_en_cours[3] = {INACTIF, INACTIF, INACTIF};
 int ciment_versement_en_cours[2] = {INACTIF, INACTIF};
@@ -40,24 +25,18 @@ int tache_versement_eau = INACTIF;
 
 void OuvrirVanne(char* vanne){
 	int valeur;
-	printf("Ouverture vanne : %s\n", vanne);
+	//printf("Ouverture vanne : %s\n", vanne);
 	
 	//Vannes bas
 	if (strcmp(vanne, cst_vanne_bas_agregat_1) == 0
 			|| strcmp(vanne, cst_vanne_bas_agregat_2) == 0
 			|| strcmp(vanne, cst_vanne_bas_agregat_3) == 0){
 		//Simule le versement des agregats
-<<<<<<< HEAD
-		
-		valeur = taskSpawn("driver_versement_agregat",200,
-					                0x100,2000,(FUNCPTR) driver_versement_agregat,
-=======
 		if (agregat_versement_en_cours[0] == INACTIF
 				&& agregat_versement_en_cours[1] == INACTIF
 				&& agregat_versement_en_cours[2] == INACTIF){
 			tache_versement_agregat = taskSpawn("driver_versement_agregat",200,
 					                0x100,2000,(FUNCPTR) driver_versement_silo_agregat,
->>>>>>> 38ea4f4310c7c765b43f23448e15dc6d1b283be0
 					                0,0,0,0,0,0,0,0,0,0);
 		}
 		if (strcmp(vanne, cst_vanne_bas_agregat_1) == 0
@@ -156,7 +135,7 @@ void OuvrirVanne(char* vanne){
 
 void FermerVanne(char* vanne){
 	int valeur = 0;
-	printf("Fermeture vanne : %s\n", vanne);
+	//printf("Fermeture vanne : %s\n", vanne);
 	
 	//Vannes bas
 	if (strcmp(vanne, cst_vanne_bas_agregat_1) == 0
@@ -257,7 +236,7 @@ void CommandeMalaxeur(int tension){
 
 void OuvrirBalance(char *balance){
 	int valeur;
-	printf("Ouverture vanne : %s\n", balance);
+	//printf("Ouverture vanne : %s\n", balance);
 	
 	//Balance
 	if (strcmp(balance, cst_balance_agregat) == 0){
@@ -281,7 +260,7 @@ void OuvrirBalance(char *balance){
 
 void FermerBalance(char *balance){
 	int valeur;
-	printf("Fermeture balance : %s\n", balance);
+	//printf("Fermeture balance : %s\n", balance);
 	
 	//Balance
 	if (strcmp(balance, cst_balance_agregat) == 0){
@@ -299,12 +278,12 @@ void FermerBalance(char *balance){
 
 void AllumerDiodePositionCamion(){
 	diode_position_camion = 1;
-	printf("\n********** diode_position_camion allumée *************\n");
+	//printf("\n********** diode_position_camion allumée *************\n");
 }
 
 void EteindreDiodePositionCamion(){
 	diode_position_camion = 0;
-	printf("\n********** diode_position_camion éteinte *************\n");
+	//printf("\n********** diode_position_camion éteinte *************\n");
 }
 
 void AllumerDiodeMalaxeur(){
@@ -319,10 +298,10 @@ void consigne_moteur(int vitesse_voulue){
 	int moteur_task_id;
 	
 	if(vitesse_voulue>0 && vitesse_voulue != vitesse_moteur){
-		printf("\n consigne_moteur : taskSpawn \n");
+		//printf("\n consigne_moteur : taskSpawn \n");
 		moteur_task_id = taskSpawn("driver_moteur",100, 0x100,2000,(FUNCPTR) driver_moteur, vitesse_voulue,0,0,0,0,0,0,0,0,0);
 	}else{
-		printf("\n vitesse_voulue = vitesse_moteur : driver non lancé \n");
+		//printf("\n vitesse_voulue = vitesse_moteur : driver non lancé \n");
 	}
 }
 
@@ -330,10 +309,10 @@ int getPresence(){
 	if(timer_getPresence < 5){
 		taskDelay(100);
 		timer_getPresence = timer_getPresence + 1;
-		printf("timer_getPresence : %d\n", timer_getPresence);
+		//printf("timer_getPresence : %d\n", timer_getPresence);
 		return 0;
 	}else{
-		printf("timer_getPresence : %d\n", timer_getPresence);
+		//printf("timer_getPresence : %d\n", timer_getPresence);
 		return 1;
 	}
 }
@@ -358,7 +337,7 @@ int getVmot(){
 	int vitesse;
 	semTake(sem_vitesse_moteur, WAIT_FOREVER);
 	vitesse = vitesse_moteur;
-	printf("vitesse_moteur : %d\n", vitesse);
+	//printf("vitesse_moteur : %d\n", vitesse);
 	semGive(sem_vitesse_moteur);
 	
 	return vitesse;
@@ -370,7 +349,7 @@ float getImot(){
 	
 	vitesse = getVmot();
 	intensite = (float)(couple_moteur*vitesse)/tension_moteur;
-	printf("intensite du moteur : %f\n", intensite);
+	//printf("intensite du moteur : %f\n", intensite);
 	return intensite;
 }
 
@@ -395,18 +374,17 @@ void interruptionMoins(char* element){
 }
 
 
-<<<<<<< HEAD
 int driver_moteur(int vitesse_voulue){
 	float coefficient_directeur;
-	printf("driver_moteur\n");
+	//printf("driver_moteur\n");
 	coefficient_directeur = (vitesse_voulue-vitesse_moteur)/5.0;
 	while(1){
 		
 		while(vitesse_moteur != vitesse_voulue){
-			printf("VITESSE VOULUE : %d\n\n", vitesse_voulue);
+			//printf("VITESSE VOULUE : %d\n\n", vitesse_voulue);
 			taskDelay(100);
 			semTake(sem_vitesse_moteur, WAIT_FOREVER);
-			printf("driver_moteur : prise du jeton \n");
+			//printf("driver_moteur : prise du jeton \n");
 			if (vitesse_voulue > vitesse_moteur){
 				vitesse_moteur = vitesse_moteur + coefficient_directeur;
 			}
@@ -415,23 +393,20 @@ int driver_moteur(int vitesse_voulue){
 							vitesse_moteur = vitesse_moteur - coefficient_directeur;
 			}
 			semGive(sem_vitesse_moteur);
-			printf("driver_moteur : vitesse moteur = %d \n", vitesse_moteur);
-			printf("driver_moteur : vitesse voulue = %d \n", vitesse_voulue);
-			printf("driver_moteur : rend le jeton \n");
+			//printf("driver_moteur : vitesse moteur = %d \n", vitesse_moteur);
+			//printf("driver_moteur : vitesse voulue = %d \n", vitesse_voulue);
+			//printf("driver_moteur : rend le jeton \n");
 		}
 		
 		if(vitesse_voulue == vitesse_moteur){
-			printf("driver_moteur : taskDelete\n");
+			//printf("driver_moteur : taskDelete\n");
 			taskDelete(taskIdSelf());
 		}
 	}
 	return 0;
 }
 
-int driver_versement_agregat(){
-=======
 int driver_versement_silo_agregat(){
->>>>>>> 38ea4f4310c7c765b43f23448e15dc6d1b283be0
 	int i;
 	
 	while (1){
@@ -440,7 +415,7 @@ int driver_versement_silo_agregat(){
 				taskDelay(ATTENTE_ENTRE_DEUX_INT);
 				//Decremente contenu silo
 				semTake(sem_capacite_silo_agregat_courrante, WAIT_FOREVER);
-				capacite_silo_agregat_courrante[i] -= 1;
+				capacite_silo_agregat_courrante[i] -= UNITE_VOLUME;
 				//Simule IT plus balance agregat
 				capteur_plus_balance_agregats();
 				//Test silo vide, si oui envoie le signal du capteur silo vide
@@ -472,7 +447,7 @@ int driver_versement_silo_ciment(){
 				taskDelay(ATTENTE_ENTRE_DEUX_INT);
 				//Decremente contenu silo
 				semTake(sem_capacite_silo_ciment_courrante, WAIT_FOREVER);
-				capacite_silo_ciment_courrante[i] -= 1;
+				capacite_silo_ciment_courrante[i] -= UNITE_VOLUME;
 				//Simule IT plus balance agregat
 				capteur_plus_balance_ciment();
 				//Test silo vide, si oui envoie le signal du capteur silo vide
@@ -497,7 +472,7 @@ int driver_versement_silo_eau(){
 		taskDelay(ATTENTE_ENTRE_DEUX_INT);
 		//Decremente contenu silo
 		semTake(sem_capacite_silo_eau_courrante, WAIT_FOREVER);
-		capacite_silo_eau_courrante -= 1;
+		capacite_silo_eau_courrante -= UNITE_VOLUME;
 		//Test silo vide, si oui envoie le signal du capteur silo vide
 		if (capacite_silo_eau_courrante <= 0){
 			capteur_vide_eau();
@@ -521,10 +496,10 @@ int driver_remplissage_silo_agregat(){
 				taskDelay(ATTENTE_ENTRE_DEUX_INT / 2);
 				//Decremente contenu silo
 				semTake(sem_capacite_silo_agregat_courrante, WAIT_FOREVER);
-				capacite_silo_agregat_courrante[i] += 1;
+				capacite_silo_agregat_courrante[i] += UNITE_VOLUME;
 				//Test silo vide, si oui envoie le signal du capteur silo vide
 				if (capacite_silo_agregat_courrante[i] >= NIVEAU_AGREGAT_MAX){
-					printf("Capa max agregat %d : %d/%d ", i, capacite_silo_agregat_courrante[i],NIVEAU_AGREGAT_MAX);
+					//printf("Capa max agregat %d : %d/%d ", i, capacite_silo_agregat_courrante[i],NIVEAU_AGREGAT_MAX);
 					switch(i){
 					case 0:
 						capteur_plein_silo_agregat_1();
@@ -552,10 +527,10 @@ int driver_remplissage_silo_ciment(){
 				taskDelay(ATTENTE_ENTRE_DEUX_INT / 2);
 				//Decremente contenu silo
 				semTake(sem_capacite_silo_ciment_courrante, WAIT_FOREVER);
-				capacite_silo_ciment_courrante[i] += 1;
+				capacite_silo_ciment_courrante[i] += UNITE_VOLUME;
 				//Test silo vide, si oui envoie le signal du capteur silo vide
 				if (capacite_silo_ciment_courrante[i] >= NIVEAU_CIMENT_MAX){
-					printf("Capa max ciment %d : %d/%d ", i, capacite_silo_ciment_courrante[i],NIVEAU_CIMENT_MAX);
+					//printf("Capa max ciment %d : %d/%d ", i, capacite_silo_ciment_courrante[i],NIVEAU_CIMENT_MAX);
 					switch(i){
 					case 0:
 						capteur_plein_silo_ciment_1();
@@ -577,10 +552,10 @@ int driver_remplissage_silo_eau(){
 		
 		//Decremente contenu silo
 		semTake(sem_capacite_silo_eau_courrante, WAIT_FOREVER);
-		capacite_silo_eau_courrante += 1;
+		capacite_silo_eau_courrante += UNITE_VOLUME;
 		//Test silo vide, si oui envoie le signal du capteur silo vide
 		if (capacite_silo_eau_courrante >= NIVEAU_EAU_MAX){
-			printf("Capa max eau : %d/%d ", capacite_silo_eau_courrante, NIVEAU_EAU_MAX);
+			//printf("Capa max eau : %d/%d ", capacite_silo_eau_courrante, NIVEAU_EAU_MAX);
 			capteur_plein_eau();
 		}
 		semGive(sem_capacite_silo_eau_courrante);

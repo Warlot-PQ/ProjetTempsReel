@@ -31,7 +31,6 @@
 #define cst_silo_eau "E"
 #define cst_malaxeur "M"
 
-<<<<<<< HEAD
 //----------------Constantes pour le moteur
 #define cste_Imax											10.0
 #define cste_vitesse_moteur_max								10
@@ -40,6 +39,7 @@
 
 //----------------Constantes pour l'hygronométrie
 #define k_hygronometrie										0.5
+#define HYGROMETRIE											38	
 
 int vitesse_moteur;
 
@@ -49,10 +49,11 @@ int diode_malaxeur;
 
 //----------------getPresence
 int timer_getPresence;
-=======
+
 #define INACTIF -1
 #define ACTIF 0
 #define ATTENTE_ENTRE_DEUX_INT 100
+#define UNITE_VOLUME 50
 
 int capacite_silo_agregat_courrante[3] = {0, 0, 0};
 int capacite_silo_ciment_courrante[2] = {0, 0};
@@ -65,7 +66,6 @@ SEM_ID sem_capacite_silo_eau_courrante;
 /*
  * Utilisation des signaux, signalInit(...) au debut de chaque tache
 */
->>>>>>> 38ea4f4310c7c765b43f23448e15dc6d1b283be0
 
 /****************************************/
 /*************ACTIONNEURS****************/
@@ -192,13 +192,9 @@ int driver_versement_silo_agregat();
 int driver_versement_silo_ciment();
 int driver_versement_silo_eau();
 int driver_versement_malaxeur();
-<<<<<<< HEAD
-int driver_remplissage_agregat();
-int driver_remplissage_ciment();
-int driver_remplissage_eau();
+
 int driver_moteur(int vitesse_voulue);
 
-=======
 int driver_remplissage_silo_agregat();
 int driver_remplissage_silo_ciment();
 int driver_remplissage_silo_eau();
@@ -206,5 +202,4 @@ int driver_versement_balance_agregat();
 int driver_versement_balance_ciment();
 //----------------Affichage du système dans la console
 int driver_affichage_test();
->>>>>>> 38ea4f4310c7c765b43f23448e15dc6d1b283be0
 //#endif
