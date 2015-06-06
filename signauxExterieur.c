@@ -5,21 +5,7 @@
 #include <string.h>
 #include <wdLib.h>
 
-<<<<<<< HEAD
-#define INACTIF -1
-#define ATTENTE_ENTRE_DEUX_INT 500
 
-//int moteur_task_id;
-
-int capacite_silo_agregat_courrante[3] = {0, 0, 0};
-int capacite_silo_ciment_courrante[2] = {0, 0};
-int capacite_silo_eau_courrante = 0;
-
-//0 signifie inactif et le pid de la tache en cours sinon, l'index représente le numéro du silo
-=======
-//PID des tâches
-//Indique les silo actif
->>>>>>> 38ea4f4310c7c765b43f23448e15dc6d1b283be0
 int agregat_versement_en_cours[3] = {INACTIF, INACTIF, INACTIF};
 int agregat_remplissage_en_cours[3] = {INACTIF, INACTIF, INACTIF};
 int ciment_versement_en_cours[2] = {INACTIF, INACTIF};
@@ -47,17 +33,11 @@ void OuvrirVanne(char* vanne){
 			|| strcmp(vanne, cst_vanne_bas_agregat_2) == 0
 			|| strcmp(vanne, cst_vanne_bas_agregat_3) == 0){
 		//Simule le versement des agregats
-<<<<<<< HEAD
-		
-		valeur = taskSpawn("driver_versement_agregat",200,
-					                0x100,2000,(FUNCPTR) driver_versement_agregat,
-=======
 		if (agregat_versement_en_cours[0] == INACTIF
 				&& agregat_versement_en_cours[1] == INACTIF
 				&& agregat_versement_en_cours[2] == INACTIF){
 			tache_versement_agregat = taskSpawn("driver_versement_agregat",200,
 					                0x100,2000,(FUNCPTR) driver_versement_silo_agregat,
->>>>>>> 38ea4f4310c7c765b43f23448e15dc6d1b283be0
 					                0,0,0,0,0,0,0,0,0,0);
 		}
 		if (strcmp(vanne, cst_vanne_bas_agregat_1) == 0
@@ -308,11 +288,13 @@ void EteindreDiodePositionCamion(){
 }
 
 void AllumerDiodeMalaxeur(){
-	
+	diode_malaxeur = 1;
+		printf("\n********** diode_malaxeur allumée *************\n");
 }
 
 void EteindreDiodeMalaxeur(){
-	
+	diode_malaxeur = 0;
+		printf("\n********** diode_malaxeur éteinte *************\n");
 }
 
 void consigne_moteur(int vitesse_voulue){
@@ -395,7 +377,6 @@ void interruptionMoins(char* element){
 }
 
 
-<<<<<<< HEAD
 int driver_moteur(int vitesse_voulue){
 	float coefficient_directeur;
 	printf("driver_moteur\n");
@@ -428,10 +409,8 @@ int driver_moteur(int vitesse_voulue){
 	return 0;
 }
 
-int driver_versement_agregat(){
-=======
+
 int driver_versement_silo_agregat(){
->>>>>>> 38ea4f4310c7c765b43f23448e15dc6d1b283be0
 	int i;
 	
 	while (1){
@@ -508,8 +487,17 @@ int driver_versement_silo_eau(){
 	return 0;
 }
 int driver_versement_malaxeur(){
-	//TODO driver_versement_malaxeur()
+	timer_versement_malaxeur = 0;
 	
+	while(1){
+		timer_versement_malaxeur = timer_versement_malaxeur + 1;
+		printf("timer_versement_malaxeur : %d \n", timer_versement_malaxeur);
+		taskDelay(80);
+		
+		if(timer_versement_malaxeur >= cste_temps_versement){
+			semGive(sem_vide_malaxeur);
+		}
+	}
 	return 0;
 }
 int driver_remplissage_silo_agregat(){

@@ -686,20 +686,13 @@ int gestion_position_camion(){
 	return 0;
 }
 int gestion_versement(){
-	int timer_versement;
-	
+	printf("\n*************** TEST GESTION_VERSEMENT MALAXEUR ***************\n");
 	while(1){
-		timer_versement = 0;
 		semTake(sem_position_camion_ok, WAIT_FOREVER);
-		semGive(sem_van_ouvre_malaxeur);
-		
-		while(timer_versement < cste_temps_versement){
-			sleep(1);
-			timer_versement += 1;
-		}
-		semGive(sem_arret_rotation_moteur);
+		OuvrirVanne(cst_vanne_malaxeur);
 		semTake(sem_vide_malaxeur, WAIT_FOREVER);
-		semGive(sem_van_ferme_malaxeur);
+		FermerVanne(cst_vanne_malaxeur);
+		printf("\n*************** FIN TEST GESTION_VERSEMENT MALAXEUR ***************\n");
 		semGive(sem_fin_malaxeur);
 	}
 	
@@ -758,6 +751,7 @@ int gestion_moteur(){
 		if(temps_sans_fluctuation == cste_temps_cst){
 			printf("temps_sans_fluctuation (fin) : %d \n",temps_sans_fluctuation);
 			printf("\n*************** FIN TEST GESTION_MOTEUR ***************\n");
+			consigne_moteur(0);
 			semGive(sem_debut_camion);
 			taskDelete(taskIdSelf());
 		}
