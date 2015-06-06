@@ -12,7 +12,9 @@
 #define PB 													-1
 
 //----------------Capacité silo en litre
-#define NIVEAU_EAU_MAX										40
+#define NIVEAU_EAU_MAX										10
+#define NIVEAU_AGREGAT_MAX									8
+#define NIVEAU_CIMENT_MAX									8
 
 //----------------Index des tampons
 #define index_tampon_cmd_distance							0
@@ -40,28 +42,29 @@
 float tampon_cmd[NB_COMMANDE * 3];
 float tampon_qte_silos[6]; 
 int tampon_fonct_calcul[5];
-int niveau_eau;
-float quantite_eau_restante;
-float quantite_agregat_restante;
-float quantite_agregat_totale;
-float quantite_ciment_restante;
-float quantite_ciment_totale;
 
 //----------------Information sur le versement de l'eau
 int versement_eau_possible;
 int versement_eau_en_cours;
 
+//----------------Quantite des balances, utiles car nous n'avons pas de capture balance vide
+int qte_contenu_balance_agregat = 0;
+int qte_contenu_balance_ciment = 0;
+
 //----------------Sémaphores d'exclusion mutuel
 SEM_ID sem_tampon_cmd;
-SEM_ID sem_tampon_qte_silos;
 SEM_ID sem_tampon_fonct_calcul;
-SEM_ID sem_niveau_eau;
-SEM_ID sem_quantite_eau_restante;
-SEM_ID sem_quantite_agregat_restante;
-SEM_ID sem_quantite_agregat_totale;
-SEM_ID sem_quantite_ciment_restante;
-SEM_ID sem_quantite_ciment_totale;
+SEM_ID sem_tampon_qte_silos;
 SEM_ID sem_versement_eau_possible;
+
+//----------------Sémaphores d'initialisation
+SEM_ID sem_init_remplissage_silo_agr_1;
+SEM_ID sem_init_remplissage_silo_agr_2;
+SEM_ID sem_init_remplissage_silo_agr_3;
+SEM_ID sem_init_remplissage_silo_cim_1;
+SEM_ID sem_init_remplissage_silo_cim_2;
+SEM_ID sem_init_remplissage_silo_eau;
+
 
 //----------------Sémaphore de synchronisation des tâches entre elles
 SEM_ID sem_fin_agregat;
@@ -86,8 +89,15 @@ SEM_ID sem_int_min_cim_2;
 SEM_ID sem_int_max_cim_1;
 SEM_ID sem_int_max_cim_2;
 
+SEM_ID sem_int_plus_eau;
+SEM_ID sem_int_moins_eau;
 SEM_ID sem_int_max_eau;
 SEM_ID sem_int_min_eau;
+
+SEM_ID sem_int_plus_bal_agr;
+SEM_ID sem_int_moins_bal_agr;
+SEM_ID sem_int_plus_bal_cim;
+SEM_ID sem_int_moins_bal_cim;
 
 SEM_ID sem_demande_versement_agregat;
 SEM_ID sem_demande_versement_ciment;
@@ -102,7 +112,7 @@ SEM_ID sem_fin_remplissage_balance_ciment;	//signal la fin du versement d'un sil
 //sémaphore de synchro des balances
 SEM_ID sem_pret_balance_agregat;
 SEM_ID sem_pret_balance_ciment;
-SEM_ID sem_ouverture_balance_agregat;	//demande d'ouverture
+SEM_ID sem_ouverture_balance_agregat;		//demande d'ouverture
 SEM_ID sem_ouverture_balance_ciment;		//demande d'ouverture
 SEM_ID sem_fin_vers_balance_agregat;
 SEM_ID sem_fin_vers_balance_ciment;
@@ -116,7 +126,6 @@ SEM_ID sem_diode_allumer_camion;
 SEM_ID sem_diode_eteindre_camion;
 SEM_ID sem_arret_rotation_moteur;
 SEM_ID sem_vide_malaxeur;
-SEM_ID sem_position_ok_camion;
 
 SEM_ID sem_van_ferme_malaxeur;
 SEM_ID sem_van_ouvre_malaxeur;
