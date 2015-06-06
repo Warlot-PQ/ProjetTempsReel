@@ -141,11 +141,11 @@ int main(){
 	taskLock();
 	
 	//Lance les tâches
-	
+	/*
 	taskSpawn("driver_affichage_test",150,
             0x100,2000,(FUNCPTR) driver_affichage_test,
             0,0,0,0,0,0,0,0,0,0);
-	
+	*/
 	taskSpawn("gestion_IHM",200,
 		                0x100,2000,(FUNCPTR) gestion_IHM,
 		                0,0,0,0,0,0,0,0,0,0);

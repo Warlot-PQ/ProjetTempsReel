@@ -163,6 +163,8 @@ int calcul_qte_eau(){
 //----------------Ecriture dans tampon_qte
 		ecrire_tampon_qte_silos_eau(qte_eau);
 		
+		printf("Quantité eau: %d\n", qte_eau);
+		
 //----------------Signale la tache "gestion synchro" que le système traite la commande suivante 	
 		semGive(sem_agregat_et_ciment_suivant);
 	}
@@ -208,6 +210,10 @@ int calcul_qte_agregat(){
 		ecrire_tampon_qte_silos_agregat(2, agregat_2);
 		ecrire_tampon_qte_silos_agregat(3, agregat_3);
 	
+		printf("Quantité agregat 1: %d\n", agregat_1);
+		printf("Quantité agregat 2: %d\n", agregat_2);
+		printf("Quantité agregat 3: %d\n", agregat_3);
+		
 //----------------Signale la tache "gestion remplissage et versement silos" que le tampon_qte a été mis à jour
 		semGive(sem_demande_versement_agregat);
 	}
@@ -248,6 +254,9 @@ int calcul_qte_ciment(){
 //----------------Ecriture des quantités dans le tampon_qte
 		ecrire_tampon_qte_silos_ciment(1, ciment_1);
 		ecrire_tampon_qte_silos_ciment(2, ciment_2);
+	
+		printf("Quantité ciment 1: %d\n", ciment_1);
+		printf("Quantité ciment 2: %d\n", ciment_2);
 			
 //----------------Signale la tache "gestion remplissage et versement silos" que le tampon_qte a été mis à jour
 		semGive(sem_demande_versement_ciment);
