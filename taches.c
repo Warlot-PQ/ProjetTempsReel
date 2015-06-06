@@ -131,35 +131,38 @@ int gestion_evenement_eau(){
 }
 
 int calcul_qte_eau(){
-	float V, D, qte_eau, hygronometrie;
-	int B;
-	
+	float V, D, qte_eau;
+	int i, B, hygrometrie;
+	printf("\n*********** CALCUL_QTE_EAU *************\n\n");
 	while(1){
 		semTake(sem_calcul_eau, WAIT_FOREVER);
-		hygronometrie = getHygrometrie();
-		
+		hygrometrie = getHygrometrie();
+		printf("hygronometrie : %d\n", hygrometrie);
 //----------------Lecture des valeurs B, V, D dans le tampon_cmd		
 		B = lire_tampon_cmd_cmd_plus_recent_beton();
 		V = lire_tampon_cmd_cmd_plus_recent_volume();
 		D = lire_tampon_cmd_cmd_plus_recent_distance();
 		
+		printf("B : %d\n", B);
+		printf("V : %f\n", V);
+		printf("D : %f\n", D);
 //----------------Calcul de la quantité d'eau voulue selon le type de béton
 		switch(B)
 		{
 			case 1:
-					qte_eau = beton_type_1.eau*V - hygronometrie*V*beton_type_1.agregat_1 + k_hygronometrie*D;
+					qte_eau = beton_type_1.eau*V - hygrometrie/100.0*V*beton_type_1.agregat_1 + k_hygronometrie*D/100.0;
 				break;
 			case 2:
-					qte_eau = beton_type_2.eau*V - hygronometrie*V*beton_type_2.agregat_1 + k_hygronometrie*D;
+					qte_eau = beton_type_2.eau*V - hygrometrie/100.0*V*beton_type_2.agregat_1 + k_hygronometrie*D/100.0;
 				break;
 			case 3:
-					qte_eau = beton_type_3.eau*V - hygronometrie*V*beton_type_3.agregat_1 + k_hygronometrie*D;
+					qte_eau = beton_type_3.eau*V - hygrometrie/100.0*V*beton_type_3.agregat_1 + k_hygronometrie*D/100.0;
 				break;
 			default:
 				printf("calcul_qte_agregat : default case !\n");
 				return PB;
 		}
-		
+		printf("qte_eau : %f\n", qte_eau);
 //----------------Ecriture dans tampon_qte
 		ecrire_tampon_qte_silos_eau(qte_eau);
 		
@@ -167,6 +170,13 @@ int calcul_qte_eau(){
 		
 //----------------Signale la tache "gestion synchro" que le système traite la commande suivante 	
 		semGive(sem_agregat_et_ciment_suivant);
+		
+		i = 0;
+			while(i<6){
+				printf("tampon_qte_silos[%d] : %f\n", i, tampon_qte_silos[i]);
+				i = i + 1;
+			}
+		printf("\n *********** FIN CALCUL_QTE_EAU ************* \n\n");
 	}
 	return 0;
 }
@@ -174,7 +184,7 @@ int calcul_qte_agregat(){
 	float V, D, agregat_1, agregat_2, agregat_3;
 	int B;
 
-
+	printf("\n*********** CALCUL_QTE_AGREGAT *************\n\n");
 	while(1){
 		semTake(sem_calcul_agregat, WAIT_FOREVER);
 		
@@ -182,7 +192,10 @@ int calcul_qte_agregat(){
 		B = lire_tampon_cmd_cmd_plus_recent_beton();
 		V = lire_tampon_cmd_cmd_plus_recent_volume();
 		D = lire_tampon_cmd_cmd_plus_recent_distance();
-
+		
+		printf("B : %d\n", B);
+		printf("V : %f\n", V);
+		printf("D : %f\n", D);
 //----------------Calcul des quantités d'agrégats voulues selon la valeur de B
 		switch(B){
 			case 1:
@@ -204,6 +217,9 @@ int calcul_qte_agregat(){
 				printf("calcul_qte_agregat : default case !\n");
 				return PB;
 		}
+		printf("agregat_1 : %f\n", agregat_1);
+		printf("agregat_2 : %f\n", agregat_2);
+		printf("agregat_3 : %f\n", agregat_3);
 
 //----------------Ecriture des quantités dans le tampon_qte
 		ecrire_tampon_qte_silos_agregat(1, agregat_1);
@@ -216,6 +232,8 @@ int calcul_qte_agregat(){
 		
 //----------------Signale la tache "gestion remplissage et versement silos" que le tampon_qte a été mis à jour
 		semGive(sem_demande_versement_agregat);
+		
+		printf("\n*********** FIN CALCUL_QTE_AGREGAT *************\n\n");
 	}
 	
 	return 0;
@@ -224,6 +242,7 @@ int calcul_qte_ciment(){
 	float V, D, ciment_1, ciment_2;
 	int B;
 	
+	printf("\n*********** CALCUL_QTE_CIMENT *************\n\n");
 	while(1){
 		semTake(sem_calcul_ciment, WAIT_FOREVER);
 		
@@ -231,12 +250,15 @@ int calcul_qte_ciment(){
 		B = lire_tampon_cmd_cmd_plus_recent_beton();
 		V = lire_tampon_cmd_cmd_plus_recent_volume();
 		D = lire_tampon_cmd_cmd_plus_recent_distance();
-	
+		
+		printf("B : %d\n", B);
+		printf("V : %f\n", V);
+		printf("D : %f\n", D);
 //----------------Calcul des quantités d'agrégats voulues selon la valeur de B
 		switch(B){
 			case 1:
-				ciment_1 = beton_type_1.ciment_1*V;
-				ciment_2 = beton_type_1.ciment_2*V;
+				ciment_1 = (float) beton_type_1.ciment_1*V;
+				ciment_2 = (float) beton_type_1.ciment_2*V;
 				break;
 			case 2:
 				ciment_1 = beton_type_2.ciment_1*V;
@@ -250,7 +272,8 @@ int calcul_qte_ciment(){
 				printf("calcul_qte_ciment : default case !\n");
 				return PB;
 		}
-	
+		printf("ciment_1 : %f\n", ciment_1);
+		printf("ciment_2 : %f\n", ciment_2);
 //----------------Ecriture des quantités dans le tampon_qte
 		ecrire_tampon_qte_silos_ciment(1, ciment_1);
 		ecrire_tampon_qte_silos_ciment(2, ciment_2);
@@ -260,6 +283,7 @@ int calcul_qte_ciment(){
 			
 //----------------Signale la tache "gestion remplissage et versement silos" que le tampon_qte a été mis à jour
 		semGive(sem_demande_versement_ciment);
+		printf("\n*********** CALCUL_QTE_CIMENT *************\n\n");
 	}
 	
 	return 0;
@@ -637,26 +661,33 @@ int remplissage_eau(){
 int gestion_position_camion(){
 	int timer_camion_present;
 	int position_camion_ok;
+	timer_getPresence = 0;
+	
+	printf("\n*************** TEST GESTION POSITION CAMION ***************\n");
 	while(1){
 		semTake(sem_debut_camion, WAIT_FOREVER);
 		AllumerDiodePositionCamion();
 		position_camion_ok = 0;
 		
 		while(position_camion_ok == 0){
-			while(!getPresence()){
-				
+			while(getPresence() == 0){
+				printf("\n******** Camion non positionné ! ********\n");
 			}
 			EteindreDiodePositionCamion();
 			timer_camion_present = 0;
 			
-			while(timer_camion_present < 5 && getPresence()){
-				sleep(1);
-				timer_camion_present += 1;
+			while((timer_camion_present < 5) && (getPresence() == 1)){
+				taskDelay(100);
+				timer_camion_present = timer_camion_present +1;
+				printf("\n *** CAMION EN POSITION *** \n");
+				printf("timer_camion_present : %d\n", timer_camion_present);
+				printf("\n ************************** \n");
 			}
 			
 			if(timer_camion_present == 5){
 				position_camion_ok = 1;
 				semGive(sem_position_camion_ok);
+				printf("\n*************** FIN TEST GESTION POSITION CAMION ***************\n");
 			}
 		}
 	}
@@ -684,31 +715,40 @@ int gestion_versement(){
 	return 0;
 }
 int gestion_moteur(){
-	int Imax_atteint;
-	int temps_sans_fluctuation;
-	char* buffer_file_intensite, buffer_file_vitesse;
-	float intensite, vitesse, intensite_avant;
-	
+	int Imax_atteint,vitesse,temps_sans_fluctuation;
+	char buffer_file_intensite[10];
+	char buffer_file_vitesse[10];
+	float intensite, intensite_avant;
+	printf("*************** TEST GESTION_MOTEUR ***************\n");
 	while(1){
 		semTake(sem_debut_malaxeur, WAIT_FOREVER);
+		printf("prise du jeton du semaphore sem_debut_malaxeur \n");
 		consigne_moteur(cste_vitesse_moteur_max);
 		Imax_atteint = 0;
 		temps_sans_fluctuation = 0;
 		intensite_avant = 0;
-		
-		while(temps_sans_fluctuation < cste_temps_cst){
-			intensite = getVmot();
-			vitesse = getImot();
+		if(getVmot() == 0){
+			sleep(5);
+		}
+		while(temps_sans_fluctuation < cste_temps_cst && getVmot() > 0){
+			vitesse = getVmot();
+			intensite  = getImot();
 			sprintf(buffer_file_intensite, "%f", intensite);
-			msgQSend(file_intensite, buffer_file_intensite, 100, WAIT_FOREVER, MSG_PRI_NORMAL);
+			msgQSend(file_intensite, buffer_file_intensite, 10, WAIT_FOREVER, MSG_PRI_NORMAL);
 			
 			if(intensite < cste_Imax){
-				if(abs(intensite - intensite_avant) < 0.05){
+				printf("intensite_avant : %f\n", intensite_avant);
+				if(abs(intensite - intensite_avant) < 0.05*intensite_avant){
+					taskDelay(100);
 					temps_sans_fluctuation += 1;
 				}else{
 					temps_sans_fluctuation = 0;
 				}
-				
+				printf("\n*** ATTENTE D'HOMOGENEISATION DU MELANGE ***\n");
+				printf("temps_sans_fluctuation : %d \n",temps_sans_fluctuation);
+				printf("cste_temps_cst : %d",cste_temps_cst);
+				printf("\n********************************************\n");
+				intensite_avant = intensite;
 				if(Imax_atteint){
 					EteindreDiodeMalaxeur();
 					semGive(sem_reprise_bal_tapis_agrEtCim);
@@ -723,7 +763,13 @@ int gestion_moteur(){
 				}
 			}
 		}
-		semGive(sem_debut_camion);
+		
+		if(temps_sans_fluctuation == cste_temps_cst){
+			printf("temps_sans_fluctuation (fin) : %d \n",temps_sans_fluctuation);
+			printf("\n*************** FIN TEST GESTION_MOTEUR ***************\n");
+			semGive(sem_debut_camion);
+			taskDelete(taskIdSelf());
+		}
 	}
 	
 	return 0;

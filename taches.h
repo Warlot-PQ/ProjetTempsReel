@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <semLib.h>
 #include <msgQLib.h>
+#include <taskLib.h>
 
 //----------------Gestion IHM
 //GestionIHM
