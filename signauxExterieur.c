@@ -302,7 +302,7 @@ void EteindreDiodeMalaxeur(){
 void consigne_moteur(int vitesse_voulue){
 	int moteur_task_id;
 	
-	if(vitesse_voulue>0 && vitesse_voulue != vitesse_moteur){
+	if(vitesse_voulue>=0 && vitesse_voulue != vitesse_moteur){
 		//printf("\n consigne_moteur : taskSpawn \n");
 		moteur_task_id = taskSpawn("driver_moteur",100, 0x100,2000,(FUNCPTR) driver_moteur, vitesse_voulue,0,0,0,0,0,0,0,0,0);
 	}else{
@@ -386,14 +386,14 @@ int driver_moteur(int vitesse_voulue){
 	while(1){
 		while(vitesse_moteur != vitesse_voulue){
 			//printf("VITESSE VOULUE : %d\n\n", vitesse_voulue);
-			taskDelay(100);
+			taskDelay(sysClkRateGet() *1);
 			semTake(sem_vitesse_moteur, WAIT_FOREVER);
 			//printf("driver_moteur : prise du jeton \n");
 			if (vitesse_voulue > vitesse_moteur){
 				vitesse_moteur = vitesse_moteur + coefficient_directeur;
 			}
 			
-			printf("Vitesse moteur actuelle : %d\n", vitesse_voulue);
+			//printf("Vitesse moteur actuelle : %d\n", vitesse_voulue);
 			
 			if (vitesse_voulue < vitesse_moteur){
 							vitesse_moteur = vitesse_moteur - coefficient_directeur;
@@ -479,6 +479,11 @@ int driver_versement_silo_eau(){
 		//Decremente contenu silo
 		semTake(sem_capacite_silo_eau_courrante, WAIT_FOREVER);
 		capacite_silo_eau_courrante -= UNITE_VOLUME_VERSEMENT;
+		
+		semTake(sem_capacite_malaxeur, WAIT_FOREVER);
+		capacite_malaxeur_courrante += UNITE_VOLUME_VERSEMENT;
+		semGive(sem_capacite_malaxeur);
+		
 		//Simule IT moins silo eau
 		capteur_moins_eau();
 		//Test silo vide, si oui envoie le signal du capteur silo vide
@@ -494,13 +499,14 @@ int driver_versement_malaxeur(){
 	timer_versement_malaxeur = 0;
 	
 	while(1){
-		timer_versement_malaxeur = timer_versement_malaxeur + 1;
-		printf("timer_versement_malaxeur : %d \n", timer_versement_malaxeur);
-		taskDelay(80);
-		
-		if(timer_versement_malaxeur >= cste_temps_versement){
+		taskDelay(sysClkRateGet() * 1);
+		semTake(sem_capacite_malaxeur, WAIT_FOREVER);
+		capacite_malaxeur_courrante -= UNITE_VOLUME_VERSEMENT;
+		printf("capacite_malaxeur_courrante : %d\n\n", capacite_malaxeur_courrante);		
+		if(capacite_malaxeur_courrante <= 0){
 			capteur_vide_malaxeur();
 		}
+		semGive(sem_capacite_malaxeur);
 	}
 	return 0;
 }
@@ -586,9 +592,11 @@ int driver_remplissage_silo_eau(){
 int driver_versement_balance_agregat(){
 	while(1){
 		taskDelay(ATTENTE_ENTRE_DEUX_INT /2);
-		
 		//Simule une IT balance moins
 		capteur_moins_balance_agregats();
+		semTake(sem_capacite_malaxeur, WAIT_FOREVER);
+		capacite_malaxeur_courrante += UNITE_VOLUME_VERSEMENT;
+		semGive(sem_capacite_malaxeur);
 	}
 	
 	return 0;
@@ -600,6 +608,9 @@ int driver_versement_balance_ciment(){
 		
 		//Simule une IT balance moins
 		capteur_moins_balance_ciment();
+		semTake(sem_capacite_malaxeur, WAIT_FOREVER);
+		capacite_malaxeur_courrante += UNITE_VOLUME_VERSEMENT;
+		semGive(sem_capacite_malaxeur);
 	}
 	
 	return 0;
