@@ -244,14 +244,14 @@ void OuvrirBalance(char *balance){
 	//Balance
 	if (strcmp(balance, cst_balance_agregat) == 0){
 		if (balance_agregat_versement_en_cours == INACTIF) {
-			valeur = taskSpawn("driver_versement_agregat",200,
+			valeur = taskSpawn("driver_versement_balance_agregat",200,
 	                0x100,2000,(FUNCPTR) driver_versement_balance_agregat,
 	                0,0,0,0,0,0,0,0,0,0);
 			balance_agregat_versement_en_cours = valeur;
 		}
 	} else if(strcmp(balance, cst_balance_ciment) == 0) {
 		if (balance_ciment_versement_en_cours == INACTIF){
-			valeur = taskSpawn("driver_versement_agregat",200,
+			valeur = taskSpawn("driver_versement_balance_ciment",200,
 			                0x100,2000,(FUNCPTR) driver_versement_balance_ciment,
 			                0,0,0,0,0,0,0,0,0,0);
 			balance_ciment_versement_en_cours = valeur;
@@ -496,8 +496,6 @@ int driver_versement_silo_eau(){
 	return 0;
 }
 int driver_versement_malaxeur(){
-	timer_versement_malaxeur = 0;
-	
 	while(1){
 		taskDelay(sysClkRateGet() * 1);
 		semTake(sem_capacite_malaxeur, WAIT_FOREVER);
@@ -688,6 +686,21 @@ int driver_affichage_test(){
 			printf(" |     |");
 		}
 		printf("\n");
+		
+		//Malaxeur
+		printf("|malaxeur| ");
+		printf("\n");
+		semTake(sem_capacite_malaxeur, WAIT_FOREVER);
+		printf("|__%d__| ", capacite_malaxeur_courrante);
+		printf("\n");
+		semGive(sem_capacite_malaxeur);
+		if (malaxeur_versement_en_cours == INACTIF){
+			printf("|xxxxxx| ");
+		} else {
+			printf("|      | ");
+		}
+		printf("\n");
+		
 		taskDelay(100);
 	}
 	

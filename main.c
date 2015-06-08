@@ -7,7 +7,6 @@
 
 int main(){
 	int index_boucle;
-	int i;
 	
 	//Initialise les types de béton
 	beton_type_1.agregat_1 = 16;

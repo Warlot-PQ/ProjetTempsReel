@@ -722,7 +722,15 @@ int gestion_moteur(){
 	
 	//semGive(sem_stupide);
 	while(1){
+		
 		semTake(sem_debut_malaxeur, WAIT_FOREVER);
+		
+		printf("\n\nCoucou hibou !!!!!!!!!!!!!!!!\n\n");
+		printf("\n\nCoucou hibou !!!!!!!!!!!!!!!!\n\n");
+		printf("\n\nCoucou hibou !!!!!!!!!!!!!!!!\n\n");
+		printf("\n\nCoucou hibou !!!!!!!!!!!!!!!!\n\n");
+		printf("\n\nCoucou hibou !!!!!!!!!!!!!!!!\n\n");
+		printf("\n\nCoucou hibou !!!!!!!!!!!!!!!!\n\n");
 		//printf("prise du jeton du semaphore sem_debut_malaxeur \n");
 		
 		consigne_moteur(cste_vitesse_moteur_max);
@@ -877,6 +885,8 @@ void capteur_moins_balance_agregats(){
 	//semGive(sem_int_moins_bal_agr);
 	if (qte_contenu_balance_agregat <= 0){
 		qte_contenu_balance_agregat = 0;
+		
+		FermerBalance(cst_balance_agregat);
 		semGive(sem_fin_vers_balance_agregat);
 	}
 }
@@ -891,6 +901,8 @@ void capteur_moins_balance_ciment(){
 	//semGive(sem_int_moins_bal_cim);
 	if (qte_contenu_balance_ciment <= 0){
 		qte_contenu_balance_ciment = 0;
+		
+		FermerBalance(cst_balance_ciment);
 		semGive(sem_fin_vers_balance_ciment);
 	}
 }
