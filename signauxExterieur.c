@@ -606,42 +606,137 @@ int driver_versement_balance_ciment(){
 }
 
 int driver_affichage_test(){
-	int x_index = 0, y_index = 0, capa_silo = 0, capa_bal_agr = 0, capa_bal_cim = 0;
+	int index = 0, capa_bal_agr = 0, capa_bal_cim = 0;
+	int long_silo[] = {0, 0, 0, 0, 0, 0};
+	int capa_silo[] = {0, 0, 0, 0, 0, 0};
+	int acti_silo_vers[] = {0, 0, 0, 0, 0, 0};
+	int acti_silo_rempl[] = {0, 0, 0, 0, 0, 0};
 	
 	while(1){
-		//Vide la console
-		printf("\33[2J");
-		printf("\n");
-		printf("|agr 1| |agr 2| |agr 3| |eau| |cim 1| |cim 2|\n");
-			
+		/////////////////////////////////////////////CHARGEMENT DES DONNES
 		//Agregat
-		for (y_index = 0; y_index < 3; y_index += 1){
+		for (index = 0; index < 3; index += 1){
 			semTake(sem_capacite_silo_agregat_courrante, WAIT_FOREVER);
-			capa_silo = capacite_silo_agregat_courrante[y_index];
+			long_silo[index] = longueur_entier(capa_silo[index]);
+			capa_silo[index] = capacite_silo_agregat_courrante[index];
+			acti_silo_vers[index] = agregat_versement_en_cours[index];
+			acti_silo_rempl[index] = agregat_remplissage_en_cours[index];
 			semGive(sem_capacite_silo_agregat_courrante);
-			printf("|__%d__| ", capa_silo);
 		}
 		//Eau
 		semTake(sem_capacite_silo_eau_courrante, WAIT_FOREVER);
-		capa_silo = capacite_silo_eau_courrante;
+		long_silo[3] = longueur_entier(capa_silo[3]);
+		capa_silo[3] = capacite_silo_eau_courrante;
+		acti_silo_vers[3] = eau_versement_en_cours;
+		acti_silo_rempl[3] = eau_remplissage_en_cours;
 		semGive(sem_capacite_silo_eau_courrante);
-		printf("|_%d_| ", capa_silo);
 		//Ciment
-		for (y_index = 0; y_index < 2; y_index += 1){
+		for (index = 0; index < 2; index += 1){
 			semTake(sem_capacite_silo_ciment_courrante, WAIT_FOREVER);
-			capa_silo = capacite_silo_ciment_courrante[y_index];
+			long_silo[4 + index] = longueur_entier(capa_silo[4 + index]);
+			capa_silo[4 + index] = capacite_silo_ciment_courrante[index];
+			acti_silo_vers[4 + index] = ciment_versement_en_cours[4 + index];
+			acti_silo_rempl[4 + index] = ciment_remplissage_en_cours[4 + index];
 			semGive(sem_capacite_silo_ciment_courrante);
-			printf("|__%d__| ", capa_silo);
 		}
-		printf("\n");
-		//Balance agr
-		printf("|bal agr| |bal cim|\n");
+		//Balances
 		capa_bal_agr = qte_contenu_balance_agregat;
 		capa_bal_cim = qte_contenu_balance_ciment;
-		printf("|___%d___| |___%d___|\n", capa_bal_agr, capa_bal_cim);
 		
-		taskDelay(200);
+		/////////////////////////////////////////////AFFICHAGE
+		
+		//Vide la console
+		printf("\33[2J");
+		printf("\n");
+
+		//Affichage des nom des silos
+		affiche_silo(long_silo, capa_silo, acti_silo_vers, acti_silo_rempl, 'r');
+		
+		//Affichage des nom des silos
+		affiche_silo(long_silo, capa_silo, acti_silo_vers, acti_silo_rempl, 't');
+		
+		//Affichage de la quantites des silos
+		affiche_silo(long_silo, capa_silo, acti_silo_vers, acti_silo_rempl, 'q');
+
+		//Affichage du statut des vannes des silos
+		affiche_silo(long_silo, capa_silo, acti_silo_vers, acti_silo_rempl, 'v');
+		
+		
+		//Balance quantite
+		printf("|bal agr| |bal cim|\n");
+		printf("|___%d___| |___%d___|\n", capa_bal_agr, capa_bal_cim);
+		//Balance vanne
+		if (balance_agregat_versement_en_cours == INACTIF){
+			printf("|_______| ");
+		} else {
+			printf(" |     |");
+		}
+		if (balance_ciment_versement_en_cours == INACTIF){
+			printf("|_______|");
+		} else {
+			printf(" |     |");
+		}
+		printf("\n");
+		taskDelay(100);
 	}
 	
 	return 0;
+	
+}
+
+void affiche_silo(int long_silo[6], int capa_silo[6], int acti_silo_vers[6], int acti_silo_rempl[6], char statut){
+	char *nom_silo = NULL;
+	int num_silo = 0, index = 0;
+	char *repetition_vide;
+	char *repetition_croix;
+	
+	for (index = 0; index < 6; index += 1){
+		//Nom et numero du silo
+		if (index < 3) {
+			nom_silo = "agr";
+			num_silo = index;
+		} else if (index > 3){
+			nom_silo = "cim";
+			num_silo = index - 3;
+		} else {
+			nom_silo = "eau";
+			num_silo = 1;
+		}
+		//Calcul les correctifs d'espacement
+		if (long_silo[index] == 1){
+			repetition_vide = "";
+			repetition_croix = "";
+		} else if (long_silo[index] == 2){
+			repetition_vide = " ";
+			repetition_croix = "x";
+		} else {
+			repetition_vide = "  ";
+			repetition_croix = "xx";			
+		}
+		//Affichage
+		if (statut == 't') {
+			printf("|%s%s %d| ", nom_silo, repetition_vide, num_silo);
+		} else if (statut == 'q'){
+			printf("|__%d__| ", capa_silo[index]);
+		} else { //statut == 'v' ou 'r'
+			if ((statut == 'v' && acti_silo_vers[index] == INACTIF)
+					|| (statut == 'r' && acti_silo_rempl[index] == INACTIF)){
+					printf(" |xxx%s|  ", repetition_croix, num_silo);
+			} else {
+				printf(" |  %s |  ", repetition_vide, num_silo);
+			}
+		}
+	}
+	printf("\n");
+}
+
+int longueur_entier(int entier){
+	int valeur = 0;
+	
+	do{
+		entier = entier / 10;
+		valeur += 1;
+	}while(entier > 0);
+	
+	return valeur;
 }

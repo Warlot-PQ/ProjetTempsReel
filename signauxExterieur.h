@@ -208,4 +208,6 @@ int driver_versement_balance_agregat();
 int driver_versement_balance_ciment();
 //----------------Affichage du système dans la console
 int driver_affichage_test();
+int longueur_entier(int);
+void affiche_silo(int[], int[], int[], int[], char);
 //#endif
