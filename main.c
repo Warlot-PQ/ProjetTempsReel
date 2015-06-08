@@ -38,6 +38,7 @@ int main(){
 	sem_capacite_silo_agregat_courrante = semMCreate(SEM_Q_FIFO);
 	sem_capacite_silo_ciment_courrante = semMCreate(SEM_Q_FIFO);
 	sem_capacite_silo_eau_courrante = semMCreate(SEM_Q_FIFO);
+	sem_capacite_malaxeur = semMCreate(SEM_Q_FIFO);
 	sem_vitesse_moteur = semMCreate(SEM_Q_FIFO);
 	
 	//Initialise les sémaphores d'exclusion mutulle
@@ -215,14 +216,18 @@ int main(){
 			                0,0,0,0,0,0,0,0,0,0);
 	taskSpawn("remplissage_eau",200,
 			                0x100,2000,(FUNCPTR) remplissage_eau,
-			                0,0,0,0,0,0,0,0,0,0);
-	
+			                0,0,0,0,0,0,0,0,0,0);*/
+	semTake(sem_capacite_malaxeur, WAIT_FOREVER);
+		capacite_malaxeur_courrante = 30;
+		semGive(sem_capacite_malaxeur);
+		semGive(sem_debut_malaxeur);
 	taskSpawn("gestion_position_camion",200,
 			                0x100,2000,(FUNCPTR) gestion_position_camion,
 			                0,0,0,0,0,0,0,0,0,0);
+	
 	taskSpawn("gestion_versement",200,
 			                0x100,2000,(FUNCPTR) gestion_versement,
-			                0,0,0,0,0,0,0,0,0,0);*/
+			                0,0,0,0,0,0,0,0,0,0);
 	taskSpawn("gestion_moteur",200,
 			                0x100,2000,(FUNCPTR) gestion_moteur,
 			                0,0,0,0,0,0,0,0,0,0);

@@ -62,10 +62,12 @@ int timer_versement_malaxeur;
 int capacite_silo_agregat_courrante[3] = {0, 0, 0};
 int capacite_silo_ciment_courrante[2] = {0, 0};
 int capacite_silo_eau_courrante = 0;
+int capacite_malaxeur_courrante = 0;
 
 SEM_ID sem_capacite_silo_agregat_courrante;
 SEM_ID sem_capacite_silo_ciment_courrante;
 SEM_ID sem_capacite_silo_eau_courrante;
+SEM_ID sem_capacite_malaxeur;
 SEM_ID sem_vitesse_moteur;
 
 
