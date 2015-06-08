@@ -107,6 +107,8 @@ int main(){
 	sem_fin_vers_balance_agregat = semBCreate(SEM_Q_FIFO, 0);
 	sem_fin_vers_balance_ciment = semBCreate(SEM_Q_FIFO, 0);
 
+	sem_melange_homogene = semBCreate(SEM_Q_FIFO, 0);
+	
 	sem_agregat_et_ciment_suivant = semBCreate(SEM_Q_FIFO, 0);
 
 	sem_debut_camion = semBCreate(SEM_Q_FIFO, 0);

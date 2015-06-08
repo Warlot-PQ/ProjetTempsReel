@@ -573,11 +573,17 @@ int gestion_synchro(){
 		semTake(sem_fin_vers_balance_ciment, WAIT_FOREVER);
 		
 		printf("Fermeture des balances, fin versement !\n");
+
+		//Lancement du malaxeur
+		semGive(sem_debut_malaxeur);
+		
+		//Attente du delai Teau entre la fin du versement agregat/ciment + l'obtention d'un mélange homogène et celle du debut de l'eau
+		taskDelay(sysClkRateGet() * cste_temps_eau);
+		
+		semTake(sem_melange_homogene, WAIT_FOREVER);
 		
 		//Lancement de l'eau
 		semGive(sem_demande_versement_eau);
-		//Lancement du malaxeur
-		semGive(sem_debut_malaxeur);
 	}
 	
 	return 0;
@@ -713,16 +719,21 @@ int gestion_moteur(){
 	char buffer_file_intensite[10];
 	char buffer_file_vitesse[10];
 	float intensite, intensite_avant;
+	
 	while(1){
 		semTake(sem_debut_malaxeur, WAIT_FOREVER);
 		printf("prise du jeton du semaphore sem_debut_malaxeur \n");
+		
 		consigne_moteur(cste_vitesse_moteur_max);
+		
 		Imax_atteint = 0;
 		temps_sans_fluctuation = 0;
 		intensite_avant = 0;
+		
 		if(getVmot() == 0){
 			taskDelay(500);
 		}
+		
 		while(temps_sans_fluctuation < cste_temps_cst && getVmot() > 0){
 			vitesse = getVmot();
 			intensite  = getImot();
@@ -740,13 +751,14 @@ int gestion_moteur(){
 				}else{
 					temps_sans_fluctuation = 0;
 				}
-				//printf("\n*** ATTENTE D'HOMOGENEISATION DU MELANGE ***\n");
+				printf("\n*** ATTENTE D'HOMOGENEISATION DU MELANGE ***\n");
 				//printf("temps_sans_fluctuation : %d \n",temps_sans_fluctuation);
 				//printf("cste_temps_cst : %d",cste_temps_cst);
 				//printf("\n********************************************\n");
 				intensite_avant = intensite;
 				if(Imax_atteint){
 					EteindreDiodeMalaxeur();
+					printf("\n*** Reprise versement ***\n");
 					semGive(sem_reprise_bal_tapis_agrEtCim);
 					Imax_atteint = 0;
 				}
@@ -754,6 +766,7 @@ int gestion_moteur(){
 				if(!Imax_atteint){
 					consigne_moteur(0);
 					Imax_atteint = 1;
+					printf("\n*** Stop versement ***\n");
 					semGive(sem_stop_bal_tapis_agrEtCim);
 					AllumerDiodeMalaxeur();
 				}
@@ -761,10 +774,14 @@ int gestion_moteur(){
 		}
 		
 		if(temps_sans_fluctuation == cste_temps_cst){
+			printf("\n***MELANGE HOMOGENE ***\n");
 			consigne_moteur(0);
 			//printf("temps_sans_fluctuation (fin) : %d \n",temps_sans_fluctuation);
 			//printf("\n*************** FIN TEST GESTION_MOTEUR ***************\n");
+			semGive(sem_melange_homogene);
 			semGive(sem_debut_camion);
+		} else {
+			//INTERBLOCAGE !!!!!!!!
 		}
 	}
 	
@@ -772,7 +789,9 @@ int gestion_moteur(){
 }
 
 
-
+void capteur_vide_malaxeur(){
+	semGive(sem_vide_malaxeur);
+}
 void capteur_plein_silo_agregat_1(){
 	semGive(sem_int_max_agr_1);
 }

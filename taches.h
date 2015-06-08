@@ -50,6 +50,7 @@ int gestion_versement();
 int gestion_moteur();
 
 //----------------Collection de fonctions (ne sont pas des taches)
+void capteur_vide_malaxeur();
 void capteur_plein_silo_agregat_1();
 void capteur_vide_silo_agregat_1();
 void capteur_plein_silo_agregat_2();

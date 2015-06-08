@@ -499,7 +499,7 @@ int driver_versement_malaxeur(){
 		taskDelay(80);
 		
 		if(timer_versement_malaxeur >= cste_temps_versement){
-			semGive(sem_vide_malaxeur);
+			capteur_vide_malaxeur();
 		}
 	}
 	return 0;

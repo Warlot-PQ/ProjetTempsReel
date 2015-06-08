@@ -37,6 +37,7 @@
 //----------------Temps
 #define cste_temps_versement								20
 #define cste_temps_cst										15
+#define cste_temps_eau										3
 
 //----------------Tampons
 float tampon_cmd[NB_COMMANDE * 3];
@@ -57,14 +58,13 @@ SEM_ID sem_tampon_fonct_calcul;
 SEM_ID sem_tampon_qte_silos;
 SEM_ID sem_versement_eau_possible;
 
-//----------------Sémaphores d'initialisation
+//----------------Sémaphores d'initialisation de la cimenterie
 SEM_ID sem_init_remplissage_silo_agr_1;
 SEM_ID sem_init_remplissage_silo_agr_2;
 SEM_ID sem_init_remplissage_silo_agr_3;
 SEM_ID sem_init_remplissage_silo_cim_1;
 SEM_ID sem_init_remplissage_silo_cim_2;
 SEM_ID sem_init_remplissage_silo_eau;
-
 
 //----------------Sémaphore de synchronisation des tâches entre elles
 SEM_ID sem_fin_agregat;
@@ -116,6 +116,8 @@ SEM_ID sem_ouverture_balance_agregat;		//demande d'ouverture
 SEM_ID sem_ouverture_balance_ciment;		//demande d'ouverture
 SEM_ID sem_fin_vers_balance_agregat;
 SEM_ID sem_fin_vers_balance_ciment;
+
+SEM_ID sem_melange_homogene;
 
 SEM_ID sem_agregat_et_ciment_suivant;
 
