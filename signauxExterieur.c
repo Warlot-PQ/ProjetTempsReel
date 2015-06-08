@@ -302,7 +302,7 @@ void EteindreDiodeMalaxeur(){
 void consigne_moteur(int vitesse_voulue){
 	int moteur_task_id;
 	
-	if(vitesse_voulue>0 && vitesse_voulue != vitesse_moteur){
+	if(vitesse_voulue>=0 && vitesse_voulue != vitesse_moteur){
 		//printf("\n consigne_moteur : taskSpawn \n");
 		moteur_task_id = taskSpawn("driver_moteur",100, 0x100,2000,(FUNCPTR) driver_moteur, vitesse_voulue,0,0,0,0,0,0,0,0,0);
 	}else{
@@ -386,14 +386,14 @@ int driver_moteur(int vitesse_voulue){
 	while(1){
 		while(vitesse_moteur != vitesse_voulue){
 			//printf("VITESSE VOULUE : %d\n\n", vitesse_voulue);
-			taskDelay(100);
+			taskDelay(sysClkRateGet() *1);
 			semTake(sem_vitesse_moteur, WAIT_FOREVER);
 			//printf("driver_moteur : prise du jeton \n");
 			if (vitesse_voulue > vitesse_moteur){
 				vitesse_moteur = vitesse_moteur + coefficient_directeur;
 			}
 			
-			printf("Vitesse moteur actuelle : %d\n", vitesse_voulue);
+			//printf("Vitesse moteur actuelle : %d\n", vitesse_voulue);
 			
 			if (vitesse_voulue < vitesse_moteur){
 							vitesse_moteur = vitesse_moteur - coefficient_directeur;

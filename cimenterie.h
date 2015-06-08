@@ -37,7 +37,8 @@
 //----------------Temps
 #define cste_temps_versement								20
 #define cste_temps_cst										15
-#define cste_temps_eau										3
+#define cste_temps_eau										20
+#define cste_temps_malaxeur									10
 
 //----------------Tampons
 float tampon_cmd[NB_COMMANDE * 3];

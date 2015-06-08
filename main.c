@@ -144,7 +144,7 @@ int main(){
 	//Empeche la réquisition (préemption)
 	taskLock();
 
-	taskSpawn("driver_affichage_test",150,
+	/*taskSpawn("driver_affichage_test",150,
 						0x100,2000,(FUNCPTR) driver_affichage_test,
 						0,0,0,0,0,0,0,0,0,0);
 	
@@ -222,7 +222,7 @@ int main(){
 			                0,0,0,0,0,0,0,0,0,0);
 	taskSpawn("gestion_versement",200,
 			                0x100,2000,(FUNCPTR) gestion_versement,
-			                0,0,0,0,0,0,0,0,0,0);
+			                0,0,0,0,0,0,0,0,0,0);*/
 	taskSpawn("gestion_moteur",200,
 			                0x100,2000,(FUNCPTR) gestion_moteur,
 			                0,0,0,0,0,0,0,0,0,0);

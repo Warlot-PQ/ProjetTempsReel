@@ -32,7 +32,7 @@
 #define cst_malaxeur "M"
 
 //----------------Constantes pour le moteur
-#define cste_Imax											10.0
+#define cste_Imax											15.0
 #define cste_vitesse_moteur_max								10
 #define couple_moteur										50
 #define tension_moteur										100

@@ -715,11 +715,12 @@ int gestion_versement(){
 	return 0;
 }
 int gestion_moteur(){
-	int Imax_atteint,vitesse,temps_sans_fluctuation;
+	int Imax_atteint,vitesse,temps_sans_fluctuation, temps_malaxage_apres_fin_eau;
 	char buffer_file_intensite[10];
 	char buffer_file_vitesse[10];
 	float intensite, intensite_avant;
 	
+	//semGive(sem_stupide);
 	while(1){
 		semTake(sem_debut_malaxeur, WAIT_FOREVER);
 		printf("prise du jeton du semaphore sem_debut_malaxeur \n");
@@ -728,13 +729,12 @@ int gestion_moteur(){
 		
 		Imax_atteint = 0;
 		temps_sans_fluctuation = 0;
+		temps_malaxage_apres_fin_eau = 0;
 		intensite_avant = 0;
 		
-		if(getVmot() == 0){
-			taskDelay(500);
-		}
+		taskDelay(sysClkRateGet() * 2);
 		
-		while(temps_sans_fluctuation < cste_temps_cst && getVmot() > 0){
+		while(temps_sans_fluctuation < cste_temps_cst){
 			vitesse = getVmot();
 			intensite  = getImot();
 			
@@ -743,16 +743,62 @@ int gestion_moteur(){
 			sprintf(buffer_file_intensite, "%f", intensite);
 			//msgQSend(file_intensite, buffer_file_intensite, 10, WAIT_FOREVER, MSG_PRI_NORMAL);
 			
-			if(intensite < cste_Imax){
+			if(intensite < 0.8*cste_Imax){
 				//printf("intensite_avant : %f\n", intensite_avant);
 				if(abs(intensite - intensite_avant) < 0.05*intensite_avant){
-					taskDelay(100);
+					taskDelay(sysClkRateGet() * 1);
 					temps_sans_fluctuation += 1;
 				}else{
 					temps_sans_fluctuation = 0;
 				}
 				printf("\n*** ATTENTE D'HOMOGENEISATION DU MELANGE ***\n");
-				//printf("temps_sans_fluctuation : %d \n",temps_sans_fluctuation);
+				printf("temps_sans_fluctuation : %d \n",temps_sans_fluctuation);
+				printf("cste_temps_cst : %d",cste_temps_cst);
+				printf("\n********************************************\n");
+				intensite_avant = intensite;
+				if(Imax_atteint){
+					EteindreDiodeMalaxeur();
+					printf("\n*** Reprise versement ***\n");
+					semGive(sem_reprise_bal_tapis_agrEtCim);
+					Imax_atteint = 0;
+				}
+			}else{
+				if(!Imax_atteint){
+					consigne_moteur(0);
+					Imax_atteint = 1;
+					printf("\n*** Stop versement ***\n");
+					semGive(sem_stop_bal_tapis_agrEtCim);
+					AllumerDiodeMalaxeur();
+				}
+			}
+		}
+		
+		printf("\n***MELANGE HOMOGENE ***\n");
+		
+		//printf("temps_sans_fluctuation (fin) : %d \n",temps_sans_fluctuation);
+		//printf("\n*************** FIN TEST GESTION_MOTEUR ***************\n");
+		semGive(sem_melange_homogene);
+		
+		while(temps_malaxage_apres_fin_eau < cste_temps_malaxeur && !Imax_atteint){
+			vitesse = getVmot();
+			intensite  = getImot();
+			
+			printf("Vitesse moteur : %d\n", vitesse);
+			
+			sprintf(buffer_file_intensite, "%f", intensite);
+			//msgQSend(file_intensite, buffer_file_intensite, 10, WAIT_FOREVER, MSG_PRI_NORMAL);
+			
+			if(intensite < 0.8*cste_Imax){
+				//printf("intensite_avant : %f\n", intensite_avant);
+				if(abs(intensite - intensite_avant) < 0.05*intensite_avant){
+					taskDelay(sysClkRateGet() * 1);
+					temps_sans_fluctuation += 1;
+					temps_malaxage_apres_fin_eau += 1;
+				}else{
+					temps_sans_fluctuation = 0;
+				}
+				printf("\n*** TEMPS DE MALAXAGE APRES HOMOGENEISATION ET AVANT VERSEMENT DANS LE CAMION ***\n");
+				printf("temps_malaxage_apres_fin_eau : %d \n", temps_malaxage_apres_fin_eau);
 				//printf("cste_temps_cst : %d",cste_temps_cst);
 				//printf("\n********************************************\n");
 				intensite_avant = intensite;
@@ -773,15 +819,13 @@ int gestion_moteur(){
 			}
 		}
 		
-		if(temps_sans_fluctuation == cste_temps_cst){
-			printf("\n***MELANGE HOMOGENE ***\n");
+		//SI on arrive ici, cela veut dire que soit : le temps de malaxage après la fin du versement de l'eau s'est écoulé, soit l'intensité a dépassé le seuil.
+		if(temps_malaxage_apres_fin_eau == cste_temps_malaxeur){
+			printf("\n*** FIN DE LA TACHE MOTEUR ET DEBUT DE CONTROLE DE POSITIONNEMENT ***\n");
 			consigne_moteur(0);
-			//printf("temps_sans_fluctuation (fin) : %d \n",temps_sans_fluctuation);
-			//printf("\n*************** FIN TEST GESTION_MOTEUR ***************\n");
-			semGive(sem_melange_homogene);
 			semGive(sem_debut_camion);
-		} else {
-			//INTERBLOCAGE !!!!!!!!
+		}else{
+			semGive(sem_debut_malaxeur);
 		}
 	}
 	
