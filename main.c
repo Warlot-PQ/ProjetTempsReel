@@ -60,6 +60,7 @@ int main(){
 	sem_fin_agregat = semBCreate(SEM_Q_FIFO, 0);
 	sem_fin_ciment = semBCreate(SEM_Q_FIFO, 0);
 	sem_fin_eau = semBCreate(SEM_Q_FIFO, 0);
+	sem_fin_versement_eau = semBCreate(SEM_Q_FIFO, 0);
 	sem_fin_malaxeur = semBCreate(SEM_Q_FIFO, 0);
 	sem_debut_malaxeur = semBCreate(SEM_Q_FIFO, 0);
 
@@ -95,6 +96,9 @@ int main(){
 
 	file_debut_remplissage_balance_agregat = msgQCreate(10, 512, MSG_Q_FIFO);
 	sem_fin_remplissage_balance_agregat = semBCreate(SEM_Q_FIFO, 0);
+	
+	sem_ferm_balance_agregat = semBCreate(SEM_Q_FIFO, 0);
+	sem_ferm_balance_ciment = semBCreate(SEM_Q_FIFO, 0);
 	
 	file_debut_remplissage_balance_ciment = msgQCreate(10, 512, MSG_Q_FIFO);
 	sem_fin_remplissage_balance_ciment = semBCreate(SEM_Q_FIFO, 0);

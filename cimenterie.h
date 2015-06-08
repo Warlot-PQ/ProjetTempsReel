@@ -71,6 +71,7 @@ SEM_ID sem_init_remplissage_silo_eau;
 SEM_ID sem_fin_agregat;
 SEM_ID sem_fin_ciment;
 SEM_ID sem_fin_eau;
+SEM_ID sem_fin_versement_eau;
 SEM_ID sem_fin_malaxeur;
 SEM_ID sem_debut_malaxeur;
 
@@ -106,6 +107,9 @@ SEM_ID sem_demande_versement_eau;
 
 MSG_Q_ID file_debut_remplissage_balance_agregat;
 SEM_ID sem_fin_remplissage_balance_agregat;	//signal la fin du versement d'un silo, demande de fermeture de vanne
+
+SEM_ID sem_ferm_balance_agregat;
+SEM_ID sem_ferm_balance_ciment;
 
 MSG_Q_ID file_debut_remplissage_balance_ciment;
 SEM_ID sem_fin_remplissage_balance_ciment;	//signal la fin du versement d'un silo, demande de fermeture de vanne

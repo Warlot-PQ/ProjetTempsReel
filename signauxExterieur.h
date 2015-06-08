@@ -53,11 +53,11 @@ int timer_getPresence;
 //----------------driver_versement_malaxeur
 int timer_versement_malaxeur;
 
-#define INACTIF -1
-#define ACTIF 0
-#define ATTENTE_ENTRE_DEUX_INT		100
-#define UNITE_VOLUME_REMPLISSAGE	50
-#define UNITE_VOLUME_VERSEMENT		1
+#define INACTIF 											-1
+#define ACTIF												0
+#define ATTENTE_ENTRE_DEUX_INT								20
+#define UNITE_VOLUME_REMPLISSAGE							50
+#define UNITE_VOLUME_VERSEMENT								1
 
 int capacite_silo_agregat_courrante[3] = {0, 0, 0};
 int capacite_silo_ciment_courrante[2] = {0, 0};

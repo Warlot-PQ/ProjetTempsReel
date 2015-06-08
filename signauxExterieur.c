@@ -14,6 +14,7 @@ int eau_remplissage_en_cours = INACTIF;
 int malaxeur_versement_en_cours = INACTIF;
 int balance_agregat_versement_en_cours = INACTIF;
 int balance_ciment_versement_en_cours = INACTIF;
+int moteur_en_cours = INACTIF;
 //PID des taches driver (test)
 int tache_remplissage_ciment = INACTIF;
 int tache_remplissage_agregat = INACTIF;
@@ -21,7 +22,9 @@ int tache_remplissage_eau = INACTIF;
 int tache_versement_ciment = INACTIF;
 int tache_versement_agregat = INACTIF;
 int tache_versement_eau = INACTIF;
-
+int tache_versement_balance_agregat = INACTIF;
+int tache_versement_balance_ciment = INACTIF;
+int tache_moteur = INACTIF;
 
 void OuvrirVanne(char* vanne){
 	int valeur;
@@ -239,22 +242,22 @@ void CommandeMalaxeur(int tension){
 
 void OuvrirBalance(char *balance){
 	int valeur;
-	//printf("Ouverture vanne : %s\n", balance);
+	printf("Ouverture balance : %s\n", balance);
 	
 	//Balance
 	if (strcmp(balance, cst_balance_agregat) == 0){
 		if (balance_agregat_versement_en_cours == INACTIF) {
-			valeur = taskSpawn("driver_versement_balance_agregat",200,
+			tache_versement_balance_agregat = taskSpawn("driver_versement_balance_agregat",200,
 	                0x100,2000,(FUNCPTR) driver_versement_balance_agregat,
 	                0,0,0,0,0,0,0,0,0,0);
-			balance_agregat_versement_en_cours = valeur;
+			balance_agregat_versement_en_cours = ACTIF;
 		}
 	} else if(strcmp(balance, cst_balance_ciment) == 0) {
 		if (balance_ciment_versement_en_cours == INACTIF){
-			valeur = taskSpawn("driver_versement_balance_ciment",200,
+			tache_versement_balance_ciment = taskSpawn("driver_versement_balance_ciment",200,
 			                0x100,2000,(FUNCPTR) driver_versement_balance_ciment,
 			                0,0,0,0,0,0,0,0,0,0);
-			balance_ciment_versement_en_cours = valeur;
+			balance_ciment_versement_en_cours = ACTIF;
 		}
 	} else {
 		printf("ERREUR, COMMANDE INCOMPRISE\n");
@@ -263,17 +266,19 @@ void OuvrirBalance(char *balance){
 
 void FermerBalance(char *balance){
 	int valeur;
-	//printf("Fermeture balance : %s\n", balance);
+	printf("Fermeture balance : %s\n", balance);
 	
 	//Balance
 	if (strcmp(balance, cst_balance_agregat) == 0){
-		valeur = balance_agregat_versement_en_cours;
-		taskDelete(valeur);
-		balance_agregat_versement_en_cours = INACTIF;
+		if (balance_agregat_versement_en_cours != INACTIF){
+			taskDelete(tache_versement_balance_agregat);
+			balance_agregat_versement_en_cours = INACTIF;
+		}
 	} else if(strcmp(balance, cst_balance_ciment) == 0) {
-		valeur = balance_ciment_versement_en_cours;
-		taskDelete(valeur);
-		balance_ciment_versement_en_cours = INACTIF;
+		if (balance_ciment_versement_en_cours != INACTIF){
+			taskDelete(tache_versement_balance_ciment);
+			balance_ciment_versement_en_cours = INACTIF;
+		}
 	} else {
 		printf("ERREUR, COMMANDE INCOMPRISE\n");
 	}
@@ -281,12 +286,12 @@ void FermerBalance(char *balance){
 
 void AllumerDiodePositionCamion(){
 	diode_position_camion = 1;
-	//printf("\n********** diode_position_camion allumée *************\n");
+	printf("\n********** diode_position_camion allumée *************\n");
 }
 
 void EteindreDiodePositionCamion(){
 	diode_position_camion = 0;
-	//printf("\n********** diode_position_camion éteinte *************\n");
+	printf("\n********** diode_position_camion éteinte *************\n");
 }
 
 void AllumerDiodeMalaxeur(){
@@ -300,14 +305,14 @@ void EteindreDiodeMalaxeur(){
 }
 
 void consigne_moteur(int vitesse_voulue){
-	int moteur_task_id;
-	
-	if(vitesse_voulue>=0 && vitesse_voulue != vitesse_moteur){
-		//printf("\n consigne_moteur : taskSpawn \n");
-		moteur_task_id = taskSpawn("driver_moteur",100, 0x100,2000,(FUNCPTR) driver_moteur, vitesse_voulue,0,0,0,0,0,0,0,0,0);
-	}else{
-		//printf("\n vitesse_voulue = vitesse_moteur : driver non lancé \n");
+	if (moteur_en_cours == INACTIF){	
+		moteur_en_cours = ACTIF;
+		tache_moteur = taskSpawn("driver_moteur",100, 0x100,2000,(FUNCPTR) driver_moteur, vitesse_voulue,0,0,0,0,0,0,0,0,0);
+	} else if (vitesse_voulue == 0){ //tache_moteur != INACTIF
+		taskDelete(tache_moteur);
 	}
+	
+	vitesse_moteur = vitesse_voulue;
 }
 
 int getPresence(){
@@ -382,30 +387,31 @@ void interruptionMoins(char* element){
 int driver_moteur(int vitesse_voulue){
 	float coefficient_directeur;
 	//printf("driver_moteur\n");
-	coefficient_directeur = (vitesse_voulue-vitesse_moteur)/5.0;
+	coefficient_directeur = (vitesse_voulue - vitesse_moteur)/5.0;
 	while(1){
-		while(vitesse_moteur != vitesse_voulue){
-			//printf("VITESSE VOULUE : %d\n\n", vitesse_voulue);
-			taskDelay(sysClkRateGet() *1);
-			semTake(sem_vitesse_moteur, WAIT_FOREVER);
-			//printf("driver_moteur : prise du jeton \n");
-			if (vitesse_voulue > vitesse_moteur){
-				vitesse_moteur = vitesse_moteur + coefficient_directeur;
+		if (moteur_en_cours != INACTIF) {
+			while(vitesse_moteur != vitesse_voulue){
+				//printf("VITESSE VOULUE : %d\n\n", vitesse_voulue);
+				taskDelay(sysClkRateGet() *1);
+				semTake(sem_vitesse_moteur, WAIT_FOREVER);
+				//printf("driver_moteur : prise du jeton \n");
+				if (vitesse_voulue > vitesse_moteur){
+					vitesse_moteur = vitesse_moteur + coefficient_directeur;
+				}
+				
+				//printf("Vitesse moteur actuelle : %d\n", vitesse_voulue);
+				
+				if (vitesse_voulue < vitesse_moteur){
+								vitesse_moteur = vitesse_moteur - coefficient_directeur;
+				}
+				semGive(sem_vitesse_moteur);
+				//printf("driver_moteur : vitesse moteur = %d \n", vitesse_moteur);
+				//printf("driver_moteur : vitesse voulue = %d \n", vitesse_voulue);
+				//printf("driver_moteur : rend le jeton \n");
 			}
 			
-			//printf("Vitesse moteur actuelle : %d\n", vitesse_voulue);
-			
-			if (vitesse_voulue < vitesse_moteur){
-							vitesse_moteur = vitesse_moteur - coefficient_directeur;
-			}
-			semGive(sem_vitesse_moteur);
-			//printf("driver_moteur : vitesse moteur = %d \n", vitesse_moteur);
-			//printf("driver_moteur : vitesse voulue = %d \n", vitesse_voulue);
-			//printf("driver_moteur : rend le jeton \n");
-		}
-		
-		if(vitesse_voulue == vitesse_moteur){
 			//printf("driver_moteur : taskDelete\n");
+			moteur_en_cours = INACTIF;
 			taskDelete(taskIdSelf());
 		}
 	}
@@ -497,10 +503,11 @@ int driver_versement_silo_eau(){
 }
 int driver_versement_malaxeur(){
 	while(1){
-		taskDelay(sysClkRateGet() * 1);
+		taskDelay(ATTENTE_ENTRE_DEUX_INT /2);
+		
 		semTake(sem_capacite_malaxeur, WAIT_FOREVER);
 		capacite_malaxeur_courrante -= UNITE_VOLUME_VERSEMENT;
-		printf("capacite_malaxeur_courrante : %d\n\n", capacite_malaxeur_courrante);		
+			
 		if(capacite_malaxeur_courrante <= 0){
 			capteur_vide_malaxeur();
 		}
@@ -644,8 +651,8 @@ int driver_affichage_test(){
 			semTake(sem_capacite_silo_ciment_courrante, WAIT_FOREVER);
 			long_silo[4 + index] = longueur_entier(capa_silo[4 + index]);
 			capa_silo[4 + index] = capacite_silo_ciment_courrante[index];
-			acti_silo_vers[4 + index] = ciment_versement_en_cours[4 + index];
-			acti_silo_rempl[4 + index] = ciment_remplissage_en_cours[4 + index];
+			acti_silo_vers[4 + index] = ciment_versement_en_cours[index];
+			acti_silo_rempl[4 + index] = ciment_remplissage_en_cours[index];
 			semGive(sem_capacite_silo_ciment_courrante);
 		}
 		//Balances
@@ -658,6 +665,12 @@ int driver_affichage_test(){
 		printf("\33[2J");
 		printf("\n");
 
+		
+		//printf("ETAT VANNE HAUT CIMENT 2 : %d\n", ciment_remplissage_en_cours[]);
+
+		
+		
+		
 		//Affichage des nom des silos
 		affiche_silo(long_silo, capa_silo, acti_silo_vers, acti_silo_rempl, 'r');
 		
@@ -678,12 +691,12 @@ int driver_affichage_test(){
 		if (balance_agregat_versement_en_cours == INACTIF){
 			printf("|_______| ");
 		} else {
-			printf(" |     |");
+			printf(" |     | ");
 		}
 		if (balance_ciment_versement_en_cours == INACTIF){
 			printf("|_______|");
 		} else {
-			printf(" |     |");
+			printf(" |     | ");
 		}
 		printf("\n");
 		

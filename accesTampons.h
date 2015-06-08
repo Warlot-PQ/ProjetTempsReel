@@ -13,6 +13,15 @@ int efface_commande_traitee();
 float lire_tampon_cmd_cmd_plus_recent_distance();
 float lire_tampon_cmd_cmd_plus_recent_volume();
 int lire_tampon_cmd_cmd_plus_recent_beton();
+float lire_tampon_cmd_cmd_agregat_en_cours_beton();
+float lire_tampon_cmd_cmd_agregat_en_cours_volume();
+float lire_tampon_cmd_cmd_agregat_en_cours_distance();
+float lire_tampon_cmd_cmd_ciment_en_cours_beton();
+float lire_tampon_cmd_cmd_ciment_en_cours_volume();
+float lire_tampon_cmd_cmd_ciment_en_cours_distance();
+float lire_tampon_cmd_cmd_eau_en_cours_beton();
+float lire_tampon_cmd_cmd_eau_en_cours_volume();
+float lire_tampon_cmd_cmd_eau_en_cours_distance();
 //Tampon quantité
 int ecrire_tampon_qte_silos_eau(float qte);
 int ecrire_tampon_qte_silos_agregat(int numero_silo, float qte);
