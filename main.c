@@ -145,7 +145,7 @@ int main(){
 	//Empeche la réquisition (préemption)
 	taskLock();
 
-	/*taskSpawn("driver_affichage_test",150,
+	taskSpawn("driver_affichage_test",150,
 						0x100,2000,(FUNCPTR) driver_affichage_test,
 						0,0,0,0,0,0,0,0,0,0);
 	
@@ -214,13 +214,11 @@ int main(){
 	taskSpawn("versement_eau",200,
 			                0x100,2000,(FUNCPTR) versement_eau,
 			                0,0,0,0,0,0,0,0,0,0);
+	
 	taskSpawn("remplissage_eau",200,
 			                0x100,2000,(FUNCPTR) remplissage_eau,
-			                0,0,0,0,0,0,0,0,0,0);*/
-	semTake(sem_capacite_malaxeur, WAIT_FOREVER);
-		capacite_malaxeur_courrante = 30;
-		semGive(sem_capacite_malaxeur);
-		semGive(sem_debut_malaxeur);
+			                0,0,0,0,0,0,0,0,0,0);
+
 	taskSpawn("gestion_position_camion",200,
 			                0x100,2000,(FUNCPTR) gestion_position_camion,
 			                0,0,0,0,0,0,0,0,0,0);

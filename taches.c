@@ -723,7 +723,7 @@ int gestion_moteur(){
 	//semGive(sem_stupide);
 	while(1){
 		semTake(sem_debut_malaxeur, WAIT_FOREVER);
-		printf("prise du jeton du semaphore sem_debut_malaxeur \n");
+		//printf("prise du jeton du semaphore sem_debut_malaxeur \n");
 		
 		consigne_moteur(cste_vitesse_moteur_max);
 		
@@ -738,7 +738,7 @@ int gestion_moteur(){
 			vitesse = getVmot();
 			intensite  = getImot();
 			
-			printf("Vitesse moteur : %d\n", vitesse);
+			//printf("Vitesse moteur : %d\n", vitesse);
 			
 			sprintf(buffer_file_intensite, "%f", intensite);
 			//msgQSend(file_intensite, buffer_file_intensite, 10, WAIT_FOREVER, MSG_PRI_NORMAL);
@@ -752,9 +752,9 @@ int gestion_moteur(){
 					temps_sans_fluctuation = 0;
 				}
 				printf("\n*** ATTENTE D'HOMOGENEISATION DU MELANGE ***\n");
-				printf("temps_sans_fluctuation : %d \n",temps_sans_fluctuation);
-				printf("cste_temps_cst : %d",cste_temps_cst);
-				printf("\n********************************************\n");
+				//printf("temps_sans_fluctuation : %d \n",temps_sans_fluctuation);
+				//printf("cste_temps_cst : %d",cste_temps_cst);
+				//printf("\n********************************************\n");
 				intensite_avant = intensite;
 				if(Imax_atteint){
 					EteindreDiodeMalaxeur();
@@ -783,7 +783,7 @@ int gestion_moteur(){
 			vitesse = getVmot();
 			intensite  = getImot();
 			
-			printf("Vitesse moteur : %d\n", vitesse);
+			//printf("Vitesse moteur : %d\n", vitesse);
 			
 			sprintf(buffer_file_intensite, "%f", intensite);
 			//msgQSend(file_intensite, buffer_file_intensite, 10, WAIT_FOREVER, MSG_PRI_NORMAL);
