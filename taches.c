@@ -132,9 +132,13 @@ int gestion_evenement_ciment(){
 	return 0;
 }
 int gestion_evenement_eau(){
+	char fin_eau[2];
 	while(1){
 		semTake(sem_fin_eau, WAIT_FOREVER);
+		fin_eau[0] = "o";
+		fin_eau[0] = "k";
 		
+		msgQSend(file_fin_eau, fin_eau, 2, WAIT_FOREVER, MSG_PRI_NORMAL);
 		incremente_tampon_fonct_calcul_cmd_eau();
 	}
 	return 0;
@@ -730,7 +734,7 @@ int gestion_versement(){
 	return 0;
 }
 int gestion_moteur(){
-	int Imax_atteint,vitesse,temps_sans_fluctuation, temps_malaxage_apres_fin_eau;
+	int Imax_atteint,vitesse,temps_sans_fluctuation, temps_malaxage_apres_fin_eau, melange_homogene;
 	char buffer_file_intensite[10];
 	char buffer_file_vitesse[10];
 	float intensite, intensite_avant;
@@ -766,10 +770,23 @@ int gestion_moteur(){
 				}else{
 					temps_sans_fluctuation = 0;
 				}
-				printf("\n*** ATTENTE D'HOMOGENEISATION DU MELANGE ***\n");
+				
+				if(temps_sans_fluctuation < cste_temps_cst){
+					printf("\n*** ATTENTE D'HOMOGENEISATION DU MELANGE ***\n");
+					melange_homogene = 0;
 				//printf("temps_sans_fluctuation : %d \n",temps_sans_fluctuation);
 				//printf("cste_temps_cst : %d",cste_temps_cst);
 				//printf("\n********************************************\n");
+				}else{
+					melange_homogene = 1;
+				}
+				if(melange_homogene == 1){
+					/*
+					 * le moteur doit exécuter sa tâche de reception et de traitement de l'intensité
+					 * et doit continuer à tourner sans objectif précis tant que l'eau n'a pas fini de verser.
+					*/
+					
+				}
 				intensite_avant = intensite;
 				if(Imax_atteint){
 					EteindreDiodeMalaxeur();
@@ -794,7 +811,7 @@ int gestion_moteur(){
 		//printf("\n*************** FIN TEST GESTION_MOTEUR ***************\n");
 		semGive(sem_melange_homogene);
 		
-		while(temps_malaxage_apres_fin_eau < cste_temps_malaxeur && !Imax_atteint){
+		while(temps_malaxage_apres_fin_eau < cste_temps_malaxeur && !Imax_atteint && melange homogene){
 			vitesse = getVmot();
 			intensite  = getImot();
 			
