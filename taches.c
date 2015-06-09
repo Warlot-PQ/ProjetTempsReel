@@ -45,7 +45,6 @@ int gestion_IHM(){
 				ecrire_tampon_cmd_cmd_plus_recent_volume(40);
 				ecrire_tampon_cmd_cmd_plus_recent_beton(1);
 				ecrire_tampon_cmd_cmd_plus_recent_distance(60);
-				
 			//TEST
 				
 				
@@ -57,11 +56,6 @@ int gestion_IHM(){
 				//Fixe la commande en cours comme étant la première
 				set_tampon_fonct_calcul_premiere_cmd();
 				
-				printf("Volume : %f, Béton : %d, Distance : %f\n", 
-						lire_tampon_cmd_cmd_plus_recent_volume(),
-						lire_tampon_cmd_cmd_plus_recent_beton(),
-						lire_tampon_cmd_cmd_plus_recent_distance());
-				printf("Lancement de la commande !\n");
 				semGive(sem_calcul_agregat);
 				semGive(sem_calcul_ciment);
 				semGive(sem_calcul_eau);
@@ -163,9 +157,6 @@ int calcul_qte_eau(){
 		V = lire_tampon_cmd_cmd_eau_en_cours_volume();
 		D = lire_tampon_cmd_cmd_eau_en_cours_distance();
 		
-		//printf("B : %d\n", B);
-		//printf("V : %f\n", V);
-		//printf("D : %f\n", D);
 //----------------Calcul de la quantité d'eau voulue selon le type de béton
 		switch(B)
 		{
@@ -198,7 +189,7 @@ int calcul_qte_agregat(){
 	
 	while(1){
 		semTake(sem_calcul_agregat, WAIT_FOREVER);
-		
+
 //----------------Lecture des valeurs B, V, D dans le tampon_cmd
 		B = lire_tampon_cmd_cmd_agregat_en_cours_beton();
 		V = lire_tampon_cmd_cmd_agregat_en_cours_volume();
@@ -521,10 +512,6 @@ int gestion_balance_agregats(){
 			semTake(sem_int_plus_bal_agr, WAIT_FOREVER);
 
 			printf("Quantité restante : %f\n", lire_tampon_qte_silos_agregat(num_silo_entier));
-			printf("Quantité restante : %f\n", lire_tampon_qte_silos_agregat(num_silo_entier));
-			printf("Quantité restante : %f\n", lire_tampon_qte_silos_agregat(num_silo_entier));
-			printf("Quantité restante : %f\n", lire_tampon_qte_silos_agregat(num_silo_entier));
-			
 			
 			//Decremente
 			decremente_tampon_qte_silos_agregat(num_silo_entier);
@@ -561,6 +548,7 @@ int gestion_balance_ciment(){
 			
 			if (is_tampon_qte_silos_ciment_nulle(num_silo_entier)){
 				versement = 0;
+				
 				semGive(sem_fin_remplissage_balance_ciment);
 			}
 		}
@@ -633,16 +621,6 @@ int versement_eau(){
 			semTake(sem_int_moins_eau, WAIT_FOREVER);
 			
 			printf("quantité eau restante : %f\n", lire_tampon_qte_silos_eau());
-			printf("quantité eau restante : %f\n", lire_tampon_qte_silos_eau());
-			printf("quantité eau restante : %f\n", lire_tampon_qte_silos_eau());
-			printf("quantité eau restante : %f\n", lire_tampon_qte_silos_eau());
-			printf("quantité eau restante : %f\n", lire_tampon_qte_silos_eau());
-			printf("quantité eau restante : %f\n", lire_tampon_qte_silos_eau());
-			printf("quantité eau restante : %f\n", lire_tampon_qte_silos_eau());
-			printf("quantité eau restante : %f\n", lire_tampon_qte_silos_eau());
-			
-			
-			
 			//Decremente
 			decremente_tampon_qte_silos_eau();
 			

@@ -6,35 +6,35 @@
 
 //----------------Fonctions d'accès aux tampons
 //Tampon commande
-int ecrire_tampon_cmd_cmd_plus_recent_distance(float distance);
-int ecrire_tampon_cmd_cmd_plus_recent_volume(float volume);
-int ecrire_tampon_cmd_cmd_plus_recent_beton(float beton);
+int ecrire_tampon_cmd_cmd_plus_recent_distance(float);
+int ecrire_tampon_cmd_cmd_plus_recent_volume(float);
+int ecrire_tampon_cmd_cmd_plus_recent_beton(float);
+LOCAL int ecrire_tampon_cmd_cmd_plus_recent_X(char, float);
 int efface_commande_traitee();
-float lire_tampon_cmd_cmd_plus_recent_distance();
-float lire_tampon_cmd_cmd_plus_recent_volume();
-int lire_tampon_cmd_cmd_plus_recent_beton();
-float lire_tampon_cmd_cmd_agregat_en_cours_beton();
+int lire_tampon_cmd_cmd_agregat_en_cours_beton();
 float lire_tampon_cmd_cmd_agregat_en_cours_volume();
 float lire_tampon_cmd_cmd_agregat_en_cours_distance();
-float lire_tampon_cmd_cmd_ciment_en_cours_beton();
+int lire_tampon_cmd_cmd_ciment_en_cours_beton();
 float lire_tampon_cmd_cmd_ciment_en_cours_volume();
 float lire_tampon_cmd_cmd_ciment_en_cours_distance();
-float lire_tampon_cmd_cmd_eau_en_cours_beton();
+int lire_tampon_cmd_cmd_eau_en_cours_beton();
 float lire_tampon_cmd_cmd_eau_en_cours_volume();
 float lire_tampon_cmd_cmd_eau_en_cours_distance();
+LOCAL float lire_tampon_cmd_cmd_Y_en_cours_X(char, char);
 //Tampon quantité
-int ecrire_tampon_qte_silos_eau(float qte);
-int ecrire_tampon_qte_silos_agregat(int numero_silo, float qte);
-int ecrire_tampon_qte_silos_ciment(int numero_silo, float qte);
+LOCAL float acces_tampon_qte_silos_X_action(char, int, char, float);
+int ecrire_tampon_qte_silos_eau(float);
+int ecrire_tampon_qte_silos_agregat(int, float);
+int ecrire_tampon_qte_silos_ciment(int, float);
 int decremente_tampon_qte_silos_eau();
-int decremente_tampon_qte_silos_agregat(int numero_silo);
-int decremente_tampon_qte_silos_ciment(int numero_silo);
+int decremente_tampon_qte_silos_agregat(int);
+int decremente_tampon_qte_silos_ciment(int);
 int is_tampon_qte_silos_eau_nulle();
-int is_tampon_qte_silos_agregat_nulle(int numero_silo);
-int is_tampon_qte_silos_ciment_nulle(int numero_silo);
+int is_tampon_qte_silos_agregat_nulle(int);
+int is_tampon_qte_silos_ciment_nulle(int);
 float lire_tampon_qte_silos_eau();
-float lire_tampon_qte_silos_agregat(int numero_silo);
-float lire_tampon_qte_silos_ciment(int numero_silo);
+float lire_tampon_qte_silos_agregat(int);
+float lire_tampon_qte_silos_ciment(int);
 //Tampon fonctionnalité calcul
 int incremente_tampon_fonct_calcul_cmd_plus_recente();
 int incremente_tampon_fonct_calcul_cmd_en_cours();
@@ -50,6 +50,7 @@ int tampon_fonct_calcul_plein();
 int is_tampon_fonct_calcul_premiere_cmd();
 int set_tampon_fonct_calcul_premiere_cmd();
 //Versement eau possible
-void set_versement_eau_possible(bool);
+void set_versement_eau_possible(int);
 int is_versement_eau_possible();
+
 #endif

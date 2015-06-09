@@ -10,6 +10,7 @@
 #define NB_COMMANDE 										10
 #define NB_SILOS 											6
 #define PB 													-1
+#define LOCAL												static
 
 //----------------Capacité silo en litre
 #define NIVEAU_EAU_MAX										10

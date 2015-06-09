@@ -2,49 +2,42 @@
 #include "accesTampons.h"
 
 int ecrire_tampon_cmd_cmd_plus_recent_distance(float distance){
-	int index_cmd_plus_recente;
-	
-	if (distance < 0){
-		return PB;
-	}
-	
-	index_cmd_plus_recente = lire_tampon_fonct_calcul_cmd_plus_recente();
-	
-	semTake(sem_tampon_cmd, WAIT_FOREVER);
-	tampon_cmd[index_cmd_plus_recente * 3 + index_tampon_cmd_distance] = distance;
-	semGive(sem_tampon_cmd);
-	
-	return 0;
+	return ecrire_tampon_cmd_cmd_plus_recent_X('D', distance);
 }
 int ecrire_tampon_cmd_cmd_plus_recent_volume(float volume){
-	int index_cmd_plus_recente;
-		
-	if (volume < 0){
-		return PB;
-	}
-	
-	index_cmd_plus_recente = lire_tampon_fonct_calcul_cmd_plus_recente();
-
-	semTake(sem_tampon_cmd, WAIT_FOREVER);
-	tampon_cmd[index_cmd_plus_recente * 3 + index_tampon_cmd_volume] = volume;
-	semGive(sem_tampon_cmd);
-		    
-	return 0;
+	return ecrire_tampon_cmd_cmd_plus_recent_X('V', volume);
 }
 int ecrire_tampon_cmd_cmd_plus_recent_beton(float beton){
-	int index_cmd_plus_recente;
+	return ecrire_tampon_cmd_cmd_plus_recent_X('B', beton);
+}
+
+LOCAL int ecrire_tampon_cmd_cmd_plus_recent_X(char X, float value){
+	int offset_tampon_X = 0, index_cmd_plus_recente = 0;
 	
-	if (beton < 0){
+	if (value < 0){
 		return PB;
 	}
 	
 	index_cmd_plus_recente = lire_tampon_fonct_calcul_cmd_plus_recente();
-
+	
+	switch(X){
+	case 'D':
+		offset_tampon_X = index_tampon_cmd_distance;
+		break;
+	case 'V':
+		offset_tampon_X = index_tampon_cmd_volume;
+		break;
+	default:	//case 'B'
+		offset_tampon_X = index_tampon_cmd_beton;
+	}
+	
 	semTake(sem_tampon_cmd, WAIT_FOREVER);
-	tampon_cmd[index_cmd_plus_recente * 3 + index_tampon_cmd_beton] = beton;
+	tampon_cmd[index_cmd_plus_recente * 3 + offset_tampon_X] = value;
 	semGive(sem_tampon_cmd);
+	
 	return 0;
 }
+
 int efface_commande_traitee(){
 	int index_cmd_en_cours;
 	
@@ -58,304 +51,152 @@ int efface_commande_traitee(){
 	
 	return 0;
 }
-float lire_tampon_cmd_cmd_plus_recent_distance(){
-	int index_cmd_plus_recente;
-	float value;
-	
-	index_cmd_plus_recente = lire_tampon_fonct_calcul_cmd_plus_recente();
 
-	semTake(sem_tampon_cmd, WAIT_FOREVER);
-	value = tampon_cmd[index_cmd_plus_recente * 3 + index_tampon_cmd_distance];
-	semGive(sem_tampon_cmd);
-	
-	return value;
-}
-float lire_tampon_cmd_cmd_plus_recent_volume(){
-	int index_cmd_plus_recente;
-	float value;
-	
-	index_cmd_plus_recente = lire_tampon_fonct_calcul_cmd_plus_recente();
-
-	semTake(sem_tampon_cmd, WAIT_FOREVER);
-	value = tampon_cmd[index_cmd_plus_recente * 3 + index_tampon_cmd_volume];
-	semGive(sem_tampon_cmd);
-	
-	return value;
-}
-int lire_tampon_cmd_cmd_plus_recent_beton(){
-	int index_cmd_plus_recente;
-	int value;
-	
-	index_cmd_plus_recente = lire_tampon_fonct_calcul_cmd_plus_recente();
-
-	semTake(sem_tampon_cmd, WAIT_FOREVER);
-	value = (int) tampon_cmd[index_cmd_plus_recente * 3 + index_tampon_cmd_beton];
-	semGive(sem_tampon_cmd);
-	return value;
-}
-float lire_tampon_cmd_cmd_agregat_en_cours_beton(){
-	int value, cmd_agregat_en_cours;
-
-	semTake(sem_tampon_cmd, WAIT_FOREVER);
-	value = tampon_cmd[lire_tampon_fonct_calcul_cmd_agregat() * 3 + index_tampon_cmd_beton];
-	semGive(sem_tampon_cmd);
-	
-	return value;
+int lire_tampon_cmd_cmd_agregat_en_cours_beton(){
+	return lire_tampon_cmd_cmd_Y_en_cours_X('a', 'B');
 }
 float lire_tampon_cmd_cmd_agregat_en_cours_volume(){
-	int value;
-	
-	semTake(sem_tampon_cmd, WAIT_FOREVER);
-	value = tampon_cmd[lire_tampon_fonct_calcul_cmd_agregat() * 3 + index_tampon_cmd_volume];
-	semGive(sem_tampon_cmd);
-	
-	return value;
+	return lire_tampon_cmd_cmd_Y_en_cours_X('a', 'V');
 }
 float lire_tampon_cmd_cmd_agregat_en_cours_distance(){
-	int value;
-	
-	semTake(sem_tampon_cmd, WAIT_FOREVER);
-	value = tampon_cmd[lire_tampon_fonct_calcul_cmd_agregat() * 3 + index_tampon_cmd_distance];
-	semGive(sem_tampon_cmd);
-	
-	return value;
+	return lire_tampon_cmd_cmd_Y_en_cours_X('a', 'D');
 }
-float lire_tampon_cmd_cmd_ciment_en_cours_beton(){
-	int value;
-		
-	semTake(sem_tampon_cmd, WAIT_FOREVER);
-	value = tampon_cmd[lire_tampon_fonct_calcul_cmd_ciment() * 3 + index_tampon_cmd_beton];
-	semGive(sem_tampon_cmd);
-	
-	return value;
+int lire_tampon_cmd_cmd_ciment_en_cours_beton(){
+	return lire_tampon_cmd_cmd_Y_en_cours_X('c', 'B');
 }
 float lire_tampon_cmd_cmd_ciment_en_cours_volume(){
-	int value;
-		
-	semTake(sem_tampon_cmd, WAIT_FOREVER);
-	value = tampon_cmd[lire_tampon_fonct_calcul_cmd_ciment() * 3 + index_tampon_cmd_volume];
-	semGive(sem_tampon_cmd);
-	
-	return value;
+	return lire_tampon_cmd_cmd_Y_en_cours_X('c', 'V');
 }
 float lire_tampon_cmd_cmd_ciment_en_cours_distance(){
-	int value;
-		
-	semTake(sem_tampon_cmd, WAIT_FOREVER);
-	value = tampon_cmd[lire_tampon_fonct_calcul_cmd_ciment() * 3 + index_tampon_cmd_distance];
-	semGive(sem_tampon_cmd);
-	
-	return value;
+	return lire_tampon_cmd_cmd_Y_en_cours_X('c', 'D');
 }
-float lire_tampon_cmd_cmd_eau_en_cours_beton(){
-	int value;
-			
-	semTake(sem_tampon_cmd, WAIT_FOREVER);
-	value = tampon_cmd[lire_tampon_fonct_calcul_cmd_eau() * 3 + index_tampon_cmd_beton];
-	semGive(sem_tampon_cmd);
-	
-	return value;
+int lire_tampon_cmd_cmd_eau_en_cours_beton(){
+	return lire_tampon_cmd_cmd_Y_en_cours_X('e', 'B');
 }
 float lire_tampon_cmd_cmd_eau_en_cours_volume(){
-	int value;
-			
-	semTake(sem_tampon_cmd, WAIT_FOREVER);
-	value = tampon_cmd[lire_tampon_fonct_calcul_cmd_eau() * 3 + index_tampon_cmd_volume];
-	semGive(sem_tampon_cmd);
-	
-	return value;
+	return lire_tampon_cmd_cmd_Y_en_cours_X('e', 'V');
 }
 float lire_tampon_cmd_cmd_eau_en_cours_distance(){
-	int value;
-			
+	return lire_tampon_cmd_cmd_Y_en_cours_X('e', 'D');
+}
+
+LOCAL float lire_tampon_cmd_cmd_Y_en_cours_X(char Y, char X){
+	float value = 0;
+	int offset_tampon_X = 0, offset_tampon_Y = 0;
+	
+	if (value < 0){
+		return PB;
+	}
+
+	switch(Y){
+	case 'e':
+		offset_tampon_Y = lire_tampon_fonct_calcul_cmd_eau();
+		break;
+	case 'a':
+		offset_tampon_Y = lire_tampon_fonct_calcul_cmd_agregat();
+		break;
+	default:	//case 'c'
+		offset_tampon_Y = lire_tampon_fonct_calcul_cmd_ciment();
+	}
+	switch(X){
+	case 'D':
+		offset_tampon_X = index_tampon_cmd_distance;
+		break;
+	case 'V':
+		offset_tampon_X = index_tampon_cmd_volume;
+		break;
+	default:	//case 'B'
+		offset_tampon_X = index_tampon_cmd_beton;
+	}
+	
 	semTake(sem_tampon_cmd, WAIT_FOREVER);
-	value = tampon_cmd[lire_tampon_fonct_calcul_cmd_eau() * 3 + index_tampon_cmd_distance];
+	value = tampon_cmd[offset_tampon_Y * 3 + offset_tampon_X];
 	semGive(sem_tampon_cmd);
 	
 	return value;
 }
+
 //---------------- fonctions d'accès à tampon_qte_silos
 int ecrire_tampon_qte_silos_eau(float qte){
-	if (qte < 0){
-		return PB;
-	}
-	
-	semTake(sem_tampon_qte_silos, WAIT_FOREVER);
-	tampon_qte_silos[index_tampon_qte_silos_eau] = qte;
-	semGive(sem_tampon_qte_silos);
-	
-	return 0;
-}
-int ecrire_tampon_qte_silos_agregat(int numero_silo, float qte){
-	if (numero_silo < 0 || numero_silo > 3 || qte < 0){
-		return PB;
-	}
-	
-	semTake(sem_tampon_qte_silos, WAIT_FOREVER);
-	switch(numero_silo){
-	case 1:
-		tampon_qte_silos[index_tampon_qte_silos_agregat_1] = qte;
-		break;
-	case 2:
-		tampon_qte_silos[index_tampon_qte_silos_agregat_2] = qte;
-		break;
-	default:
-		tampon_qte_silos[index_tampon_qte_silos_agregat_3] = qte;
-	}
-	semGive(sem_tampon_qte_silos);
-	
-	return 0;
-}
-int ecrire_tampon_qte_silos_ciment(int numero_silo, float qte){
-	if (numero_silo < 0 || numero_silo > 2 || qte < 0){
-		return PB;
-	}
-	
-	semTake(sem_tampon_qte_silos, WAIT_FOREVER);
-	switch(numero_silo){
-	case 1:
-		tampon_qte_silos[index_tampon_qte_silos_ciment_1] = qte;
-		break;
-	default:
-		tampon_qte_silos[index_tampon_qte_silos_ciment_2] = qte;
-	}
-	semGive(sem_tampon_qte_silos);
-	
-	return 0;
-}
-float lire_tampon_qte_silos_eau(){
-	int value;
-	
-	semTake(sem_tampon_qte_silos, WAIT_FOREVER);
-	value = tampon_qte_silos[index_tampon_qte_silos_eau];
-	semGive(sem_tampon_qte_silos);
-	
-	return value;
+	return acces_tampon_qte_silos_X_action('e', 0, 'w', qte);
 }
 int decremente_tampon_qte_silos_eau(){
-	semTake(sem_tampon_qte_silos, WAIT_FOREVER);
-	tampon_qte_silos[index_tampon_qte_silos_eau] -= 1;
-	semGive(sem_tampon_qte_silos);
-	return 0;
+	return acces_tampon_qte_silos_X_action('e', 0, 'd', 0);
+}
+float lire_tampon_qte_silos_eau(){
+	return acces_tampon_qte_silos_X_action('e', 0, 'r', 0);
+}
+int ecrire_tampon_qte_silos_agregat(int numero_silo, float qte){
+	return acces_tampon_qte_silos_X_action('a', numero_silo, 'w', qte);
 }
 int decremente_tampon_qte_silos_agregat(int numero_silo){
-	semTake(sem_tampon_qte_silos, WAIT_FOREVER);
-	switch(numero_silo){
-	case 1:
-		tampon_qte_silos[index_tampon_qte_silos_agregat_1] -= 1;
-		break;
-	case 2:
-		tampon_qte_silos[index_tampon_qte_silos_agregat_2] -= 1;
-		break;
-	default:
-		tampon_qte_silos[index_tampon_qte_silos_agregat_3] -= 1;
-	}
-	semGive(sem_tampon_qte_silos);
-	return 0;
-}
-int decremente_tampon_qte_silos_ciment(int numero_silo){
-	semTake(sem_tampon_qte_silos, WAIT_FOREVER);
-	switch(numero_silo){
-	case 1:
-		tampon_qte_silos[index_tampon_qte_silos_ciment_1] -= 1;
-		break;
-	default:
-		tampon_qte_silos[index_tampon_qte_silos_ciment_2] -= 1;
-	}
-	semGive(sem_tampon_qte_silos);
-	return 0;
-}
-int is_tampon_qte_silos_eau_nulle(){
-	int valeur = 0;
-	semTake(sem_tampon_qte_silos, WAIT_FOREVER);
-	if (tampon_qte_silos[index_tampon_qte_silos_eau] <= 0){
-		valeur = 1;
-	}
-	semGive(sem_tampon_qte_silos);
-	
-	return valeur;
-}
-int is_tampon_qte_silos_agregat_nulle(int numero_silo){
-	int valeur = 0, qte = 0;
-	
-	semTake(sem_tampon_qte_silos, WAIT_FOREVER);
-	switch(numero_silo){
-	case 1:
-		qte = tampon_qte_silos[index_tampon_qte_silos_agregat_1];
-		break;
-	case 2:
-		qte = tampon_qte_silos[index_tampon_qte_silos_agregat_2];
-		break;
-	default:
-		qte = tampon_qte_silos[index_tampon_qte_silos_agregat_3];
-	}
-	semGive(sem_tampon_qte_silos);
-	
-	if (qte <= 0){
-		valeur = 1;
-	}
-	
-	return valeur;
-}
-int is_tampon_qte_silos_ciment_nulle(int numero_silo){
-	int valeur = 0, qte = 0;
-	
-	semTake(sem_tampon_qte_silos, WAIT_FOREVER);
-	switch(numero_silo){
-	case 1:
-		qte = tampon_qte_silos[index_tampon_qte_silos_ciment_1];
-		break;
-	default:
-		qte = tampon_qte_silos[index_tampon_qte_silos_ciment_2];
-	}
-	semGive(sem_tampon_qte_silos);
-	
-	if (qte <= 0){
-		valeur = 1;
-	}
-	
-	return valeur;
+	return acces_tampon_qte_silos_X_action('a', numero_silo, 'd', 0);
 }
 float lire_tampon_qte_silos_agregat(int numero_silo){
-	int value;
-	
+	return acces_tampon_qte_silos_X_action('a', numero_silo, 'r', 0);
+}
+int ecrire_tampon_qte_silos_ciment(int numero_silo, float qte){
+	return acces_tampon_qte_silos_X_action('c', numero_silo, 'w', qte);
+}
+int decremente_tampon_qte_silos_ciment(int numero_silo){
+	return acces_tampon_qte_silos_X_action('c', numero_silo, 'd', 0);
+}
+float lire_tampon_qte_silos_ciment(int numero_silo){
+	return acces_tampon_qte_silos_X_action('c', numero_silo, 'r', 0);
+}
+int is_tampon_qte_silos_eau_nulle(){
+	return acces_tampon_qte_silos_X_action('e', 0, 't', 0);
+}
+int is_tampon_qte_silos_agregat_nulle(int numero_silo){
+	return acces_tampon_qte_silos_X_action('a', numero_silo, 't', 0);
+}
+int is_tampon_qte_silos_ciment_nulle(int numero_silo){
+	return acces_tampon_qte_silos_X_action('c', numero_silo, 't', 0);
+}
+
+LOCAL float acces_tampon_qte_silos_X_action(char X, int numero_silo, char action, float qte){
+	float *valueAdr;
+		
 	if (numero_silo < 0 || numero_silo > 3){
 		return PB;
 	}
 	
 	semTake(sem_tampon_qte_silos, WAIT_FOREVER);
-	switch(numero_silo){
-	case 1:
-		value = tampon_qte_silos[index_tampon_qte_silos_agregat_1];
-		break;
-	case 2:
-		value = tampon_qte_silos[index_tampon_qte_silos_agregat_2];
-		break;
-	default:
-		value = tampon_qte_silos[index_tampon_qte_silos_agregat_3];
+	if (X == 'a') {
+		switch(numero_silo){
+		case 1:
+			valueAdr = &tampon_qte_silos[index_tampon_qte_silos_agregat_1];
+			break;
+		case 2:
+			valueAdr = &tampon_qte_silos[index_tampon_qte_silos_agregat_2];
+			break;
+		default:
+			valueAdr = &tampon_qte_silos[index_tampon_qte_silos_agregat_3];
+		}
+	} else if (X == 'c'){
+		switch(numero_silo){
+		case 1:
+			valueAdr = &tampon_qte_silos[index_tampon_qte_silos_ciment_1];
+			break;
+		default:
+			valueAdr = &tampon_qte_silos[index_tampon_qte_silos_ciment_2];
+		}
+	} else {	//X == 'e'
+		valueAdr = &tampon_qte_silos[index_tampon_qte_silos_eau];
 	}
 	semGive(sem_tampon_qte_silos);
 	
-	return value;
-}
-float lire_tampon_qte_silos_ciment(int numero_silo){
-	int value;
-	
-	if (numero_silo < 0 || numero_silo > 2){
-		return PB;
+	if (action == 'w'){
+		*valueAdr = qte;
+		return 0;
+	} else if (action == 'd'){
+		*valueAdr -= 1;
+		return 0;
+	} else if(action == 't'){
+		return (*valueAdr <= 0) ? 1 : 0;
+	} else { //action == 'r'
+		return *valueAdr;
 	}
-	
-	semTake(sem_tampon_qte_silos, WAIT_FOREVER);
-	switch(numero_silo){
-	case 1:
-		value = tampon_qte_silos[index_tampon_qte_silos_ciment_1];
-		break;
-	default:
-		value = tampon_qte_silos[index_tampon_qte_silos_ciment_2];
-	}
-	semGive(sem_tampon_qte_silos);
-	
-	return value;
 }
 
 //---------------- fonctions d'accès à tampon_fonct_calcul
