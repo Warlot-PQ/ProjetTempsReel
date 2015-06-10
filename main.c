@@ -54,8 +54,6 @@ int main(){
 	sem_init_remplissage_silo_cim_2 = semBCreate(SEM_Q_FIFO, 0);
 	sem_init_remplissage_silo_eau = semBCreate(SEM_Q_FIFO, 0);
 	
-	
-	
 	//Initialise les sémaphores de synchronisation des tâches
 	sem_fin_agregat = semBCreate(SEM_Q_FIFO, 0);
 	sem_fin_ciment = semBCreate(SEM_Q_FIFO, 0);
@@ -114,7 +112,7 @@ int main(){
 
 	sem_melange_homogene = semBCreate(SEM_Q_FIFO, 0);
 	
-	sem_agregat_et_ciment_suivant = semBCreate(SEM_Q_FIFO, 0);
+	sem_cmd_en_cours = semBCreate(SEM_Q_FIFO, 0);
 
 	sem_debut_camion = semBCreate(SEM_Q_FIFO, 0);
 	sem_diode_allumer_camion = semBCreate(SEM_Q_FIFO, 0);
@@ -148,7 +146,7 @@ int main(){
 		
 	//Empeche la réquisition (préemption)
 	taskLock();
-
+	
 	taskSpawn("driver_affichage_test",150,
 						0x100,2000,(FUNCPTR) driver_affichage_test,
 						0,0,0,0,0,0,0,0,0,0);

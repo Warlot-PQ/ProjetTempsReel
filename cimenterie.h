@@ -9,6 +9,8 @@
 //----------------Constantes diverses
 #define NB_COMMANDE 										10
 #define NB_SILOS 											6
+#define MAX_MESSAGE_AFFICHAGE								20
+#define TAILLE_MESSAGE_AFFICHAGE							512
 #define PB 													-1
 #define LOCAL												static
 
@@ -45,6 +47,9 @@
 float tampon_cmd[NB_COMMANDE * 3];
 float tampon_qte_silos[6]; 
 int tampon_fonct_calcul[5];
+
+char buffer_affichage[MAX_MESSAGE_AFFICHAGE][TAILLE_MESSAGE_AFFICHAGE];
+int message_plus_recent = 0;
 
 //----------------Information sur le versement de l'eau
 int versement_eau_possible;
@@ -127,7 +132,7 @@ SEM_ID sem_fin_vers_balance_ciment;
 
 SEM_ID sem_melange_homogene;
 
-SEM_ID sem_agregat_et_ciment_suivant;
+SEM_ID sem_cmd_en_cours;
 
 SEM_ID sem_debut_camion;
 SEM_ID sem_position_camion_ok;

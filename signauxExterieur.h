@@ -55,7 +55,8 @@ int timer_versement_malaxeur;
 
 #define INACTIF 											-1
 #define ACTIF												0
-#define ATTENTE_ENTRE_DEUX_INT								50
+#define ATTENTE_ENTRE_DEUX_INT								200
+#define TAUX_RAFFRAICHISSEMENT								200
 #define UNITE_VOLUME_REMPLISSAGE							50
 #define UNITE_VOLUME_VERSEMENT								1
 
@@ -105,11 +106,6 @@ void DemarrageTapis(char *tapis);
 **/
 void ArretTapis(char *tapis);
 /**
-*	Fixe la tension du moteur du malaxeur
-*	tension : pourcentage de la tension, entre 0 et 100
-**/
-void CommandeMalaxeur(int tension);
-/**
 *	Ouvre une balance BA ou BC
 *	vanne : Constante de la balance, utiliser les defines du .h
 **/
@@ -138,7 +134,8 @@ void AllumerDiodeMalaxeur();
 **/
 void EteindreDiodeMalaxeur();
 /**
- * 	Envoie la consigne de vitesse au moteur
+*	Fixe la vitesse du moteur du malaxeur
+*	vitesse : pourcentage entre 0 et 100
 **/
 void consigne_moteur(int);
 /****************************************/
@@ -152,47 +149,11 @@ int getPresence();
 /****************************************/
 /***************DONNEES******************/
 /****************************************/
-/**
-*	Récupère le volume de ciment
-*	return : entier
-**/
-int getVolume();
-
-int getDistance();
-
-int getTypeBeton();
-
 int getHygrometrie();
 
 int getVmot();
 
 float getImot();
-
-int getEtatBmal();
-/****************************************/
-/*************Interruption***************/
-/****************************************/
-/**
-*	Signal que l'element est vide : A1, A2, A3, C1, C2, E, M
-*	element : constante de l'element, utiliser les defines du .h
-**/
-void interruptionMin(char* element);
-/**
-*	Signal que l'element est plein : A1, A2, A3, C1, C2, E, M
-*	element : constante de l'element, utiliser les defines du .h
-**/
-void interruptionMax(char* element);
-/**
-*	Signal que l'element a perdu 1 unité : BA, BC, E
-*	element : constante de l'element, utiliser les defines du .h
-**/
-void interruptionPlus(char* element);
-/**
-*	Signal que l'element a gagné 1 unité : BA, BC, E
-*	element : constante de l'element, utiliser les defines du .h
-**/
-void interruptionMoins(char* element);
-
 /****************************************/
 /****************Taches******************/
 /****************************************/
