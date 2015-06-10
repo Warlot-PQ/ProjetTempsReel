@@ -1,5 +1,6 @@
 #include "signauxExterieur.h"
 #include "cimenterie.h"
+#include "accesTampons.h"
 #include "taches.h"
 #include <taskLib.h>
 #include <string.h>
@@ -229,15 +230,11 @@ void OuvrirRobinet(char *vanne, int ouverture){
 }
 
 void DemarrageTapis(char *tapis){
-
+	printf("\n********** Démarrage du tapis *************\n");
 }
 
 void ArretTapis(char *tapis){
-
-}
-
-void CommandeMalaxeur(int tension){
-
+	printf("\n********** Arret du tapis *************\n");
 }
 
 void OuvrirBalance(char *balance){
@@ -327,18 +324,6 @@ int getPresence(){
 	}
 }
 
-int getVolume(){
-
-}
-
-int getDistance(){
-
-}
-
-int getTypeBeton(){
-
-}
-
 int getHygrometrie(){
 	return (rand()%100);
 }
@@ -362,27 +347,6 @@ float getImot(){
 	//printf("intensite du moteur : %f\n", intensite);
 	return intensite;
 }
-
-int getEtatBmal(){
-
-}
-
-void interruptionMin(char* element){
-
-}
-
-void interruptionMax(char* element){
-
-}
-
-void interruptionPlus(char* element){
-
-}
-
-void interruptionMoins(char* element){
-
-}
-
 
 int driver_moteur(int vitesse_voulue){
 	float coefficient_directeur;
@@ -622,7 +586,7 @@ int driver_versement_balance_ciment(){
 }
 
 int driver_affichage_test(){
-	int index = 0, capa_bal_agr = 0, capa_bal_cim = 0;
+	int index = 0, index_aff = 0, capa_bal_agr = 0, capa_bal_cim = 0;
 	int long_silo[] = {0, 0, 0, 0, 0, 0};
 	int capa_silo[] = {0, 0, 0, 0, 0, 0};
 	int acti_silo_vers[] = {0, 0, 0, 0, 0, 0};
@@ -665,11 +629,12 @@ int driver_affichage_test(){
 		printf("\33[2J");
 		printf("\n");
 
-		
-		//printf("ETAT VANNE HAUT CIMENT 2 : %d\n", ciment_remplissage_en_cours[]);
-
-		
-		
+		//Affichage des messages
+		for(index_aff = 0; index_aff < MAX_MESSAGE_AFFICHAGE; index_aff += 1){
+			if (strcmp(get_message_affichage(index_aff), "") != 0){
+				printf("%s\n", get_message_affichage(index_aff));
+			}
+		}
 		
 		//Affichage des nom des silos
 		affiche_silo(long_silo, capa_silo, acti_silo_vers, acti_silo_rempl, 'r');
@@ -682,7 +647,6 @@ int driver_affichage_test(){
 
 		//Affichage du statut des vannes des silos
 		affiche_silo(long_silo, capa_silo, acti_silo_vers, acti_silo_rempl, 'v');
-		
 		
 		//Balance quantite
 		printf("|bal agr| |bal cim|\n");
@@ -714,7 +678,7 @@ int driver_affichage_test(){
 		}
 		printf("\n");
 		
-		taskDelay(100);
+		taskDelay(TAUX_RAFFRAICHISSEMENT);
 	}
 	
 	return 0;

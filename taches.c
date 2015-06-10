@@ -6,26 +6,39 @@
 #include <stdlib.h>
 #include <errno.h>
 
-/*
- *	Vider le terminal : printf("\33[2J"); 
-*/
-
 int gestion_IHM(){
-	char valeur_volume[20];
-	char valeur_beton[20];
-	char valeur_distance[20];
+	float valeur_volume;
+	int valeur_beton, premier_essai = 1;
+	float valeur_distance;
 	
-	//while(1){
-		printf("Initialisation de la cimenterie, remplissage des silos\n");
-		semTake(sem_init_remplissage_silo_agr_1, WAIT_FOREVER);
-		semTake(sem_init_remplissage_silo_agr_2, WAIT_FOREVER);
-		semTake(sem_init_remplissage_silo_agr_3, WAIT_FOREVER);
-		semTake(sem_init_remplissage_silo_cim_1, WAIT_FOREVER);
-		semTake(sem_init_remplissage_silo_cim_2, WAIT_FOREVER);
-		semTake(sem_init_remplissage_silo_eau, WAIT_FOREVER);
+	printf("Initialisation de la cimenterie, remplissage des silos\n");
+	semTake(sem_init_remplissage_silo_agr_1, WAIT_FOREVER);
+	semTake(sem_init_remplissage_silo_agr_2, WAIT_FOREVER);
+	semTake(sem_init_remplissage_silo_agr_3, WAIT_FOREVER);
+	semTake(sem_init_remplissage_silo_cim_1, WAIT_FOREVER);
+	semTake(sem_init_remplissage_silo_cim_2, WAIT_FOREVER);
+	semTake(sem_init_remplissage_silo_eau, WAIT_FOREVER);
+	
+	while(1){
+		do{
+			if (premier_essai == 0) {
+				ajouter_message_affichage("Valeurs entrées incorrect.\n");
+				ajouter_message_affichage("Vous pouvez répéter la question ?\n");
+			}
 			
-		printf("Entrez le volume de béton, le type souhaité (1, 2 ou 3) et la distance à parcourir (séparé par les espaces, ex : 50 2 10) :\n");
-		//scanf("%d %d %d", &valeur_volume, &valeur_beton, &valeur_distance);
+			ajouter_message_affichage("Entrez le volume de béton souhaité :\n");
+			scanf("%f", &valeur_volume);
+			ajouter_message_affichage("Entrez le type de béton souhaité (1,2,3) :\n");
+			scanf("%d", &valeur_beton);
+			ajouter_message_affichage("Entrez la distance à parcourir :\n");
+			scanf("%f", &valeur_distance);
+			premier_essai = 0;
+			vider_messages_affichage();
+		} while (!(valeur_volume > 0 
+				&& (valeur_beton == 1 || valeur_beton == 2 || valeur_beton == 3) 
+				&& valeur_distance > 0));
+		
+		premier_essai = 1;
 		
 		if (tampon_fonct_calcul_plein() == PB){
 			printf("Nombre maximum de commande en cours de traitement atteint !\n");
@@ -33,28 +46,16 @@ int gestion_IHM(){
 			//Signale que l'arrivée d'une commande plus recente
 			incremente_tampon_fonct_calcul_cmd_plus_recente();
 			//Remplie les caractéristiques de la commande la plus recente
-			//ecrire_tampon_cmd_cmd_plus_recent_volume(atoi(valeur_volume));
-			//ecrire_tampon_cmd_cmd_plus_recent_beton(atoi(valeur_beton));
-			//ecrire_tampon_cmd_cmd_plus_recent_distance(atoi(valeur_distance));
+			ecrire_tampon_cmd_cmd_plus_recent_volume(valeur_volume);
+			ecrire_tampon_cmd_cmd_plus_recent_beton(valeur_beton);
+			ecrire_tampon_cmd_cmd_plus_recent_distance(valeur_distance);
 			
-			//TEST
-				ecrire_tampon_cmd_cmd_plus_recent_volume(20);
-				ecrire_tampon_cmd_cmd_plus_recent_beton(2);
-				ecrire_tampon_cmd_cmd_plus_recent_distance(30);
-				incremente_tampon_fonct_calcul_cmd_plus_recente();
-				ecrire_tampon_cmd_cmd_plus_recent_volume(40);
-				ecrire_tampon_cmd_cmd_plus_recent_beton(1);
-				ecrire_tampon_cmd_cmd_plus_recent_distance(60);
-			//TEST
-				
-				
-				
-				
-				
 			//Test toute première commande
 			if (is_tampon_fonct_calcul_premiere_cmd() != PB){
 				//Fixe la commande en cours comme étant la première
 				set_tampon_fonct_calcul_premiere_cmd();
+				
+				printf("Démarrage de la commande V %f, B %d, D %f", valeur_volume, valeur_beton, valeur_distance);
 				
 				semGive(sem_calcul_agregat);
 				semGive(sem_calcul_ciment);
@@ -62,7 +63,7 @@ int gestion_IHM(){
 			} else {
 				printf("ERREUR %d\n", is_tampon_fonct_calcul_premiere_cmd());
 			}
-		//}
+		}
 	}
 	return 0;
 }
@@ -179,7 +180,7 @@ int calcul_qte_eau(){
 		//printf("Quantité eau: %f\n", qte_eau);
 		
 //----------------Signale la tache "gestion synchro" que le système traite la commande suivante 	
-		semGive(sem_agregat_et_ciment_suivant);
+		semGive(sem_cmd_en_cours);
 	}
 	return 0;
 }
@@ -195,9 +196,6 @@ int calcul_qte_agregat(){
 		V = lire_tampon_cmd_cmd_agregat_en_cours_volume();
 		D = lire_tampon_cmd_cmd_agregat_en_cours_distance();
 
-		//printf("B : %d\n", B);
-		//printf("V : %f\n", V);
-		//printf("D : %f\n", D);
 //----------------Calcul des quantités d'agrégats voulues selon la valeur de B
 		switch(B){
 			case 1:
@@ -225,10 +223,6 @@ int calcul_qte_agregat(){
 		ecrire_tampon_qte_silos_agregat(2, agregat_2);
 		ecrire_tampon_qte_silos_agregat(3, agregat_3);
 	
-		//printf("Quantité agregat 1: %f\n", agregat_1);
-		//printf("Quantité agregat 2: %f\n", agregat_2);
-		//printf("Quantité agregat 3: %f\n", agregat_3);
-		
 //----------------Signale la tache "gestion remplissage et versement silos" que le tampon_qte a été mis à jour
 		semGive(sem_demande_versement_agregat);
 	}
@@ -573,7 +567,7 @@ int gestion_synchro(){
 		cmd_cim_en_cours = lire_tampon_fonct_calcul_cmd_ciment();
 		cmd_en_cours = lire_tampon_fonct_calcul_cmd_en_cours();
 		
-		semTake(sem_agregat_et_ciment_suivant, WAIT_FOREVER);
+		semTake(sem_cmd_en_cours, WAIT_FOREVER);
 
 		printf("Ouverture des balances, debut versement !\n");
 		

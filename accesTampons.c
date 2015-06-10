@@ -1,5 +1,6 @@
 #include "cimenterie.h"
 #include "accesTampons.h"
+#include <string.h>
 
 int ecrire_tampon_cmd_cmd_plus_recent_distance(float distance){
 	return ecrire_tampon_cmd_cmd_plus_recent_X('D', distance);
@@ -344,4 +345,28 @@ int is_versement_eau_possible(){
 	semGive(sem_versement_eau_possible);
 	
 	return value;
+}
+int ajouter_message_affichage(char message[TAILLE_MESSAGE_AFFICHAGE]){
+	if (message_plus_recent == 10){
+		return PB;
+	}
+	
+	strncpy(buffer_affichage[message_plus_recent], message, sizeof buffer_affichage[message_plus_recent]);
+	message_plus_recent += 1;
+	
+	return 0;
+	
+}
+int vider_messages_affichage(){
+	int index;
+	
+	for (index = 0; index < MAX_MESSAGE_AFFICHAGE; index += 1){
+		strncpy(buffer_affichage[index], "", sizeof buffer_affichage[index]);
+	}
+	message_plus_recent = 0;
+	
+	return 0;
+}
+char *get_message_affichage(int index_message){
+	return buffer_affichage[index_message];
 }

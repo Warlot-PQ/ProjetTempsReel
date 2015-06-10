@@ -52,5 +52,9 @@ int set_tampon_fonct_calcul_premiere_cmd();
 //Versement eau possible
 void set_versement_eau_possible(int);
 int is_versement_eau_possible();
+//Tampon affichage
+int ajouter_message_affichage(char *);
+int vider_messages_affichage();
+char *get_message_affichage(int);
 
 #endif
