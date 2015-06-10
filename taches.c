@@ -281,7 +281,7 @@ int calcul_qte_ciment(){
 
 int versement_agregat(){
 	//Numéro du silo à ouvrir
-	int num_silo_entier;
+	int versement = 0, num_silo_entier;
 	char num_silo[256];
 	char buffer[MAX_MESSAGE_AFFICHAGE];
 	
@@ -333,8 +333,27 @@ int versement_agregat(){
 		semGive(sem_pret_balance_agregat);	//Signal balance agr prête pour synchro
 		
 		semTake(sem_ouverture_balance_agregat, WAIT_FOREVER);	//Attente de l'ordre d'ouverture
+		
 		DemarrageTapis(cst_tapis_agregat);
 		OuvrirBalance(cst_balance_agregat);
+
+		versement = 1;
+		while(versement == 1){
+			semTake(sem_int_moins_bal_agr, WAIT_FOREVER);
+
+			qte_contenu_balance_agregat -= UNITE_VOLUME_VERSEMENT;
+	
+			if (qte_contenu_balance_agregat <= 0){
+				qte_contenu_balance_agregat = 0;
+				
+				versement = 0;
+				FermerBalance(cst_balance_agregat);
+				ArretTapis(cst_tapis_agregat);
+
+				semGive(sem_fin_agregat);
+				semGive(sem_fin_vers_balance_agregat);			
+			}
+		}
 	}
 	return 0;
 }
@@ -409,7 +428,7 @@ int remplissage_agregat_3(){
 
 int versement_ciment(){
 	//Numéro du silo à ouvrir
-	int num_silo_entier;
+	int num_silo_entier, versement = 0;
 	char num_silo[256];
 	
 	while(1){
@@ -448,8 +467,27 @@ int versement_ciment(){
 		semGive(sem_pret_balance_ciment);	//Signal balance agr prête pour synchro
 		
 		semTake(sem_ouverture_balance_ciment, WAIT_FOREVER);	//Attente de l'ordre d'ouverture
+		
 		DemarrageTapis(cst_tapis_ciment);
 		OuvrirBalance(cst_balance_ciment);
+
+		versement = 1;
+		while(versement == 1){
+			semTake(sem_int_moins_bal_cim, WAIT_FOREVER);
+
+			qte_contenu_balance_ciment -= UNITE_VOLUME_VERSEMENT;
+	
+			if (qte_contenu_balance_ciment <= 0){
+				qte_contenu_balance_ciment = 0;
+				
+				versement = 0;
+				FermerBalance(cst_balance_ciment);
+				ArretTapis(cst_tapis_ciment);
+
+				semGive(sem_fin_ciment);
+				semGive(sem_fin_vers_balance_ciment);
+			}
+		}
 	}
 	return 0;
 }
@@ -512,6 +550,8 @@ int gestion_quantite_balance_agregats(){
 		while(versement == 1){
 			semTake(sem_int_plus_bal_agr, WAIT_FOREVER);
 
+			qte_contenu_balance_agregat += UNITE_VOLUME_VERSEMENT;
+		
 			sprintf(qte, "%f", lire_tampon_qte_silos_agregat(num_silo_entier));
 			
 			strcpy(buffer, "Quantité agrégat restante :");
@@ -525,12 +565,6 @@ int gestion_quantite_balance_agregats(){
 				versement = 0;
 				semGive(sem_fin_remplissage_balance_agregat);
 			}
-		}
-		if (num_silo_entier == 3){
-			semTake(sem_ferm_balance_agregat, WAIT_FOREVER);
-			FermerBalance(cst_balance_agregat);
-			
-			semGive(sem_fin_agregat);
 		}
 	}
 	return 0;
@@ -546,7 +580,9 @@ int gestion_quantite_balance_ciment(){
 		
 		while(versement == 1){
 			semTake(sem_int_plus_bal_cim, WAIT_FOREVER);
-
+			
+			qte_contenu_balance_ciment += UNITE_VOLUME_VERSEMENT;
+		
 			sprintf(qte, "%f", lire_tampon_qte_silos_ciment(num_silo_entier));
 			
 			strcpy(buffer, "Quantité ciment restante :");
@@ -561,12 +597,6 @@ int gestion_quantite_balance_ciment(){
 				
 				semGive(sem_fin_remplissage_balance_ciment);
 			}
-		}
-		if (num_silo_entier == 2){
-			semTake(sem_ferm_balance_ciment, WAIT_FOREVER);
-			FermerBalance(cst_balance_ciment);
-			
-			semGive(sem_fin_ciment);
 		}
 	}
 	return 0;
@@ -899,36 +929,16 @@ void capteur_vide_silo_ciment_2(){
 	semGive(sem_int_min_cim_2);
 }
 void capteur_plus_balance_agregats(){
-	qte_contenu_balance_agregat += UNITE_VOLUME_VERSEMENT;
-	
 	semGive(sem_int_plus_bal_agr);
 }
 void capteur_moins_balance_agregats(){
-	qte_contenu_balance_agregat -= UNITE_VOLUME_VERSEMENT;
-
-	//semGive(sem_int_moins_bal_agr);
-	if (qte_contenu_balance_agregat <= 0){
-		qte_contenu_balance_agregat = 0;
-		
-		semGive(sem_ferm_balance_agregat);
-		semGive(sem_fin_vers_balance_agregat);
-	}
+	semGive(sem_int_moins_bal_agr);
 }
 void capteur_plus_balance_ciment(){
-	qte_contenu_balance_ciment += UNITE_VOLUME_VERSEMENT;
-		
 	semGive(sem_int_plus_bal_cim);
 }
 void capteur_moins_balance_ciment(){
-	qte_contenu_balance_ciment -= UNITE_VOLUME_VERSEMENT;
-	
-	//semGive(sem_int_moins_bal_cim);
-	if (qte_contenu_balance_ciment <= 0){
-		qte_contenu_balance_ciment = 0;
-
-		semGive(sem_ferm_balance_ciment);
-		semGive(sem_fin_vers_balance_ciment);
-	}
+	semGive(sem_int_moins_bal_cim);
 }
 void capteur_plein_eau(){
 	semGive(sem_int_max_eau);
