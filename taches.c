@@ -10,13 +10,12 @@
  * 								tache.c										*
  * L'ensemble des tâches lancées par le système sont regroupées ici.		*
  * Auteurs : Piere-Quentin WARLOT, Jean-Michel NOKAYA						*																			*
- * ****************************************************************************/
+ * ***************************************************************************/
 
-/*
- *	gestion_IHM() :	Récupère les informations entrées par l'utilisateur et les
- * 	stocke dans le tampon tampon_cmd.
- * 					- Initialisation de la cimenterie : remplissage des silos 1 à 1.
- * 					
+/**
+ * gestion_IHM() :	Récupère les informations entrées par l'utilisateur et les
+ * stocke dans le tampon tampon_cmd.
+ * @return 0
  */
 
 int gestion_IHM(){
@@ -24,6 +23,7 @@ int gestion_IHM(){
 	int valeur_beton, premier_essai = 1;
 	float valeur_distance;
 	
+//	**************	Initialisation de la cimenterie : remplissage des silos 1 à 1  **************** //
 	printf("Initialisation de la cimenterie, remplissage des silos\n");
 	semTake(sem_init_remplissage_silo_agr_1, WAIT_FOREVER);
 	semTake(sem_init_remplissage_silo_agr_2, WAIT_FOREVER);
@@ -32,7 +32,9 @@ int gestion_IHM(){
 	semTake(sem_init_remplissage_silo_cim_2, WAIT_FOREVER);
 	semTake(sem_init_remplissage_silo_eau, WAIT_FOREVER);
 	
+//	**************	lancement de la tâche  **************** //
 	while(1){
+		//	**************	récupération de données via des scanf (contrôle des données assurées) **************** //
 		do{
 			if (premier_essai == 0) {
 				ajouter_message_affichage("Valeurs entrées incorrect.\n");
@@ -55,15 +57,19 @@ int gestion_IHM(){
 		
 		if (tampon_fonct_calcul_plein() == PB){
 			printf("Nombre maximum de commande en cours de traitement atteint !\n");
+		
+		//	**************	Si Ok (tampon non plein) :   **************** //
 		} else {
-			//Signale que l'arrivée d'une commande plus recente
+			
+			//	**************	incrémentation de cmd_plus_récente dans tampon_fonct_calcul  **************** //
 			incremente_tampon_fonct_calcul_cmd_plus_recente();
-			//Remplie les caractéristiques de la commande la plus recente
+			
+			//	**************	insertion des données entrées dans tampon_cmd  **************** //
 			ecrire_tampon_cmd_cmd_plus_recent_volume(valeur_volume);
 			ecrire_tampon_cmd_cmd_plus_recent_beton(valeur_beton);
 			ecrire_tampon_cmd_cmd_plus_recent_distance(valeur_distance);
 			
-			//Test toute première commande
+			//	**************	Si première commande, on lance les tâches de calcul de quantité  **************** //
 			if (is_tampon_fonct_calcul_premiere_cmd() != PB){
 				//Fixe la commande en cours comme étant la première
 				set_tampon_fonct_calcul_premiere_cmd();
@@ -82,22 +88,36 @@ int gestion_IHM(){
 }
 
 /*
- *	 gestion_evenement_malax() :	Tâche gérant les événement concernant le malaxeur.
- * 									
+ *	 gestion_evenement_malax() :Tâche gérant les événements suivants la fin de traitement d'une commande
+ * donnée par le malaxeur.
+ * @return 0									
  */
 int gestion_evenement_malax(){
 	int cmd_plus_recente, cmd_en_cours, index_boucle;
 	
 	while(1){
+		
+		//	**************	Attente de la fin de versement du mélange dans le malaxeur  **************** //
 		semTake(sem_fin_malaxeur, WAIT_FOREVER);
 		
+		/* Il s'agit d'une fin de traitement d'une commande : lecture des
+		 * variables cmd_plus_recente et cmd_en_cours dans tampon_fonct_calcul 
+		 */
 		cmd_plus_recente = lire_tampon_fonct_calcul_cmd_plus_recente();
 		cmd_en_cours = lire_tampon_fonct_calcul_cmd_en_cours();
 		
+		/* Si elles sont différentes : il reste des commandes à traiter,
+		 * effacement des données de traitement de la commandes en cours, MAJ de cmd_en_cours pour passer au
+		 * traitement de la commande suivante
+		 */
 		if(cmd_plus_recente != cmd_en_cours){
 			efface_commande_traitee();
 			incremente_tampon_fonct_calcul_cmd_en_cours();
 			semGive(sem_calcul_eau);
+			
+		/*Sinon, cela veut dire qu'il n'y a plus de commande à traiter :
+		 * on re initialise le système
+		 */
 		} else {
 			for(index_boucle = 0; index_boucle < NB_COMMANDE * 3; index_boucle += 1){
 				tampon_cmd[index_boucle] = 0;
@@ -116,23 +136,44 @@ int gestion_evenement_malax(){
 	}
 	return 0;
 }
+
+/*
+ * gestion_evenement_agregat() : tâche gérant les les événements suivants la fin du versement des agrégats
+ * dans la balance pour une commande donnée.
+ * @return 0
+ */
 int gestion_evenement_agregat(){
 	int cmd_plus_recente, cmd_en_cours;
 	
 	while(1){
+		
+		//	**************	Attente de la fin du versement des agrégats dans la balance  **************** //
 		semTake(sem_fin_agregat, WAIT_FOREVER);
 		
+		//  ******* Lecture des variables cmd_plus_recente et cmd_en_cours dans tampon_fonct_calcul *******/
 		cmd_plus_recente = lire_tampon_fonct_calcul_cmd_plus_recente();
 		cmd_en_cours = lire_tampon_fonct_calcul_cmd_en_cours();
 		
+		/*	Si elles sont différentes : il reste des commandes à traiter,
+		 * on incrémente la valeur de cmd_agregat_en_cours dans tampon_fonct_calcul et on signale que l'on peut 
+		 * lancer les calculs de quantités pour les agrégats de la commande suivante.
+		 */
 		if(cmd_plus_recente != cmd_en_cours){
 			incremente_tampon_fonct_calcul_cmd_agregat();
 			semGive(sem_calcul_agregat);
 		}
+		
+		//	**************	Sinon, plus de commande à traiter, la tâche ne fait rien  **************** //
 	}
 	
 	return 0;
 }
+
+/*
+ * gestion_evenement_ciment() : tâche gérant la fin de versement des ciments dans la balance.
+ * Fonctionnement identique à gestion_evenement_agregat().
+ * @return 0
+ */
 int gestion_evenement_ciment(){
 	int cmd_plus_recente, cmd_en_cours;
 		
@@ -150,6 +191,13 @@ int gestion_evenement_ciment(){
 		
 	return 0;
 }
+
+/*
+ * gestion_evenement_eau() :tâche gérant la fin du versement de l'eau.
+ * Attente du signal de fin de versement de l'eau dans le malaxeur, et incrémente cmd_eau_en_cours dans 
+ * tampon_fonct_calcul
+ * @return 0
+ */
 int gestion_evenement_eau(){
 	while(1){
 		semTake(sem_fin_eau, WAIT_FOREVER);
@@ -159,24 +207,32 @@ int gestion_evenement_eau(){
 	return 0;
 }
 
+/*
+ * calcul_qte_eau() : 	tâche gérant le calcul de la quantité d'eau à verser dans le malaxeur pour une 
+ * commande donnée.
+ * @return 0
+ */
 int calcul_qte_eau(){
 	float V, D, qte_eau;
 	int i, B, hygrometrie;
 	
 	while(1){
+		
+		//	**************	Attente du signal de lancement des calculs  **************** //
 		semTake(sem_calcul_eau, WAIT_FOREVER);
+		
+		//	**************	récupération de l'hygrométrie  **************** //
 		hygrometrie = getHygrometrie();
 		//printf("hygronometrie : %d\n", hygrometrie);
-//----------------Lecture des valeurs B, V, D dans le tampon_cmd		
-	
 		//printf("cmd en cours : %d\n\n", lire_tampon_fonct_calcul_cmd_en_cours());
 		//printf("type de béton : %d\n\n", lire_tampon_cmd_cmd_plus_recent_beton());
 		
+		//	**************	lecture des valeurs B, V, D de la commande en cours  **************** //
 		B = lire_tampon_cmd_cmd_eau_en_cours_beton();
 		V = lire_tampon_cmd_cmd_eau_en_cours_volume();
 		D = lire_tampon_cmd_cmd_eau_en_cours_distance();
 		
-//----------------Calcul de la quantité d'eau voulue selon le type de béton
+		//	**************	calcul de la quantité d'eau à verser selon le type de béton (B)  **************** //
 		switch(B)
 		{
 			case 1:
@@ -192,29 +248,36 @@ int calcul_qte_eau(){
 				printf("calcul_qte_agregat : default case !\n");
 				return PB;
 		}
-//----------------Ecriture dans tampon_qte
+		//	**************	écriture de cette faleur dans tampon_qte_silo **************** //
 		ecrire_tampon_qte_silos_eau(qte_eau);
 
 		//printf("Quantité eau: %f\n", qte_eau);
 		
-//----------------Signale la tache "gestion synchro" que le système traite la commande suivante 	
+		//	**************	Signale au gestionnaire de synchronisation que le tampon_qte_silo a été mis à jour pour l'eau.  **************** //
 		semGive(sem_cmd_en_cours);
 	}
 	return 0;
 }
+
+/*
+ * calcul_qte_agregat() : 	tâche gérant le calcul de la quantité d'argegats à verser dans le malaxeur pour une 
+ * commande donnée.
+ * @return 0
+ */
 int calcul_qte_agregat(){
 	float V, D, agregat_1, agregat_2, agregat_3;
 	int B;
 	
 	while(1){
+		//	**************  Attente du signal de lancement des calculs  **************** //
 		semTake(sem_calcul_agregat, WAIT_FOREVER);
 
-//----------------Lecture des valeurs B, V, D dans le tampon_cmd
+		//	**************	lecture des valeurs B, V, D de la commande en cours  **************** //
 		B = lire_tampon_cmd_cmd_agregat_en_cours_beton();
 		V = lire_tampon_cmd_cmd_agregat_en_cours_volume();
 		D = lire_tampon_cmd_cmd_agregat_en_cours_distance();
 
-//----------------Calcul des quantités d'agrégats voulues selon la valeur de B
+		//	**************	calcul de la quantité d'agrégat à verser selon le type de béton (B)  **************** //
 		switch(B){
 			case 1:
 				agregat_1 = beton_type_1.agregat_1/100.0*V;
@@ -236,25 +299,34 @@ int calcul_qte_agregat(){
 				return PB;
 		}
 		
-//----------------Ecriture des quantités dans le tampon_qte
+		//	**************	écriture de cette faleur dans tampon_qte_silo  **************** //
 		ecrire_tampon_qte_silos_agregat(1, agregat_1);
 		ecrire_tampon_qte_silos_agregat(2, agregat_2);
 		ecrire_tampon_qte_silos_agregat(3, agregat_3);
-	
-//----------------Signale la tache "gestion remplissage et versement silos" que le tampon_qte a été mis à jour
+		
+		//	**************	Signale au gestionnaire de versement des agrégats que le tampon_qte_silo a été mis à jour pour les agrégats.  **************** //
 		semGive(sem_demande_versement_agregat);
 	}
 	
 	return 0;
 }
+
+/*
+ * calcul_qte_ciment() : 	tâche gérant le calcul de la quantité de ciment à verser dans le malaxeur pour une 
+ * commande donnée.
+ * Fonctionnement similaire à calcul_qte_agregat
+ * @return 0
+ */
 int calcul_qte_ciment(){
 	float V, D, ciment_1, ciment_2;
 	int B;
 	
 	while(1){
-		semTake(sem_calcul_ciment, WAIT_FOREVER);
 		
-//----------------Lecture des valeurs B, V, D dans le tampon_cmd
+		//	**************  Attente du signal de lancement des calculs  **************** //
+		semTake(sem_calcul_ciment, WAIT_FOREVER);
+	
+		//	**************	lecture des valeurs B, V, D de la commande en cours  **************** //
 		B = lire_tampon_cmd_cmd_ciment_en_cours_beton();
 		V = lire_tampon_cmd_cmd_ciment_en_cours_volume();
 		D = lire_tampon_cmd_cmd_ciment_en_cours_distance();
@@ -262,7 +334,8 @@ int calcul_qte_ciment(){
 		//printf("B : %d\n", B);
 		//printf("V : %f\n", V);
 		//printf("D : %f\n", D);
-//----------------Calcul des quantités d'agrégats voulues selon la valeur de B
+		
+		//	**************	calcul de la quantité de ciment à verser selon le type de béton (B)  **************** //
 		switch(B){
 			case 1:
 				ciment_1 = beton_type_1.ciment_1/100.0*V;
@@ -280,37 +353,45 @@ int calcul_qte_ciment(){
 				printf("calcul_qte_ciment : default case !\n");
 				return PB;
 		}
-//----------------Ecriture des quantités dans le tampon_qte
+
+		//	**************	écriture de cette faleur dans tampon_qte_silo  **************** //
 		ecrire_tampon_qte_silos_ciment(1, ciment_1);
 		ecrire_tampon_qte_silos_ciment(2, ciment_2);
 	
 		//printf("Quantité ciment 1: %f\n", ciment_1);
 		//printf("Quantité ciment 2: %f\n", ciment_2);
 			
-//----------------Signale la tache "gestion remplissage et versement silos" que le tampon_qte a été mis à jour
+		//	**************	Signale au gestionnaire de versement des ciments que le tampon_qte_silo a été mis à jour pour les ciments.  **************** //
 		semGive(sem_demande_versement_ciment);
 	}
 	
 	return 0;
 }
 
+/*
+ * versement_agrégat() : tâche gérant le versement du contenu des silos des agrégats dans la balance.
+ * @return 0
+ */
 int versement_agregat(){
 	//Numéro du silo à ouvrir
 	int num_silo_entier;
 	char num_silo[256];
 	
 	while(1){
-		//Attente de la demande de versement d'agregat
+		//	**************	Attente du signal de début de versement (depuis le calcul_qte_agregat)  **************** //
 		semTake(sem_demande_versement_agregat, WAIT_FOREVER);
 		
+		//	**************	On verse les silos 1 à 1  **************** //
 		for (num_silo_entier = 1; num_silo_entier <= 3; num_silo_entier += 1) {
+			
 			sprintf(num_silo, "%d", num_silo_entier);
-			//Signal de début de versement à la balance
+
+			//	**************	Signal de début de versement à la balance **************** //
 			msgQSend(file_debut_remplissage_balance_agregat, num_silo, sizeof num_silo, WAIT_FOREVER, MSG_PRI_NORMAL);
 			
 			printf("Debut versement silo agregat %d.\n", num_silo_entier);
 			
-			//Ouverture du silo num_silo
+			//	**************	Ouverture du silo num_silo **************** //
 			switch (num_silo_entier){
 			case 1:
 				OuvrirVanne(cst_vanne_bas_agregat_1);
@@ -326,7 +407,7 @@ int versement_agregat(){
 			
 			printf("Fin versement silo agregat %d.\n", num_silo_entier);
 						
-			//Fermeture du silo num_silo
+			//	**************	Fermeture du silo num_silo  **************** //
 			switch (num_silo_entier){
 			case 1:
 				FermerVanne(cst_vanne_bas_agregat_1);
@@ -339,30 +420,43 @@ int versement_agregat(){
 				break;
 			}
 		}
-		//Ici tous les silos d'agregat ont été versés
-		semGive(sem_pret_balance_agregat);	//Signal balance agr prête pour synchro
-		
-		semTake(sem_ouverture_balance_agregat, WAIT_FOREVER);	//Attente de l'ordre d'ouverture
+		/* Ici tous les silos d'agregat ont été versés
+		 * Signal balance agr prête pour synchro
+		 */
+		semGive(sem_pret_balance_agregat);
+
+		//	**************	Attente de l'ordre d'ouverture et de démarrage des tapis **************** //
+		semTake(sem_ouverture_balance_agregat, WAIT_FOREVER);	
 		DemarrageTapis(cst_tapis_agregat);
 		OuvrirBalance(cst_balance_agregat);
 	}
 	return 0;
 }
+
+/*
+ * remplissage_agregat_1() : tâche gérant le remplissage du silo d'agrégat 1 quant le silo est vide
+ * @return 0
+ */
 int remplissage_agregat_1(){
-	//Initialisation du système, remplissage du silo
+	
+	//	**************	Initialisation du système, remplissage du silo **************** //
 	OuvrirVanne(cst_vanne_haut_agregat_1);
 	
-	//Attente de l'évènement silo plein
+	//	**************	Attente de l'évènement silo plein **************** //
 	semTake(sem_int_max_agr_1, WAIT_FOREVER);
 	
 	FermerVanne(cst_vanne_haut_agregat_1);
 	
 	semGive(sem_init_remplissage_silo_agr_1);
+	
+	//	**************	Core de la tâche **************** //
 	while(1){
+		//	**************	Attente de l'événement de silo vide **************** //
 		semTake(sem_int_min_agr_1, WAIT_FOREVER);
 		
 		OuvrirVanne(cst_vanne_haut_agregat_1);
 		
+		//	**************	Attente de l'évènement silo plein **************** //
 		semTake(sem_int_max_agr_1, WAIT_FOREVER);
 		
 		FermerVanne(cst_vanne_haut_agregat_1);
@@ -370,6 +464,12 @@ int remplissage_agregat_1(){
 	
 	return 0;
 }
+
+/*
+ * remplissage_agregat_2() : tâche gérant le remplissage du silo d'agrégat 2 quant le silo est vide
+ * fonctionnement identique à remplissage_agregat_1()
+ * @return 0
+ */
 int remplissage_agregat_2(){
 	//Initialisation du système, remplissage du silo
 	OuvrirVanne(cst_vanne_haut_agregat_2);
@@ -393,6 +493,12 @@ int remplissage_agregat_2(){
 		
 	return 0;
 }
+
+/*
+ * remplissage_agregat_3() : tâche gérant le remplissage du silo d'agrégat 3 quant le silo est vide
+ * fonctionnement identique à remplissage_agregat_1()
+ * @return 0
+ */
 int remplissage_agregat_3(){
 	//Initialisation du système, remplissage du silo
 	OuvrirVanne(cst_vanne_haut_agregat_3);
@@ -417,22 +523,29 @@ int remplissage_agregat_3(){
 	return 0;
 }
 
+/*
+ * versement_ciment() : tâche gérant le versement des ciments dans la balance.
+ * @return 0
+ */
 int versement_ciment(){
-	//Numéro du silo à ouvrir
+	
+	//	**************	Numéro du silo à ouvrir **************** //
 	int num_silo_entier;
 	char num_silo[256];
 	
 	while(1){
-		//Attente de la demande de versement d'agregat
+		
+		//	**************	Attente de la demande de versement des ciments **************** //
+		Numéro du silo à ouvrir
 		semTake(sem_demande_versement_ciment, WAIT_FOREVER);
 		
 		for (num_silo_entier = 1; num_silo_entier <= 2; num_silo_entier += 1) {
 			sprintf(num_silo, "%d", num_silo_entier);
 			
-			//Signal de début de versement à la balance
+			//	**************	Signal de début de versement à la balance **************** //
 			msgQSend(file_debut_remplissage_balance_ciment, num_silo, sizeof num_silo, WAIT_FOREVER, MSG_PRI_NORMAL);
 			
-			//Ouverture du silo num_silo
+			//	**************	Ouverture du silo num_silo **************** //
 			switch (num_silo_entier){
 			case 1:
 				OuvrirVanne(cst_vanne_bas_ciment_1);
@@ -444,7 +557,7 @@ int versement_ciment(){
 			
 			semTake(sem_fin_remplissage_balance_ciment, WAIT_FOREVER);
 			
-			//Fermeture du silo num_silo
+			//	**************	Fermeture du silo num_silo **************** //
 			switch (num_silo_entier){
 			case 1:
 				FermerVanne(cst_vanne_bas_ciment_1);
@@ -454,10 +567,14 @@ int versement_ciment(){
 				break;
 			}
 		}
-		//Ici tous les silos d'agregat ont été versés
-		semGive(sem_pret_balance_ciment);	//Signal balance agr prête pour synchro
+
+		/* Si tous les silos d'agregat ont été versés
+		 * Signal balance agr prête pour synchro
+		 */
+		semGive(sem_pret_balance_ciment);	
 		
-		semTake(sem_ouverture_balance_ciment, WAIT_FOREVER);	//Attente de l'ordre d'ouverture
+		//	**************	Attente de l'ordre d'ouverture  **************** //
+		semTake(sem_ouverture_balance_ciment, WAIT_FOREVER);
 		DemarrageTapis(cst_tapis_ciment);
 		OuvrirBalance(cst_balance_ciment);
 	}
