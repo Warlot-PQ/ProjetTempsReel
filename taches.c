@@ -82,7 +82,7 @@ int gestion_IHM(){
 	}
 	return 0;
 }
-int gestion_evenement_malax(){
+int gestion_evenement_fin_malax(){
 	int cmd_plus_recente, cmd_en_cours, index_boucle;
 	
 	while(1){
@@ -113,7 +113,7 @@ int gestion_evenement_malax(){
 	}
 	return 0;
 }
-int gestion_evenement_agregat(){
+int gestion_evenement_fin_agregat(){
 	int cmd_plus_recente, cmd_en_cours;
 	
 	while(1){
@@ -130,7 +130,7 @@ int gestion_evenement_agregat(){
 	
 	return 0;
 }
-int gestion_evenement_ciment(){
+int gestion_evenement_fin_ciment(){
 	int cmd_plus_recente, cmd_en_cours;
 		
 	while(1){
@@ -147,7 +147,7 @@ int gestion_evenement_ciment(){
 		
 	return 0;
 }
-int gestion_evenement_eau(){
+int gestion_evenement_fin_eau(){
 	while(1){
 		semTake(sem_fin_eau, WAIT_FOREVER);
 		
@@ -500,7 +500,7 @@ int remplissage_ciment_2(){
 	return 0;
 }
 
-int gestion_balance_agregats(){
+int gestion_quantite_balance_agregats(){
 	int num_silo_entier = 0, versement = 1;
 	char num_silo[256], buffer[TAILLE_MESSAGE_AFFICHAGE], qte[50];
 
@@ -535,7 +535,7 @@ int gestion_balance_agregats(){
 	}
 	return 0;
 }
-int gestion_balance_ciment(){
+int gestion_quantite_balance_ciment(){
 	int num_silo_entier = 0, versement = 1;		//Numéro du silo en cours de versement
 	char num_silo[256], buffer[TAILLE_MESSAGE_AFFICHAGE], qte[50];
 
@@ -571,7 +571,21 @@ int gestion_balance_ciment(){
 	}
 	return 0;
 }
-int gestion_synchro(){
+int arret_et_reprise_versement_balances(){
+	while (1){
+		semTake(sem_stop_bal_tapis_agrEtCim, WAIT_FOREVER);
+		FermerBalance(cst_balance_agregat);
+		FermerBalance(cst_balance_ciment);
+		
+		semTake(sem_reprise_bal_tapis_agrEtCim, WAIT_FOREVER);
+		OuvrirBalance(cst_balance_agregat);
+		OuvrirBalance(cst_balance_ciment);
+	}
+	
+	return 0;
+}
+
+int gestion_synchro_balances(){
 	int cmd_agr_en_cours, cmd_cim_en_cours, cmd_en_cours;
 	
 	while (1){
@@ -727,7 +741,7 @@ int gestion_position_camion(){
 	
 	return 0;
 }
-int gestion_versement(){
+int gestion_versement_malaxeur(){
 	while(1){
 		semTake(sem_position_camion_ok, WAIT_FOREVER);
 		semTake(sem_fin_versement_eau, WAIT_FOREVER);
@@ -742,7 +756,7 @@ int gestion_versement(){
 	
 	return 0;
 }
-int gestion_moteur(){
+int gestion_moteur_malaxeur(){
 	int Imax_atteint,vitesse,temps_sans_fluctuation, temps_malaxage_apres_fin_eau;
 	char buffer_file_intensite[10], buffer_file_vitesse[10], buffer[TAILLE_MESSAGE_AFFICHAGE], temps_malaxage_apres_fin_eau_s[50];
 	float intensite, intensite_avant;

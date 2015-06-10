@@ -154,17 +154,17 @@ int main(){
 		                0x100,2000,(FUNCPTR) gestion_IHM,
 		                0,0,0,0,0,0,0,0,0,0);
 	
-	taskSpawn("gestion_evenement_malax",200,
-			                0x100,2000,(FUNCPTR) gestion_evenement_malax,
+	taskSpawn("gestion_evenement_fin_malax",200,
+			                0x100,2000,(FUNCPTR) gestion_evenement_fin_malax,
 			                0,0,0,0,0,0,0,0,0,0);
-	taskSpawn("gestion_evenement_agregat",200,
-			                0x100,2000,(FUNCPTR) gestion_evenement_agregat,
+	taskSpawn("gestion_evenement_fin_agregat",200,
+			                0x100,2000,(FUNCPTR) gestion_evenement_fin_agregat,
 			                0,0,0,0,0,0,0,0,0,0);
-	taskSpawn("gestion_evenement_ciment",200,
-			                0x100,2000,(FUNCPTR) gestion_evenement_ciment,
+	taskSpawn("gestion_evenement_fin_ciment",200,
+			                0x100,2000,(FUNCPTR) gestion_evenement_fin_ciment,
 			                0,0,0,0,0,0,0,0,0,0);
-	taskSpawn("gestion_evenement_eau",200,
-			                0x100,2000,(FUNCPTR) gestion_evenement_eau,
+	taskSpawn("gestion_evenement_fin_eau",200,
+			                0x100,2000,(FUNCPTR) gestion_evenement_fin_eau,
 			                0,0,0,0,0,0,0,0,0,0);
 	taskSpawn("calcul_qte_eau",200,
 			                0x100,2000,(FUNCPTR) calcul_qte_eau,
@@ -202,14 +202,17 @@ int main(){
 			                0x100,2000,(FUNCPTR) remplissage_ciment_2,
 			                0,0,0,0,0,0,0,0,0,0);
 	
-	taskSpawn("gestion_balance_agregats",200,
-			                0x100,2000,(FUNCPTR) gestion_balance_agregats,
+	taskSpawn("gestion_quantite_balance_agregats",200,
+			                0x100,2000,(FUNCPTR) gestion_quantite_balance_agregats,
 			                0,0,0,0,0,0,0,0,0,0);
-	taskSpawn("gestion_balance_ciment",200,
-			                0x100,2000,(FUNCPTR) gestion_balance_ciment,
+	taskSpawn("gestion_quantite_balance_ciment",200,
+			                0x100,2000,(FUNCPTR) gestion_quantite_balance_ciment,
 			                0,0,0,0,0,0,0,0,0,0);
-	taskSpawn("gestion_synchro",200,
-			                0x100,2000,(FUNCPTR) gestion_synchro,
+	taskSpawn("arret_et_reprise_versement_balances",200,
+			                0x100,2000,(FUNCPTR) arret_et_reprise_versement_balances,
+			                0,0,0,0,0,0,0,0,0,0);
+	taskSpawn("gestion_synchro_balances",200,
+			                0x100,2000,(FUNCPTR) gestion_synchro_balances,
 			                0,0,0,0,0,0,0,0,0,0);
 	
 	taskSpawn("versement_eau",200,
@@ -224,11 +227,11 @@ int main(){
 			                0x100,2000,(FUNCPTR) gestion_position_camion,
 			                0,0,0,0,0,0,0,0,0,0);
 	
-	taskSpawn("gestion_versement",200,
-			                0x100,2000,(FUNCPTR) gestion_versement,
+	taskSpawn("gestion_versement_malaxeur",200,
+			                0x100,2000,(FUNCPTR) gestion_versement_malaxeur,
 			                0,0,0,0,0,0,0,0,0,0);
-	taskSpawn("gestion_moteur",200,
-			                0x100,2000,(FUNCPTR) gestion_moteur,
+	taskSpawn("gestion_moteur_malaxeur",200,
+			                0x100,2000,(FUNCPTR) gestion_moteur_malaxeur,
 			                0,0,0,0,0,0,0,0,0,0);
 	//Réautorise la réquisition
 	taskUnlock();
