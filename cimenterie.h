@@ -10,7 +10,7 @@
 #define NB_COMMANDE 										10
 #define NB_SILOS 											6
 #define MAX_MESSAGE_AFFICHAGE								20
-#define TAILLE_MESSAGE_AFFICHAGE							512
+#define TAILLE_MESSAGE_AFFICHAGE							1024
 #define PB 													-1
 #define LOCAL												static
 
@@ -50,6 +50,8 @@ int tampon_fonct_calcul[5];
 
 char buffer_affichage[MAX_MESSAGE_AFFICHAGE][TAILLE_MESSAGE_AFFICHAGE];
 int message_plus_recent = 0;
+
+char message_affichage_persistant[TAILLE_MESSAGE_AFFICHAGE];
 
 //----------------Information sur le versement de l'eau
 int versement_eau_possible;

@@ -29,7 +29,12 @@ int tache_moteur = INACTIF;
 
 void OuvrirVanne(char* vanne){
 	int valeur;
-	printf("Ouverture vanne : %s\n", vanne);
+	char buffer[TAILLE_MESSAGE_AFFICHAGE];
+
+	strcpy(buffer, "Ouverture vanne : ");
+	strcat(buffer, vanne);
+	
+	ajouter_message_affichage(buffer);
 	
 	//Vannes bas
 	if (strcmp(vanne, cst_vanne_bas_agregat_1) == 0
@@ -124,14 +129,19 @@ void OuvrirVanne(char* vanne){
 				eau_remplissage_en_cours = ACTIF;
 			}
 		} else {
-			printf("ERREUR, COMMANDE INCOMPRISE\n");
+			ajouter_message_affichage("ERREUR, COMMANDE INCOMPRISE");
 		}
 	}
 }
 
 void FermerVanne(char* vanne){
 	int valeur = 0;
-	//printf("Fermeture vanne : %s\n", vanne);
+	char buffer[TAILLE_MESSAGE_AFFICHAGE];
+
+	strcpy(buffer, "Fermeture vanne : ");
+	strcat(buffer, vanne);
+	
+	ajouter_message_affichage(buffer);
 	
 	//Vannes bas
 	if (strcmp(vanne, cst_vanne_bas_agregat_1) == 0
@@ -209,7 +219,7 @@ void FermerVanne(char* vanne){
 			eau_remplissage_en_cours = INACTIF;
 			taskDelete(tache_remplissage_eau);
 		} else {
-			printf("ERREUR, COMMANDE INCOMPRISE\n");
+			ajouter_message_affichage("ERREUR, COMMANDE INCOMPRISE");
 		}
 	}
 }
@@ -230,16 +240,21 @@ void OuvrirRobinet(char *vanne, int ouverture){
 }
 
 void DemarrageTapis(char *tapis){
-	printf("\n********** Démarrage du tapis *************\n");
+	ajouter_message_affichage("********** Démarrage du tapis *************");
 }
 
 void ArretTapis(char *tapis){
-	printf("\n********** Arret du tapis *************\n");
+	ajouter_message_affichage("********** Arret du tapis *************");
 }
 
 void OuvrirBalance(char *balance){
 	int valeur;
-	printf("Ouverture balance : %s\n", balance);
+	char buffer[TAILLE_MESSAGE_AFFICHAGE];
+
+	strcpy(buffer, "Ouverture balance : ");
+	strcat(buffer, balance);
+	
+	ajouter_message_affichage(buffer);
 	
 	//Balance
 	if (strcmp(balance, cst_balance_agregat) == 0){
@@ -257,13 +272,18 @@ void OuvrirBalance(char *balance){
 			balance_ciment_versement_en_cours = ACTIF;
 		}
 	} else {
-		printf("ERREUR, COMMANDE INCOMPRISE\n");
+		ajouter_message_affichage("ERREUR, COMMANDE INCOMPRISE");
 	}
 }
 
 void FermerBalance(char *balance){
 	int valeur;
-	printf("Fermeture balance : %s\n", balance);
+	char buffer[TAILLE_MESSAGE_AFFICHAGE];
+	
+	strcpy(buffer, "Fermeture balance : ");
+	strcat(buffer, balance);
+	
+	ajouter_message_affichage(buffer);
 	
 	//Balance
 	if (strcmp(balance, cst_balance_agregat) == 0){
@@ -277,28 +297,28 @@ void FermerBalance(char *balance){
 			balance_ciment_versement_en_cours = INACTIF;
 		}
 	} else {
-		printf("ERREUR, COMMANDE INCOMPRISE\n");
+		ajouter_message_affichage("ERREUR, COMMANDE INCOMPRISE");
 	}
 }
 
 void AllumerDiodePositionCamion(){
 	diode_position_camion = 1;
-	printf("\n********** diode_position_camion allumée *************\n");
+	ajouter_message_affichage("********** diode_position_camion allumée *************");
 }
 
 void EteindreDiodePositionCamion(){
 	diode_position_camion = 0;
-	printf("\n********** diode_position_camion éteinte *************\n");
+	ajouter_message_affichage("********** diode_position_camion éteinte *************");
 }
 
 void AllumerDiodeMalaxeur(){
 	diode_malaxeur = 1;
-		printf("\n********** diode_malaxeur allumée *************\n");
+	ajouter_message_affichage("********** diode_malaxeur allumée *************");
 }
 
 void EteindreDiodeMalaxeur(){
 	diode_malaxeur = 0;
-		printf("\n********** diode_malaxeur éteinte *************\n");
+		ajouter_message_affichage("********** diode_malaxeur éteinte *************");
 }
 
 void consigne_moteur(int vitesse_voulue){
@@ -316,10 +336,8 @@ int getPresence(){
 	if(timer_getPresence < 5){
 		taskDelay(100);
 		timer_getPresence = timer_getPresence + 1;
-		//printf("timer_getPresence : %d\n", timer_getPresence);
 		return 0;
 	}else{
-		//printf("timer_getPresence : %d\n", timer_getPresence);
 		return 1;
 	}
 }
@@ -332,7 +350,6 @@ int getVmot(){
 	int vitesse;
 	semTake(sem_vitesse_moteur, WAIT_FOREVER);
 	vitesse = vitesse_moteur;
-	//printf("vitesse_moteur : %d\n", vitesse);
 	semGive(sem_vitesse_moteur);
 	
 	return vitesse;
@@ -344,37 +361,28 @@ float getImot(){
 	
 	vitesse = getVmot();
 	intensite = (float)(couple_moteur*vitesse)/tension_moteur;
-	//printf("intensite du moteur : %f\n", intensite);
 	return intensite;
 }
 
 int driver_moteur(int vitesse_voulue){
 	float coefficient_directeur;
-	//printf("driver_moteur\n");
 	coefficient_directeur = (vitesse_voulue - vitesse_moteur)/5.0;
 	while(1){
 		if (moteur_en_cours != INACTIF) {
 			while(vitesse_moteur != vitesse_voulue){
-				//printf("VITESSE VOULUE : %d\n\n", vitesse_voulue);
 				taskDelay(sysClkRateGet() *1);
 				semTake(sem_vitesse_moteur, WAIT_FOREVER);
-				//printf("driver_moteur : prise du jeton \n");
+				
 				if (vitesse_voulue > vitesse_moteur){
 					vitesse_moteur = vitesse_moteur + coefficient_directeur;
 				}
-				
-				//printf("Vitesse moteur actuelle : %d\n", vitesse_voulue);
 				
 				if (vitesse_voulue < vitesse_moteur){
 								vitesse_moteur = vitesse_moteur - coefficient_directeur;
 				}
 				semGive(sem_vitesse_moteur);
-				//printf("driver_moteur : vitesse moteur = %d \n", vitesse_moteur);
-				//printf("driver_moteur : vitesse voulue = %d \n", vitesse_voulue);
-				//printf("driver_moteur : rend le jeton \n");
 			}
 			
-			//printf("driver_moteur : taskDelete\n");
 			moteur_en_cours = INACTIF;
 			taskDelete(taskIdSelf());
 		}
@@ -491,7 +499,6 @@ int driver_remplissage_silo_agregat(){
 				capacite_silo_agregat_courrante[i] += UNITE_VOLUME_REMPLISSAGE;
 				//Test silo vide, si oui envoie le signal du capteur silo vide
 				if (capacite_silo_agregat_courrante[i] >= NIVEAU_AGREGAT_MAX){
-					//printf("Capa max agregat %d : %d/%d ", i, capacite_silo_agregat_courrante[i],NIVEAU_AGREGAT_MAX);
 					switch(i){
 					case 0:
 						capteur_plein_silo_agregat_1();
@@ -522,7 +529,6 @@ int driver_remplissage_silo_ciment(){
 				capacite_silo_ciment_courrante[i] += UNITE_VOLUME_REMPLISSAGE;
 				//Test silo vide, si oui envoie le signal du capteur silo vide
 				if (capacite_silo_ciment_courrante[i] >= NIVEAU_CIMENT_MAX){
-					//printf("Capa max ciment %d : %d/%d ", i, capacite_silo_ciment_courrante[i],NIVEAU_CIMENT_MAX);
 					switch(i){
 					case 0:
 						capteur_plein_silo_ciment_1();
@@ -549,7 +555,6 @@ int driver_remplissage_silo_eau(){
 		capteur_plus_eau();
 		//Test silo vide, si oui envoie le signal du capteur silo vide
 		if (capacite_silo_eau_courrante >= NIVEAU_EAU_MAX){
-			//printf("Capa max eau : %d/%d ", capacite_silo_eau_courrante, NIVEAU_EAU_MAX);
 			capteur_plein_eau();
 		}
 		semGive(sem_capacite_silo_eau_courrante);
@@ -635,6 +640,12 @@ int driver_affichage_test(){
 				printf("%s\n", get_message_affichage(index_aff));
 			}
 		}
+
+		printf("\n");
+		
+		printf("%s\n", get_message_affichage_persistant());
+		
+		printf("\n");
 		
 		//Affichage des nom des silos
 		affiche_silo(long_silo, capa_silo, acti_silo_vers, acti_silo_rempl, 'r');

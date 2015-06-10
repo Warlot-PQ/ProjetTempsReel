@@ -7,11 +7,11 @@
 #include <errno.h>
 
 int gestion_IHM(){
-	float valeur_volume;
+	float valeur_volume, valeur_distance;
 	int valeur_beton, premier_essai = 1;
-	float valeur_distance;
+	char buffer[TAILLE_MESSAGE_AFFICHAGE], valeur_volume_s[50], valeur_beton_s[50], valeur_distance_s[50];
 	
-	printf("Initialisation de la cimenterie, remplissage des silos\n");
+	ajouter_message_affichage("Initialisation de la cimenterie, remplissage des silos\n");
 	semTake(sem_init_remplissage_silo_agr_1, WAIT_FOREVER);
 	semTake(sem_init_remplissage_silo_agr_2, WAIT_FOREVER);
 	semTake(sem_init_remplissage_silo_agr_3, WAIT_FOREVER);
@@ -26,11 +26,11 @@ int gestion_IHM(){
 				ajouter_message_affichage("Vous pouvez répéter la question ?\n");
 			}
 			
-			ajouter_message_affichage("Entrez le volume de béton souhaité :\n");
+			ajouter_message_affichage_persistant("Entrez le volume de béton souhaité :\n");
 			scanf("%f", &valeur_volume);
-			ajouter_message_affichage("Entrez le type de béton souhaité (1,2,3) :\n");
+			ajouter_message_affichage_persistant("Entrez le type de béton souhaité (1,2,3) :\n");
 			scanf("%d", &valeur_beton);
-			ajouter_message_affichage("Entrez la distance à parcourir :\n");
+			ajouter_message_affichage_persistant("Entrez la distance à parcourir :\n");
 			scanf("%f", &valeur_distance);
 			premier_essai = 0;
 			vider_messages_affichage();
@@ -41,7 +41,7 @@ int gestion_IHM(){
 		premier_essai = 1;
 		
 		if (tampon_fonct_calcul_plein() == PB){
-			printf("Nombre maximum de commande en cours de traitement atteint !\n");
+			ajouter_message_affichage("Nombre maximum de commande en cours de traitement atteint !\n");
 		} else {
 			//Signale que l'arrivée d'une commande plus recente
 			incremente_tampon_fonct_calcul_cmd_plus_recente();
@@ -55,13 +55,24 @@ int gestion_IHM(){
 				//Fixe la commande en cours comme étant la première
 				set_tampon_fonct_calcul_premiere_cmd();
 				
-				printf("Démarrage de la commande V %f, B %d, D %f", valeur_volume, valeur_beton, valeur_distance);
+				sprintf(valeur_volume_s, "%f", valeur_volume);
+				sprintf(valeur_beton_s, "%d", valeur_beton);
+				sprintf(valeur_distance_s, "%f", valeur_distance);
+				
+				strcpy(buffer, "Démarrage de la commande V : ");
+				strcat(buffer, valeur_volume_s);
+				strcat(buffer, ", B : ");
+				strcat(buffer, valeur_beton_s);
+				strcat(buffer, ", D : ");
+				strcat(buffer, valeur_distance_s);
+				
+				ajouter_message_affichage(buffer);
 				
 				semGive(sem_calcul_agregat);
 				semGive(sem_calcul_ciment);
 				semGive(sem_calcul_eau);
 			} else {
-				printf("ERREUR %d\n", is_tampon_fonct_calcul_premiere_cmd());
+				// ne rien faire, déclenchement automatique de la commande suivante avec la fin de la commande en cours
 			}
 		}
 	}
@@ -148,12 +159,8 @@ int calcul_qte_eau(){
 	while(1){
 		semTake(sem_calcul_eau, WAIT_FOREVER);
 		hygrometrie = getHygrometrie();
-		//printf("hygronometrie : %d\n", hygrometrie);
 //----------------Lecture des valeurs B, V, D dans le tampon_cmd		
 	
-		//printf("cmd en cours : %d\n\n", lire_tampon_fonct_calcul_cmd_en_cours());
-		//printf("type de béton : %d\n\n", lire_tampon_cmd_cmd_plus_recent_beton());
-		
 		B = lire_tampon_cmd_cmd_eau_en_cours_beton();
 		V = lire_tampon_cmd_cmd_eau_en_cours_volume();
 		D = lire_tampon_cmd_cmd_eau_en_cours_distance();
@@ -171,14 +178,12 @@ int calcul_qte_eau(){
 					qte_eau = beton_type_3.eau/100.0*V - HYGROMETRIE/100.0*beton_type_3.agregat_1/100*V + k_hygronometrie*D;
 				break;
 			default:
-				printf("calcul_qte_agregat : default case !\n");
+				ajouter_message_affichage("calcul_qte_agregat : default case !");
 				return PB;
 		}
 //----------------Ecriture dans tampon_qte
 		ecrire_tampon_qte_silos_eau(qte_eau);
 
-		//printf("Quantité eau: %f\n", qte_eau);
-		
 //----------------Signale la tache "gestion synchro" que le système traite la commande suivante 	
 		semGive(sem_cmd_en_cours);
 	}
@@ -214,7 +219,7 @@ int calcul_qte_agregat(){
 				agregat_3 = beton_type_3.agregat_3/100.0*V;
 				break;
 			default:
-				printf("calcul_qte_agregat : default case !\n");
+				ajouter_message_affichage("calcul_qte_agregat : default case !");
 				return PB;
 		}
 		
@@ -241,9 +246,6 @@ int calcul_qte_ciment(){
 		V = lire_tampon_cmd_cmd_ciment_en_cours_volume();
 		D = lire_tampon_cmd_cmd_ciment_en_cours_distance();
 
-		//printf("B : %d\n", B);
-		//printf("V : %f\n", V);
-		//printf("D : %f\n", D);
 //----------------Calcul des quantités d'agrégats voulues selon la valeur de B
 		switch(B){
 			case 1:
@@ -259,16 +261,13 @@ int calcul_qte_ciment(){
 				ciment_2 = beton_type_3.ciment_2/100.0*V;
 				break;
 			default:
-				printf("calcul_qte_ciment : default case !\n");
+				ajouter_message_affichage("calcul_qte_ciment : default case !");
 				return PB;
 		}
 //----------------Ecriture des quantités dans le tampon_qte
 		ecrire_tampon_qte_silos_ciment(1, ciment_1);
 		ecrire_tampon_qte_silos_ciment(2, ciment_2);
-	
-		//printf("Quantité ciment 1: %f\n", ciment_1);
-		//printf("Quantité ciment 2: %f\n", ciment_2);
-			
+		
 //----------------Signale la tache "gestion remplissage et versement silos" que le tampon_qte a été mis à jour
 		semGive(sem_demande_versement_ciment);
 	}
@@ -280,6 +279,7 @@ int versement_agregat(){
 	//Numéro du silo à ouvrir
 	int num_silo_entier;
 	char num_silo[256];
+	char buffer[MAX_MESSAGE_AFFICHAGE];
 	
 	while(1){
 		//Attente de la demande de versement d'agregat
@@ -290,7 +290,9 @@ int versement_agregat(){
 			//Signal de début de versement à la balance
 			msgQSend(file_debut_remplissage_balance_agregat, num_silo, sizeof num_silo, WAIT_FOREVER, MSG_PRI_NORMAL);
 			
-			printf("Debut versement silo agregat %d.\n", num_silo_entier);
+			strcpy(buffer, "Debut versement silo agregat ");
+			strcat(buffer, num_silo),
+			ajouter_message_affichage(buffer);
 			
 			//Ouverture du silo num_silo
 			switch (num_silo_entier){
@@ -306,7 +308,9 @@ int versement_agregat(){
 			}
 			semTake(sem_fin_remplissage_balance_agregat, WAIT_FOREVER);
 			
-			printf("Fin versement silo agregat %d.\n", num_silo_entier);
+			strcpy(buffer, "Fin versement silo agregat ");
+			strcat(buffer, num_silo),
+			ajouter_message_affichage(buffer);
 						
 			//Fermeture du silo num_silo
 			switch (num_silo_entier){
@@ -493,9 +497,8 @@ int remplissage_ciment_2(){
 }
 
 int gestion_balance_agregats(){
-	int num_silo_entier = 0;		//Numéro du silo en cours de versement
-	char num_silo[256];
-	int versement = 1;
+	int num_silo_entier = 0, versement = 1;
+	char num_silo[256], buffer[TAILLE_MESSAGE_AFFICHAGE], qte[50];
 
 	while (1){
 		msgQReceive(file_debut_remplissage_balance_agregat, num_silo, sizeof num_silo, WAIT_FOREVER);
@@ -505,7 +508,11 @@ int gestion_balance_agregats(){
 		while(versement == 1){
 			semTake(sem_int_plus_bal_agr, WAIT_FOREVER);
 
-			printf("Quantité restante : %f\n", lire_tampon_qte_silos_agregat(num_silo_entier));
+			sprintf(qte, "%f", lire_tampon_qte_silos_agregat(num_silo_entier));
+			
+			strcpy(buffer, "Quantité agrégat restante :");
+			strcat(buffer, qte);
+			ajouter_message_affichage(buffer);
 			
 			//Decremente
 			decremente_tampon_qte_silos_agregat(num_silo_entier);
@@ -525,9 +532,8 @@ int gestion_balance_agregats(){
 	return 0;
 }
 int gestion_balance_ciment(){
-	int num_silo_entier = 0;		//Numéro du silo en cours de versement
-	char num_silo[256];
-	int versement = 1;
+	int num_silo_entier = 0, versement = 1;		//Numéro du silo en cours de versement
+	char num_silo[256], buffer[TAILLE_MESSAGE_AFFICHAGE], qte[50];
 
 	while (1){
 		msgQReceive(file_debut_remplissage_balance_ciment, num_silo, sizeof num_silo, WAIT_FOREVER);
@@ -536,6 +542,12 @@ int gestion_balance_ciment(){
 		
 		while(versement == 1){
 			semTake(sem_int_plus_bal_cim, WAIT_FOREVER);
+
+			sprintf(qte, "%f", lire_tampon_qte_silos_ciment(num_silo_entier));
+			
+			strcpy(buffer, "Quantité ciment restante :");
+			strcat(buffer, qte);
+			ajouter_message_affichage(buffer);
 			
 			//Decremente
 			decremente_tampon_qte_silos_ciment(num_silo_entier);
@@ -569,7 +581,7 @@ int gestion_synchro(){
 		
 		semTake(sem_cmd_en_cours, WAIT_FOREVER);
 
-		printf("Ouverture des balances, debut versement !\n");
+		ajouter_message_affichage("Ouverture des balances, debut versement !\n");
 		
 		//Ici, le contenu des balances correspond à la cmd en cours
 		//Démarrage du versement des balances
@@ -580,7 +592,7 @@ int gestion_synchro(){
 		semTake(sem_fin_vers_balance_agregat, WAIT_FOREVER);
 		semTake(sem_fin_vers_balance_ciment, WAIT_FOREVER);
 
-		printf("Fermeture des balances, fin versement !\n");
+		ajouter_message_affichage("Fermeture des balances, fin versement !\n");
 
 		//Lancement du malaxeur
 		semGive(sem_debut_malaxeur);
@@ -599,6 +611,8 @@ int gestion_synchro(){
 
 int versement_eau(){
 	int versement = 0;
+	char buffer[TAILLE_MESSAGE_AFFICHAGE], qte[50];
+	
 	versement_eau_en_cours = 0;
 	
 	while(1){
@@ -613,8 +627,13 @@ int versement_eau(){
 		
 		while(versement == 1){
 			semTake(sem_int_moins_eau, WAIT_FOREVER);
+
+			sprintf(qte, "%f", lire_tampon_qte_silos_eau());
 			
-			printf("quantité eau restante : %f\n", lire_tampon_qte_silos_eau());
+			strcpy(buffer, "Quantité eau restante :");
+			strcat(buffer, qte);
+			ajouter_message_affichage(buffer);
+			
 			//Decremente
 			decremente_tampon_qte_silos_eau();
 			
@@ -684,7 +703,7 @@ int gestion_position_camion(){
 		
 		while(position_camion_ok == 0){
 			while(getPresence() == 0){
-				printf("\n******** Camion non positionné ! ********\n");
+				ajouter_message_affichage("\n******** Camion non positionné ! ********\n");
 			}
 			EteindreDiodePositionCamion();
 			timer_camion_present = 0;
@@ -692,15 +711,12 @@ int gestion_position_camion(){
 			while((timer_camion_present < 5) && (getPresence() == 1)){
 				taskDelay(100);
 				timer_camion_present = timer_camion_present +1;
-				printf("\n *** CAMION EN POSITION *** \n");
-				//printf("timer_camion_present : %d\n", timer_camion_present);
-				//printf("\n ************************** \n");
+				ajouter_message_affichage("\n *** CAMION EN POSITION *** \n");
 			}
 			
 			if(timer_camion_present == 5){
 				position_camion_ok = 1;
 				semGive(sem_position_camion_ok);
-				//printf("\n*************** FIN TEST GESTION POSITION CAMION ***************\n");
 			}
 		}
 	}
@@ -708,7 +724,6 @@ int gestion_position_camion(){
 	return 0;
 }
 int gestion_versement(){
-	//printf("\n*************** TEST GESTION_VERSEMENT MALAXEUR ***************\n");
 	while(1){
 		semTake(sem_position_camion_ok, WAIT_FOREVER);
 		semTake(sem_fin_versement_eau, WAIT_FOREVER);
@@ -716,8 +731,8 @@ int gestion_versement(){
 		OuvrirVanne(cst_vanne_malaxeur);
 		semTake(sem_vide_malaxeur, WAIT_FOREVER);
 		FermerVanne(cst_vanne_malaxeur);
-		//printf("\n*************** FIN TEST GESTION_VERSEMENT MALAXEUR ***************\n");
-		printf("FINIIIIIIIII\n");
+		
+		ajouter_message_affichage("Commande terminée.\n");
 		semGive(sem_fin_malaxeur);
 	}
 	
@@ -725,8 +740,7 @@ int gestion_versement(){
 }
 int gestion_moteur(){
 	int Imax_atteint,vitesse,temps_sans_fluctuation, temps_malaxage_apres_fin_eau;
-	char buffer_file_intensite[10];
-	char buffer_file_vitesse[10];
+	char buffer_file_intensite[10], buffer_file_vitesse[10], buffer[TAILLE_MESSAGE_AFFICHAGE], temps_malaxage_apres_fin_eau_s[50];
 	float intensite, intensite_avant;
 	
 	//semGive(sem_stupide);
@@ -747,27 +761,20 @@ int gestion_moteur(){
 			vitesse = getVmot();
 			intensite  = getImot();
 			
-			//printf("Vitesse moteur : %d\n", vitesse);
-			
 			sprintf(buffer_file_intensite, "%f", intensite);
-			//msgQSend(file_intensite, buffer_file_intensite, 10, WAIT_FOREVER, MSG_PRI_NORMAL);
 			
 			if(intensite < 0.8*cste_Imax){
-				//printf("intensite_avant : %f\n", intensite_avant);
 				if(abs(intensite - intensite_avant) < 0.05*intensite_avant){
 					taskDelay(sysClkRateGet() * 1);
 					temps_sans_fluctuation += 1;
 				}else{
 					temps_sans_fluctuation = 0;
 				}
-				printf("\n*** ATTENTE D'HOMOGENEISATION DU MELANGE ***\n");
-				//printf("temps_sans_fluctuation : %d \n",temps_sans_fluctuation);
-				//printf("cste_temps_cst : %d",cste_temps_cst);
-				//printf("\n********************************************\n");
+				ajouter_message_affichage("\n*** ATTENTE D'HOMOGENEISATION DU MELANGE ***\n");
 				intensite_avant = intensite;
 				if(Imax_atteint){
 					EteindreDiodeMalaxeur();
-					printf("\n*** Reprise versement ***\n");
+					ajouter_message_affichage("\n*** Reprise versement ***\n");
 					semGive(sem_reprise_bal_tapis_agrEtCim);
 					Imax_atteint = 0;
 				}
@@ -775,30 +782,24 @@ int gestion_moteur(){
 				if(!Imax_atteint){
 					consigne_moteur(0);
 					Imax_atteint = 1;
-					printf("\n*** Stop versement ***\n");
+					ajouter_message_affichage("\n*** Stop versement ***\n");
 					semGive(sem_stop_bal_tapis_agrEtCim);
 					AllumerDiodeMalaxeur();
 				}
 			}
 		}
 		
-		printf("\n***MELANGE HOMOGENE ***\n");
+		ajouter_message_affichage("\n***MELANGE HOMOGENE ***\n");
 		
-		//printf("temps_sans_fluctuation (fin) : %d \n",temps_sans_fluctuation);
-		//printf("\n*************** FIN TEST GESTION_MOTEUR ***************\n");
 		semGive(sem_melange_homogene);
 		
 		while(temps_malaxage_apres_fin_eau < cste_temps_malaxeur && !Imax_atteint){
 			vitesse = getVmot();
 			intensite  = getImot();
 			
-			//printf("Vitesse moteur : %d\n", vitesse);
-			
 			sprintf(buffer_file_intensite, "%f", intensite);
-			//msgQSend(file_intensite, buffer_file_intensite, 10, WAIT_FOREVER, MSG_PRI_NORMAL);
 			
 			if(intensite < 0.8*cste_Imax){
-				//printf("intensite_avant : %f\n", intensite_avant);
 				if(abs(intensite - intensite_avant) < 0.05*intensite_avant){
 					taskDelay(sysClkRateGet() * 1);
 					temps_sans_fluctuation += 1;
@@ -806,14 +807,19 @@ int gestion_moteur(){
 				}else{
 					temps_sans_fluctuation = 0;
 				}
-				printf("\n*** TEMPS DE MALAXAGE APRES HOMOGENEISATION ET AVANT VERSEMENT DANS LE CAMION ***\n");
-				printf("temps_malaxage_apres_fin_eau : %d \n", temps_malaxage_apres_fin_eau);
-				//printf("cste_temps_cst : %d",cste_temps_cst);
-				//printf("\n********************************************\n");
+				ajouter_message_affichage("\n*** TEMPS DE MALAXAGE APRES HOMOGENEISATION ET AVANT VERSEMENT DANS LE CAMION ***\n");
+				
+				sprintf(temps_malaxage_apres_fin_eau_s, "%d", temps_malaxage_apres_fin_eau);
+				
+				strcpy(buffer, "Temps_malaxage_apres_fin_eau : ");
+				strcat(buffer, temps_malaxage_apres_fin_eau_s);
+				
+				ajouter_message_affichage(buffer);
+				
 				intensite_avant = intensite;
 				if(Imax_atteint){
 					EteindreDiodeMalaxeur();
-					printf("\n*** Reprise versement ***\n");
+					ajouter_message_affichage("\n*** Reprise versement ***\n");
 					semGive(sem_reprise_bal_tapis_agrEtCim);
 					Imax_atteint = 0;
 				}
@@ -821,7 +827,7 @@ int gestion_moteur(){
 				if(!Imax_atteint){
 					consigne_moteur(0);
 					Imax_atteint = 1;
-					printf("\n*** Stop versement ***\n");
+					ajouter_message_affichage("\n*** Stop versement ***\n");
 					semGive(sem_stop_bal_tapis_agrEtCim);
 					AllumerDiodeMalaxeur();
 				}
@@ -830,7 +836,7 @@ int gestion_moteur(){
 		
 		//SI on arrive ici, cela veut dire que soit : le temps de malaxage après la fin du versement de l'eau s'est écoulé, soit l'intensité a dépassé le seuil.
 		if(temps_malaxage_apres_fin_eau == cste_temps_malaxeur){
-			printf("\n*** FIN DE LA TACHE MOTEUR ET DEBUT DE CONTROLE DE POSITIONNEMENT ***\n");
+			ajouter_message_affichage("\n*** FIN DE LA TACHE MOTEUR ET DEBUT DE CONTROLE DE POSITIONNEMENT ***\n");
 			consigne_moteur(0);
 			semGive(sem_debut_camion);
 		}else{

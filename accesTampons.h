@@ -57,4 +57,7 @@ int ajouter_message_affichage(char *);
 int vider_messages_affichage();
 char *get_message_affichage(int);
 
+int ajouter_message_affichage_persistant(char *);
+char *get_message_affichage_persistant();
+
 #endif
