@@ -63,6 +63,7 @@ int main(){
 	sem_fin_versement_eau = semBCreate(SEM_Q_FIFO, 0);
 	sem_fin_malaxeur = semBCreate(SEM_Q_FIFO, 0);
 	sem_debut_malaxeur = semBCreate(SEM_Q_FIFO, 0);
+	sem_attente_fin_eau = semBCreate(SEM_Q_FIFO, SEM_FULL);
 
 	sem_calcul_agregat = semBCreate(SEM_Q_FIFO, 0);
 	sem_calcul_ciment = semBCreate(SEM_Q_FIFO, 0);

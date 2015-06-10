@@ -49,6 +49,7 @@ int tampon_fonct_calcul[5];
 //----------------Information sur le versement de l'eau
 int versement_eau_possible;
 int versement_eau_en_cours;
+int attente_fin_eau;
 
 //----------------Quantite des balances, utiles car nous n'avons pas de capture balance vide
 int qte_contenu_balance_agregat = 0;
@@ -75,6 +76,7 @@ SEM_ID sem_fin_eau;
 SEM_ID sem_fin_versement_eau;
 SEM_ID sem_fin_malaxeur;
 SEM_ID sem_debut_malaxeur;
+SEM_ID sem_attente_fin_eau;
 
 SEM_ID sem_calcul_agregat;
 SEM_ID sem_calcul_ciment;

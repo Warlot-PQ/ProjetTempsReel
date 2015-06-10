@@ -55,7 +55,7 @@ int timer_versement_malaxeur;
 
 #define INACTIF 											-1
 #define ACTIF												0
-#define ATTENTE_ENTRE_DEUX_INT								200
+#define ATTENTE_ENTRE_DEUX_INT								50
 #define UNITE_VOLUME_REMPLISSAGE							50
 #define UNITE_VOLUME_VERSEMENT								1
 

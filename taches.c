@@ -6,10 +6,18 @@
 #include <stdlib.h>
 #include <errno.h>
 
-/*
- *	Vider le terminal : printf("\33[2J"); 
-*/
+/****************************************************************************
+ * 								tache.c										*
+ * L'ensemble des tâches lancées par le système sont regroupées ici.		*
+ * Auteurs : Piere-Quentin WARLOT, Jean-Michel NOKAYA						*																			*
+ * ****************************************************************************/
 
+/*
+ *	gestion_IHM() :	Récupère les informations entrées par l'utilisateur et les
+ * 	stocke dans le tampon tampon_cmd.
+ * 					- Initialisation de la cimenterie : remplissage des silos 1 à 1.
+ * 					
+ */
 int gestion_IHM(){
 	char valeur_volume[20];
 	char valeur_beton[20];
@@ -66,6 +74,11 @@ int gestion_IHM(){
 	}
 	return 0;
 }
+
+/*
+ *	 gestion_evenement_malax() :	Tâche gérant les événement concernant le malaxeur.
+ * 									
+ */
 int gestion_evenement_malax(){
 	int cmd_plus_recente, cmd_en_cours, index_boucle;
 	
@@ -629,6 +642,9 @@ int versement_eau(){
 				OuvrirRobinet(cst_vanne_bas_eau, 0);
 				semGive(sem_fin_versement_eau);
 				semGive(sem_fin_eau);
+				semTake(sem_attente_fin_eau, WAIT_FOREVER);
+				attente_fin_eau = 1;
+				semGive(sem_attente_fin_eau);
 			}
 		}
 	}
@@ -734,7 +750,9 @@ int gestion_moteur(){
 	char buffer_file_intensite[10];
 	char buffer_file_vitesse[10];
 	float intensite, intensite_avant;
-	
+	semTake(sem_attente_fin_eau, WAIT_FOREVER);
+	attente_fin_eau = 0;
+	semGive(sem_attente_fin_eau);
 	//semGive(sem_stupide);
 	while(1){
 		
@@ -743,7 +761,9 @@ int gestion_moteur(){
 		consigne_moteur(cste_vitesse_moteur_max);
 		
 		Imax_atteint = 0;
-		temps_sans_fluctuation = 0;
+		temps_sans_fluctuation = 0;semTake(sem_attente_fin_eau, WAIT_FOREVER);
+		attente_fin_eau = 0;
+		semGive(sem_attente_fin_eau);
 		temps_malaxage_apres_fin_eau = 0;
 		intensite_avant = 0;
 		
@@ -808,14 +828,21 @@ int gestion_moteur(){
 				if(abs(intensite - intensite_avant) < 0.05*intensite_avant){
 					taskDelay(sysClkRateGet() * 1);
 					temps_sans_fluctuation += 1;
-					temps_malaxage_apres_fin_eau += 1;
 				}else{
 					temps_sans_fluctuation = 0;
 				}
-				printf("\n*** TEMPS DE MALAXAGE APRES HOMOGENEISATION ET AVANT VERSEMENT DANS LE CAMION ***\n");
-				printf("temps_malaxage_apres_fin_eau : %d \n", temps_malaxage_apres_fin_eau);
+				semTake(sem_attente_fin_eau, WAIT_FOREVER);
+				if(attente_fin_eau == 1){
+					printf("\n*** TEMPS DE MALAXAGE APRES HOMOGENEISATION ET AVANT VERSEMENT DANS LE CAMION ***\n");
+					printf("temps_malaxage_apres_fin_eau : %d \n", temps_malaxage_apres_fin_eau);
+					temps_malaxage_apres_fin_eau += 1;
 				//printf("cste_temps_cst : %d",cste_temps_cst);
 				//printf("\n********************************************\n");
+				}else{
+					printf("\n*** ATTENTE FIN EAU ***\n");
+					temps_malaxage_apres_fin_eau = 0;
+				}
+				semGive(sem_attente_fin_eau);
 				intensite_avant = intensite;
 				if(Imax_atteint){
 					EteindreDiodeMalaxeur();
@@ -838,6 +865,9 @@ int gestion_moteur(){
 		if(temps_malaxage_apres_fin_eau == cste_temps_malaxeur){
 			printf("\n*** FIN DE LA TACHE MOTEUR ET DEBUT DE CONTROLE DE POSITIONNEMENT ***\n");
 			consigne_moteur(0);
+			semTake(sem_attente_fin_eau, WAIT_FOREVER);
+			attente_fin_eau = 0;
+			semGive(sem_attente_fin_eau);
 			semGive(sem_debut_camion);
 		}else{
 			semGive(sem_debut_malaxeur);
