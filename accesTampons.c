@@ -372,7 +372,7 @@ char *get_message_affichage(int index_message){
 }
 int ajouter_message_affichage_persistant(char message[TAILLE_MESSAGE_AFFICHAGE]){
 	strncpy(message_affichage_persistant, message, sizeof message_affichage_persistant);
-	
+		
 	return 0;
 }
 char *get_message_affichage_persistant(){

@@ -322,10 +322,12 @@ void EteindreDiodeMalaxeur(){
 }
 
 void consigne_moteur(int vitesse_voulue){
-	if (moteur_en_cours == INACTIF){	
+	if (moteur_en_cours == INACTIF){
+		ajouter_message_affichage("Démarrage du moteur");
 		moteur_en_cours = ACTIF;
 		tache_moteur = taskSpawn("driver_moteur",100, 0x100,2000,(FUNCPTR) driver_moteur, vitesse_voulue,0,0,0,0,0,0,0,0,0);
 	} else if (vitesse_voulue == 0){ //tache_moteur != INACTIF
+		ajouter_message_affichage("Arret du moteur");
 		taskDelete(tache_moteur);
 	}
 	
@@ -642,7 +644,7 @@ int driver_affichage_test(){
 		}
 
 		printf("\n");
-		
+
 		printf("%s\n", get_message_affichage_persistant());
 		
 		printf("\n");

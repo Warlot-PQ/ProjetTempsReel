@@ -11,27 +11,31 @@ int gestion_IHM(){
 	int valeur_beton, premier_essai = 1;
 	char buffer[TAILLE_MESSAGE_AFFICHAGE], valeur_volume_s[50], valeur_beton_s[50], valeur_distance_s[50];
 	
-	ajouter_message_affichage("Initialisation de la cimenterie, remplissage des silos\n");
+	ajouter_message_affichage("Initialisation de la cimenterie, remplissage des silos");
 	semTake(sem_init_remplissage_silo_agr_1, WAIT_FOREVER);
 	semTake(sem_init_remplissage_silo_agr_2, WAIT_FOREVER);
 	semTake(sem_init_remplissage_silo_agr_3, WAIT_FOREVER);
 	semTake(sem_init_remplissage_silo_cim_1, WAIT_FOREVER);
 	semTake(sem_init_remplissage_silo_cim_2, WAIT_FOREVER);
 	semTake(sem_init_remplissage_silo_eau, WAIT_FOREVER);
+	ajouter_message_affichage("Cimenterie initialisé avec succès");
 	
 	while(1){
 		do{
 			if (premier_essai == 0) {
-				ajouter_message_affichage("Valeurs entrées incorrect.\n");
-				ajouter_message_affichage("Vous pouvez répéter la question ?\n");
+				ajouter_message_affichage("Valeurs entrées incorrect.");
+				ajouter_message_affichage("Vous pouvez répéter la question ?");
 			}
 			
-			ajouter_message_affichage_persistant("Entrez le volume de béton souhaité :\n");
+			ajouter_message_affichage_persistant("Entrez le volume de béton souhaité :");
 			scanf("%f", &valeur_volume);
-			ajouter_message_affichage_persistant("Entrez le type de béton souhaité (1,2,3) :\n");
+			
+			ajouter_message_affichage_persistant("Entrez le type de béton souhaité (1,2,3) :");
 			scanf("%d", &valeur_beton);
-			ajouter_message_affichage_persistant("Entrez la distance à parcourir :\n");
+			
+			ajouter_message_affichage_persistant("Entrez la distance à parcourir :");
 			scanf("%f", &valeur_distance);
+			
 			premier_essai = 0;
 			vider_messages_affichage();
 		} while (!(valeur_volume > 0 
@@ -41,7 +45,7 @@ int gestion_IHM(){
 		premier_essai = 1;
 		
 		if (tampon_fonct_calcul_plein() == PB){
-			ajouter_message_affichage("Nombre maximum de commande en cours de traitement atteint !\n");
+			ajouter_message_affichage("Nombre maximum de commande en cours de traitement atteint !");
 		} else {
 			//Signale que l'arrivée d'une commande plus recente
 			incremente_tampon_fonct_calcul_cmd_plus_recente();
@@ -581,7 +585,7 @@ int gestion_synchro(){
 		
 		semTake(sem_cmd_en_cours, WAIT_FOREVER);
 
-		ajouter_message_affichage("Ouverture des balances, debut versement !\n");
+		ajouter_message_affichage("Ouverture des balances, debut versement !");
 		
 		//Ici, le contenu des balances correspond à la cmd en cours
 		//Démarrage du versement des balances
@@ -592,7 +596,7 @@ int gestion_synchro(){
 		semTake(sem_fin_vers_balance_agregat, WAIT_FOREVER);
 		semTake(sem_fin_vers_balance_ciment, WAIT_FOREVER);
 
-		ajouter_message_affichage("Fermeture des balances, fin versement !\n");
+		ajouter_message_affichage("Fermeture des balances, fin versement !");
 
 		//Lancement du malaxeur
 		semGive(sem_debut_malaxeur);
@@ -703,7 +707,7 @@ int gestion_position_camion(){
 		
 		while(position_camion_ok == 0){
 			while(getPresence() == 0){
-				ajouter_message_affichage("\n******** Camion non positionné ! ********\n");
+				ajouter_message_affichage("******** Camion non positionné ! ********");
 			}
 			EteindreDiodePositionCamion();
 			timer_camion_present = 0;
@@ -711,7 +715,7 @@ int gestion_position_camion(){
 			while((timer_camion_present < 5) && (getPresence() == 1)){
 				taskDelay(100);
 				timer_camion_present = timer_camion_present +1;
-				ajouter_message_affichage("\n *** CAMION EN POSITION *** \n");
+				ajouter_message_affichage(" *** CAMION EN POSITION *** ");
 			}
 			
 			if(timer_camion_present == 5){
@@ -732,7 +736,7 @@ int gestion_versement(){
 		semTake(sem_vide_malaxeur, WAIT_FOREVER);
 		FermerVanne(cst_vanne_malaxeur);
 		
-		ajouter_message_affichage("Commande terminée.\n");
+		ajouter_message_affichage("Commande terminée.");
 		semGive(sem_fin_malaxeur);
 	}
 	
@@ -770,11 +774,11 @@ int gestion_moteur(){
 				}else{
 					temps_sans_fluctuation = 0;
 				}
-				ajouter_message_affichage("\n*** ATTENTE D'HOMOGENEISATION DU MELANGE ***\n");
+				ajouter_message_affichage("*** ATTENTE D'HOMOGENEISATION DU MELANGE ***");
 				intensite_avant = intensite;
 				if(Imax_atteint){
 					EteindreDiodeMalaxeur();
-					ajouter_message_affichage("\n*** Reprise versement ***\n");
+					ajouter_message_affichage("*** Reprise versement ***");
 					semGive(sem_reprise_bal_tapis_agrEtCim);
 					Imax_atteint = 0;
 				}
@@ -782,14 +786,14 @@ int gestion_moteur(){
 				if(!Imax_atteint){
 					consigne_moteur(0);
 					Imax_atteint = 1;
-					ajouter_message_affichage("\n*** Stop versement ***\n");
+					ajouter_message_affichage("*** Stop versement ***");
 					semGive(sem_stop_bal_tapis_agrEtCim);
 					AllumerDiodeMalaxeur();
 				}
 			}
 		}
 		
-		ajouter_message_affichage("\n***MELANGE HOMOGENE ***\n");
+		ajouter_message_affichage("***MELANGE HOMOGENE ***");
 		
 		semGive(sem_melange_homogene);
 		
@@ -807,7 +811,7 @@ int gestion_moteur(){
 				}else{
 					temps_sans_fluctuation = 0;
 				}
-				ajouter_message_affichage("\n*** TEMPS DE MALAXAGE APRES HOMOGENEISATION ET AVANT VERSEMENT DANS LE CAMION ***\n");
+				ajouter_message_affichage("*** TEMPS DE MALAXAGE APRES HOMOGENEISATION ET AVANT VERSEMENT DANS LE CAMION ***");
 				
 				sprintf(temps_malaxage_apres_fin_eau_s, "%d", temps_malaxage_apres_fin_eau);
 				
@@ -819,7 +823,7 @@ int gestion_moteur(){
 				intensite_avant = intensite;
 				if(Imax_atteint){
 					EteindreDiodeMalaxeur();
-					ajouter_message_affichage("\n*** Reprise versement ***\n");
+					ajouter_message_affichage("*** Reprise versement ***");
 					semGive(sem_reprise_bal_tapis_agrEtCim);
 					Imax_atteint = 0;
 				}
@@ -827,7 +831,7 @@ int gestion_moteur(){
 				if(!Imax_atteint){
 					consigne_moteur(0);
 					Imax_atteint = 1;
-					ajouter_message_affichage("\n*** Stop versement ***\n");
+					ajouter_message_affichage("*** Stop versement ***");
 					semGive(sem_stop_bal_tapis_agrEtCim);
 					AllumerDiodeMalaxeur();
 				}
@@ -836,7 +840,7 @@ int gestion_moteur(){
 		
 		//SI on arrive ici, cela veut dire que soit : le temps de malaxage après la fin du versement de l'eau s'est écoulé, soit l'intensité a dépassé le seuil.
 		if(temps_malaxage_apres_fin_eau == cste_temps_malaxeur){
-			ajouter_message_affichage("\n*** FIN DE LA TACHE MOTEUR ET DEBUT DE CONTROLE DE POSITIONNEMENT ***\n");
+			ajouter_message_affichage("*** FIN DE LA TACHE MOTEUR ET DEBUT DE CONTROLE DE POSITIONNEMENT ***");
 			consigne_moteur(0);
 			semGive(sem_debut_camion);
 		}else{
@@ -846,7 +850,6 @@ int gestion_moteur(){
 	
 	return 0;
 }
-
 
 void capteur_vide_malaxeur(){
 	semGive(sem_vide_malaxeur);

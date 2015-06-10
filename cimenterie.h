@@ -48,9 +48,9 @@ float tampon_cmd[NB_COMMANDE * 3];
 float tampon_qte_silos[6]; 
 int tampon_fonct_calcul[5];
 
+//----------------Tampons d'affichage
 char buffer_affichage[MAX_MESSAGE_AFFICHAGE][TAILLE_MESSAGE_AFFICHAGE];
 int message_plus_recent = 0;
-
 char message_affichage_persistant[TAILLE_MESSAGE_AFFICHAGE];
 
 //----------------Information sur le versement de l'eau
