@@ -1,6 +1,3 @@
-//#ifndef CIMENTERIE_H
-//#define CIMENTERIE_H
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -164,5 +161,3 @@ typedef struct type_beton{
 type_beton beton_type_1;
 type_beton beton_type_2;
 type_beton beton_type_3;
-
-//#endif

@@ -1,6 +1,3 @@
-#ifndef ACCES_TAMPONS_H
-#define ACCES_TAMPONS_H
-
 #include <stdio.h>
 #include <unistd.h>
 
@@ -59,5 +56,3 @@ char *get_message_affichage(int);
 
 int ajouter_message_affichage_persistant(char *);
 char *get_message_affichage_persistant();
-
-#endif
