@@ -149,28 +149,103 @@ int getPresence();
 /****************************************/
 /***************DONNEES******************/
 /****************************************/
+/**
+ * getHygrometrie : fonction random entre 1 et 100
+ * @return rand()%100
+ **/
 int getHygrometrie();
-
+/**
+ * getVMot : retourne la vitesse actuelle du moteur (ressource critique protégée par un sémaphore d'exclusion 
+ * mutuelle)
+ * @return vitesse_moteur
+ **/
 int getVmot();
 
+/**
+ * getVMot : retourne l'intensité absorbée par le moteur calcultée en fonction du couple (défini en global)
+ * et de vitesse_moteur.
+ * @return intensite
+ **/
 float getImot();
 /****************************************/
 /****************Taches******************/
 /****************************************/
+/**
+ * driver_versement_silo_agregat : driver modélisant la gestion du versement du contenu des silos d'agrégats.
+ * return 0
+ **/
 int driver_versement_silo_agregat();
+/**
+ * driver_versement_silo_ciment : driver modélisant la gestion du versement du contenu des silos des ciments.
+ * return 0
+ **/
 int driver_versement_silo_ciment();
+/**
+ * driver_versement_silo_eau : driver modélisant la gestion du versement due l'eau dans le malaxeur.
+ * return 0
+ **/
 int driver_versement_silo_eau();
+/**
+ * driver_versement_malaxeur : driver modélisant la gestion du versement due l'eau dans le malaxeur.
+ * return 0
+ **/
 int driver_versement_malaxeur();
-
+/**
+ * driver_moteur : driver modélisant la gestion de la vitesse du moteur selon la consigne reçue. Modifie la
+ * valeur de vitesse_moteur. Calcule un coefficient d'incrémentation pour que la vitesse voulue soit atteinte
+ * en 5 secondes.
+ * in : (int) vitesse_voulue
+ * return 0
+ **/
 int driver_moteur(int vitesse_voulue);
-
+/**
+ * driver_remplissage_silo_agregat : driver modélisant la gestion du remplissage des silos agrégats. Lancé quand
+ * le silo est vide.
+ * return 0
+ **/
 int driver_remplissage_silo_agregat();
+/**
+ * driver_remplissage_silo_ciment : driver modélisant la gestion du remplissage des silos ciments. Lancé quand
+ * le silo est vide.
+ * return 0
+ **/
 int driver_remplissage_silo_ciment();
+/**
+ * driver_remplissage_silo_eau : driver modélisant la gestion du remplissage du silo d'eau. Lancé quand
+ * le silo est vide.
+ * return 0
+ **/
 int driver_remplissage_silo_eau();
+/**
+ * driver_versement_balance_agregat : driver modélisant le versement du contenu de la balance des agrégats.
+ * Se lance quand les silos ont fini de verser leur quantités d'agrégats respectifs.
+ * return 0
+ **/
 int driver_versement_balance_agregat();
+/**
+ * driver_versement_balance_ciment : driver modélisant le versement du contenu de la balance des ciments.
+ * Se lance quand les silos ont fini de verser leur quantités de ciments respectifs.
+ * return 0
+ **/
 int driver_versement_balance_ciment();
+
 //----------------Affichage du système dans la console
+/**
+ * driver_affichage_test : affichage de l'état du système en temps réel dans la console. Recupère les informations
+ * depuis les tampons. Rafraîchit la console selon la valeur de TAUX_RAFFRAICHISSEMENT définie en globale.
+ * return 0
+ **/
 int driver_affichage_test();
+/**
+ * longueur_entier : retourne la longueur d'un entier (on le divise par 10 successivement jusqu'à ce qu'il 
+ * atteigne 0, en incrémentant la valeur que l'on retourne).
+ * in : int valeur à tester
+ * return longueur
+ **/
 int longueur_entier(int);
+/**
+ * affiche_silo : représente l'état des différents silos présents dans le système dans la console.
+ * return void
+ **/
 void affiche_silo(int[], int[], int[], int[], char);
 //#endif
