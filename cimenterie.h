@@ -59,10 +59,10 @@ int qte_contenu_balance_agregat = 0;
 int qte_contenu_balance_ciment = 0;
 
 //----------------Sémaphores d'exclusion mutuel
-SEM_ID sem_tampon_cmd;
-SEM_ID sem_tampon_fonct_calcul;
-SEM_ID sem_tampon_qte_silos;
-SEM_ID sem_versement_eau_possible;
+SEM_ID sem_exl_tampon_cmd;
+SEM_ID sem_exl_tampon_fonct_calcul;
+SEM_ID sem_exl_tampon_qte_silos;
+SEM_ID sem_exl_versement_eau_possible;
 
 //----------------Sémaphores d'initialisation de la cimenterie
 SEM_ID sem_init_remplissage_silo_agr_1;
@@ -129,25 +129,14 @@ SEM_ID sem_fin_vers_balance_ciment;
 
 SEM_ID sem_melange_homogene;
 
+//sémpahore de synchro de l'ouverture des balances (si malaxeur vide)
 SEM_ID sem_cmd_en_cours;
 
 SEM_ID sem_debut_camion;
 SEM_ID sem_position_camion_ok;
-SEM_ID sem_diode_allumer_camion;
-SEM_ID sem_diode_eteindre_camion;
-SEM_ID sem_arret_rotation_moteur;
 SEM_ID sem_vide_malaxeur;
-
-SEM_ID sem_van_ferme_malaxeur;
-SEM_ID sem_van_ouvre_malaxeur;
 SEM_ID sem_stop_bal_tapis_agrEtCim;
 SEM_ID sem_reprise_bal_tapis_agrEtCim;
-
-MSG_Q_ID file_intensite;
-
-//TEST
-SEM_ID sem_stupide;
-//TEST
 
 typedef struct type_beton{
 	int agregat_1;

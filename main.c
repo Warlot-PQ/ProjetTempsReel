@@ -41,10 +41,10 @@ int main(){
 	sem_vitesse_moteur = semMCreate(SEM_Q_FIFO);
 	
 	//Initialise les sémaphores d'exclusion mutulle
-	sem_tampon_cmd = semMCreate(SEM_Q_FIFO);
-	sem_tampon_fonct_calcul = semMCreate(SEM_Q_FIFO);
-	sem_tampon_qte_silos = semMCreate(SEM_Q_FIFO);
-	sem_versement_eau_possible = semMCreate(SEM_Q_FIFO);
+	sem_exl_tampon_cmd = semMCreate(SEM_Q_FIFO);
+	sem_exl_tampon_fonct_calcul = semMCreate(SEM_Q_FIFO);
+	sem_exl_tampon_qte_silos = semMCreate(SEM_Q_FIFO);
+	sem_exl_versement_eau_possible = semMCreate(SEM_Q_FIFO);
 	
 	//Initialise les sémaphores d'initialisation de la cimenterie	
 	sem_init_remplissage_silo_agr_1 = semBCreate(SEM_Q_FIFO, 0);
@@ -104,8 +104,8 @@ int main(){
 	//sémaphore de synchro des balances
 	sem_pret_balance_agregat = semBCreate(SEM_Q_FIFO, 0);
 	sem_pret_balance_ciment = semBCreate(SEM_Q_FIFO, 0);
-	sem_ouverture_balance_agregat = semBCreate(SEM_Q_FIFO, 0);		//demande d'ouverture
-	sem_ouverture_balance_ciment = semBCreate(SEM_Q_FIFO, 0);		//demande d'ouverture
+	sem_ouverture_balance_agregat = semBCreate(SEM_Q_FIFO, 0);
+	sem_ouverture_balance_ciment = semBCreate(SEM_Q_FIFO, 0);
 	sem_fin_vers_balance_agregat = semBCreate(SEM_Q_FIFO, 0);
 	sem_fin_vers_balance_ciment = semBCreate(SEM_Q_FIFO, 0);
 
@@ -114,19 +114,12 @@ int main(){
 	sem_cmd_en_cours = semBCreate(SEM_Q_FIFO, 0);
 
 	sem_debut_camion = semBCreate(SEM_Q_FIFO, 0);
-	sem_diode_allumer_camion = semBCreate(SEM_Q_FIFO, 0);
-	sem_diode_eteindre_camion = semBCreate(SEM_Q_FIFO, 0);
 	sem_position_camion_ok = semBCreate(SEM_Q_FIFO, 0);
 	sem_position_camion_ok = semBCreate(SEM_Q_FIFO, 0);
-	sem_arret_rotation_moteur = semBCreate(SEM_Q_FIFO, 0);
 	sem_vide_malaxeur = semBCreate(SEM_Q_FIFO, 0);
 
-	sem_van_ferme_malaxeur = semBCreate(SEM_Q_FIFO, 0);
-	sem_van_ouvre_malaxeur = semBCreate(SEM_Q_FIFO, 0);
 	sem_stop_bal_tapis_agrEtCim = semBCreate(SEM_Q_FIFO, 0);
 	sem_reprise_bal_tapis_agrEtCim = semBCreate(SEM_Q_FIFO, 0);
-	
-	file_intensite = msgQCreate(1000, 100, MSG_Q_FIFO);
 	
 	//Initialise le contenu des tampons
 	for(index_boucle = 0; index_boucle < NB_COMMANDE * 3; index_boucle += 1){
@@ -143,20 +136,15 @@ int main(){
 	tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_agregat_en_cours] = 0;
 	tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_ciment_en_cours] = 0;
 	
-	//Initialisation implicite
-	//TODO fermeture de toutes les vannes
-	
 	//Empeche la réquisition (préemption)
 	taskLock();
 	
 	taskSpawn("driver_affichage_test",150,
 						0x100,2000,(FUNCPTR) driver_affichage_test,
 						0,0,0,0,0,0,0,0,0,0);
-	
 	taskSpawn("gestion_IHM",200,
 		                0x100,2000,(FUNCPTR) gestion_IHM,
 		                0,0,0,0,0,0,0,0,0,0);
-	
 	taskSpawn("gestion_evenement_fin_malax",200,
 			                0x100,2000,(FUNCPTR) gestion_evenement_fin_malax,
 			                0,0,0,0,0,0,0,0,0,0);
@@ -178,33 +166,27 @@ int main(){
 	taskSpawn("calcul_qte_ciment",200,
 			                0x100,2000,(FUNCPTR) calcul_qte_ciment,
 			                0,0,0,0,0,0,0,0,0,0);
-	
 	taskSpawn("versement_agregat_silos_et_balance",200,
 			                0x100,2000,(FUNCPTR) versement_agregat_silos_et_balance,
 			                0,0,0,0,0,0,0,0,0,0);
 	taskSpawn("remplissage_silo_agregat_1",200,
 			                0x100,2000,(FUNCPTR) remplissage_silo_agregat_1,
 			                0,0,0,0,0,0,0,0,0,0);
-	
 	taskSpawn("remplissage_silo_agregat_2",200,
 			                0x100,2000,(FUNCPTR) remplissage_silo_agregat_2,
 			                0,0,0,0,0,0,0,0,0,0);
-	
 	taskSpawn("remplissage_silo_agregat_3",200,
 			                0x100,2000,(FUNCPTR) remplissage_silo_agregat_3,
 			                0,0,0,0,0,0,0,0,0,0);
 	taskSpawn("versement_ciment_silos_et_balance",200,
 			                0x100,2000,(FUNCPTR) versement_ciment_silos_et_balance,
 			                0,0,0,0,0,0,0,0,0,0);
-	 
 	taskSpawn("remplissage_silo_ciment_1",200,
 			                0x100,2000,(FUNCPTR) remplissage_silo_ciment_1,
 			                0,0,0,0,0,0,0,0,0,0);
-	
 	taskSpawn("remplissage_silo_ciment_2",200,
 			                0x100,2000,(FUNCPTR) remplissage_silo_ciment_2,
 			                0,0,0,0,0,0,0,0,0,0);
-	
 	taskSpawn("remplissage_balance_agregats",200,
 			                0x100,2000,(FUNCPTR) remplissage_balance_agregats,
 			                0,0,0,0,0,0,0,0,0,0);
@@ -217,19 +199,15 @@ int main(){
 	taskSpawn("gestion_synchro_balances",200,
 			                0x100,2000,(FUNCPTR) gestion_synchro_balances,
 			                0,0,0,0,0,0,0,0,0,0);
-	
 	taskSpawn("versement_eau",200,
 			                0x100,2000,(FUNCPTR) versement_eau,
 			                0,0,0,0,0,0,0,0,0,0);
-	
 	taskSpawn("remplissage_eau",200,
 			                0x100,2000,(FUNCPTR) remplissage_eau,
 			                0,0,0,0,0,0,0,0,0,0);
-
 	taskSpawn("gestion_position_camion",200,
 			                0x100,2000,(FUNCPTR) gestion_position_camion,
 			                0,0,0,0,0,0,0,0,0,0);
-	
 	taskSpawn("gestion_versement_malaxeur",200,
 			                0x100,2000,(FUNCPTR) gestion_versement_malaxeur,
 			                0,0,0,0,0,0,0,0,0,0);
@@ -238,10 +216,6 @@ int main(){
 			                0,0,0,0,0,0,0,0,0,0);
 	//Réautorise la réquisition
 	taskUnlock();
-	
-	
-	
-	
 	
 	return 0;
 }
