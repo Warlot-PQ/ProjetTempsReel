@@ -10,7 +10,6 @@ int gestion_IHM(){
 	float valeur_volume, valeur_distance;
 	int valeur_beton, premier_essai = 1;
 	char buffer[TAILLE_MESSAGE_AFFICHAGE], valeur_volume_s[50], valeur_beton_s[50], valeur_distance_s[50];
-	
 	ajouter_message_affichage("Initialisation de la cimenterie, remplissage des silos");
 	semTake(sem_init_remplissage_silo_agr_1, WAIT_FOREVER);
 	semTake(sem_init_remplissage_silo_agr_2, WAIT_FOREVER);
@@ -279,7 +278,7 @@ int calcul_qte_ciment(){
 	return 0;
 }
 
-int versement_agregat(){
+int versement_agregat_silos_et_balance(){
 	//Numéro du silo à ouvrir
 	int versement = 0, num_silo_entier;
 	char num_silo[256];
@@ -357,7 +356,7 @@ int versement_agregat(){
 	}
 	return 0;
 }
-int remplissage_agregat_1(){
+int remplissage_silo_agregat_1(){
 	//Initialisation du système, remplissage du silo
 	OuvrirVanne(cst_vanne_haut_agregat_1);
 	
@@ -379,7 +378,7 @@ int remplissage_agregat_1(){
 	
 	return 0;
 }
-int remplissage_agregat_2(){
+int remplissage_silo_agregat_2(){
 	//Initialisation du système, remplissage du silo
 	OuvrirVanne(cst_vanne_haut_agregat_2);
 	
@@ -402,7 +401,7 @@ int remplissage_agregat_2(){
 		
 	return 0;
 }
-int remplissage_agregat_3(){
+int remplissage_silo_agregat_3(){
 	//Initialisation du système, remplissage du silo
 	OuvrirVanne(cst_vanne_haut_agregat_3);
 	
@@ -426,7 +425,7 @@ int remplissage_agregat_3(){
 	return 0;
 }
 
-int versement_ciment(){
+int versement_ciment_silos_et_balance(){
 	//Numéro du silo à ouvrir
 	int num_silo_entier, versement = 0;
 	char num_silo[256];
@@ -491,7 +490,7 @@ int versement_ciment(){
 	}
 	return 0;
 }
-int remplissage_ciment_1(){
+int remplissage_silo_ciment_1(){
 	//Initialisation du système, remplissage du silo
 	OuvrirVanne(cst_vanne_haut_ciment_1);
 	
@@ -514,7 +513,7 @@ int remplissage_ciment_1(){
 		
 	return 0;
 }
-int remplissage_ciment_2(){
+int remplissage_silo_ciment_2(){
 	//Initialisation du système, remplissage du silo
 	OuvrirVanne(cst_vanne_haut_ciment_2);
 	
@@ -538,7 +537,7 @@ int remplissage_ciment_2(){
 	return 0;
 }
 
-int gestion_quantite_balance_agregats(){
+int remplissage_balance_agregats(){
 	int num_silo_entier = 0, versement = 1;
 	char num_silo[256], buffer[TAILLE_MESSAGE_AFFICHAGE], qte[50];
 
@@ -569,7 +568,7 @@ int gestion_quantite_balance_agregats(){
 	}
 	return 0;
 }
-int gestion_quantite_balance_ciment(){
+int remplissage_balance_ciment(){
 	int num_silo_entier = 0, versement = 1;		//Numéro du silo en cours de versement
 	char num_silo[256], buffer[TAILLE_MESSAGE_AFFICHAGE], qte[50];
 
@@ -767,6 +766,8 @@ int gestion_position_camion(){
 				semGive(sem_position_camion_ok);
 			}
 		}
+		//Fermer toute
+		
 	}
 	
 	return 0;

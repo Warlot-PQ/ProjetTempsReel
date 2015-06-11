@@ -142,7 +142,10 @@ int main(){
 	tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_eau_en_cours] = 0;
 	tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_agregat_en_cours] = 0;
 	tampon_fonct_calcul[index_tampon_fonct_calcul_cmd_ciment_en_cours] = 0;
-		
+	
+	//Initialisation implicite
+	//TODO fermeture de toutes les vannes
+	
 	//Empeche la réquisition (préemption)
 	taskLock();
 	
@@ -176,37 +179,37 @@ int main(){
 			                0x100,2000,(FUNCPTR) calcul_qte_ciment,
 			                0,0,0,0,0,0,0,0,0,0);
 	
-	taskSpawn("versement_agregat",200,
-			                0x100,2000,(FUNCPTR) versement_agregat,
+	taskSpawn("versement_agregat_silos_et_balance",200,
+			                0x100,2000,(FUNCPTR) versement_agregat_silos_et_balance,
 			                0,0,0,0,0,0,0,0,0,0);
-	taskSpawn("remplissage_agregat_1",200,
-			                0x100,2000,(FUNCPTR) remplissage_agregat_1,
-			                0,0,0,0,0,0,0,0,0,0);
-	
-	taskSpawn("remplissage_agregat_2",200,
-			                0x100,2000,(FUNCPTR) remplissage_agregat_2,
+	taskSpawn("remplissage_silo_agregat_1",200,
+			                0x100,2000,(FUNCPTR) remplissage_silo_agregat_1,
 			                0,0,0,0,0,0,0,0,0,0);
 	
-	taskSpawn("remplissage_agregat_3",200,
-			                0x100,2000,(FUNCPTR) remplissage_agregat_3,
+	taskSpawn("remplissage_silo_agregat_2",200,
+			                0x100,2000,(FUNCPTR) remplissage_silo_agregat_2,
 			                0,0,0,0,0,0,0,0,0,0);
-	taskSpawn("versement_ciment",200,
-			                0x100,2000,(FUNCPTR) versement_ciment,
+	
+	taskSpawn("remplissage_silo_agregat_3",200,
+			                0x100,2000,(FUNCPTR) remplissage_silo_agregat_3,
+			                0,0,0,0,0,0,0,0,0,0);
+	taskSpawn("versement_ciment_silos_et_balance",200,
+			                0x100,2000,(FUNCPTR) versement_ciment_silos_et_balance,
 			                0,0,0,0,0,0,0,0,0,0);
 	 
-	taskSpawn("remplissage_ciment_1",200,
-			                0x100,2000,(FUNCPTR) remplissage_ciment_1,
+	taskSpawn("remplissage_silo_ciment_1",200,
+			                0x100,2000,(FUNCPTR) remplissage_silo_ciment_1,
 			                0,0,0,0,0,0,0,0,0,0);
 	
-	taskSpawn("remplissage_ciment_2",200,
-			                0x100,2000,(FUNCPTR) remplissage_ciment_2,
+	taskSpawn("remplissage_silo_ciment_2",200,
+			                0x100,2000,(FUNCPTR) remplissage_silo_ciment_2,
 			                0,0,0,0,0,0,0,0,0,0);
 	
-	taskSpawn("gestion_quantite_balance_agregats",200,
-			                0x100,2000,(FUNCPTR) gestion_quantite_balance_agregats,
+	taskSpawn("remplissage_balance_agregats",200,
+			                0x100,2000,(FUNCPTR) remplissage_balance_agregats,
 			                0,0,0,0,0,0,0,0,0,0);
-	taskSpawn("gestion_quantite_balance_ciment",200,
-			                0x100,2000,(FUNCPTR) gestion_quantite_balance_ciment,
+	taskSpawn("remplissage_balance_ciment",200,
+			                0x100,2000,(FUNCPTR) remplissage_balance_ciment,
 			                0,0,0,0,0,0,0,0,0,0);
 	taskSpawn("arret_et_reprise_versement_balances",200,
 			                0x100,2000,(FUNCPTR) arret_et_reprise_versement_balances,

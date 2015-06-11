@@ -24,19 +24,19 @@ int calcul_qte_ciment();
 
 //----------------Gestion silos agregats et ciments
 //Gestion silos agregats
-int versement_agregat();
-int remplissage_agregat_1();
-int remplissage_agregat_2();
-int remplissage_agregat_3();
+int versement_agregat_silos_et_balance();
+int remplissage_silo_agregat_1();
+int remplissage_silo_agregat_2();
+int remplissage_silo_agregat_3();
 //Gestion silos ciments
-int versement_ciment();
-int remplissage_ciment_1();
-int remplissage_ciment_2();
+int versement_ciment_silos_et_balance();
+int remplissage_silo_ciment_1();
+int remplissage_silo_ciment_2();
 
 //----------------Gestion balances et tapis
 //Gestion balances
-int gestion_quantite_balance_agregats();
-int gestion_quantite_balance_ciment();
+int remplissage_balance_agregats();
+int remplissage_balance_ciment();
 int arret_et_reprise_versement_balances();
 
 //----------------Gestion silo eau et malaxeur
