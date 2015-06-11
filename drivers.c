@@ -6,27 +6,6 @@
 #include <string.h>
 #include <wdLib.h>
 
-int agregat_versement_en_cours[3] = {INACTIF, INACTIF, INACTIF};
-int agregat_remplissage_en_cours[3] = {INACTIF, INACTIF, INACTIF};
-int ciment_versement_en_cours[2] = {INACTIF, INACTIF};
-int ciment_remplissage_en_cours[2] = {INACTIF, INACTIF};
-int eau_versement_en_cours = INACTIF;
-int eau_remplissage_en_cours = INACTIF;
-int malaxeur_versement_en_cours = INACTIF;
-int balance_agregat_versement_en_cours = INACTIF;
-int balance_ciment_versement_en_cours = INACTIF;
-int moteur_en_cours = INACTIF;
-//PID des taches driver (test)
-int tache_remplissage_ciment = INACTIF;
-int tache_remplissage_agregat = INACTIF;
-int tache_remplissage_eau = INACTIF;
-int tache_versement_ciment = INACTIF;
-int tache_versement_agregat = INACTIF;
-int tache_versement_eau = INACTIF;
-int tache_versement_balance_agregat = INACTIF;
-int tache_versement_balance_ciment = INACTIF;
-int tache_moteur = INACTIF;
-
 void OuvrirVanne(char* vanne){
 	int valeur;
 	char buffer[TAILLE_MESSAGE_AFFICHAGE];
@@ -334,7 +313,7 @@ void consigne_moteur(int vitesse_voulue){
 	vitesse_moteur = vitesse_voulue;
 }
 
-int getPresence(){
+int getPresenceCamion(){
 	if(timer_getPresence < 5){
 		taskDelay(ATTENTE_ENTRE_DEUX_INT / 2);
 		timer_getPresence = timer_getPresence + 1;

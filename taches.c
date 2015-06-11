@@ -749,13 +749,13 @@ int gestion_position_camion(){
 		position_camion_ok = 0;
 		
 		while(position_camion_ok == 0){
-			while(getPresence() == 0){
+			while(getPresenceCamion() == 0){
 				ajouter_message_affichage("******** Camion non positionné ! ********");
 			}
 			EteindreDiodePositionCamion();
 			timer_camion_present = 0;
 			
-			while((timer_camion_present < 5) && (getPresence() == 1)){
+			while((timer_camion_present < 5) && (getPresenceCamion() == 1)){
 				taskDelay(100);
 				timer_camion_present = timer_camion_present +1;
 				ajouter_message_affichage(" *** CAMION EN POSITION *** ");

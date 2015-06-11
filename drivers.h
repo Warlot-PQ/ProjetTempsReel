@@ -31,7 +31,7 @@
 
 //----------------Constantes pour le moteur
 #define cste_Imax											15.0
-#define cste_vitesse_moteur_max								10
+#define cste_vitesse_moteur_max								20
 #define couple_moteur										50
 #define tension_moteur										100
 
@@ -55,7 +55,7 @@ int timer_versement_malaxeur;
 #define ACTIF												0
 #define ATTENTE_ENTRE_DEUX_INT								100
 #define TAUX_RAFFRAICHISSEMENT								50
-#define UNITE_VOLUME_REMPLISSAGE							2
+#define UNITE_VOLUME_REMPLISSAGE							3
 #define UNITE_VOLUME_VERSEMENT								1
 
 int capacite_silo_agregat_courrante[3] = {0, 0, 0};
@@ -68,6 +68,27 @@ SEM_ID sem_capacite_silo_ciment_courrante;
 SEM_ID sem_capacite_silo_eau_courrante;
 SEM_ID sem_capacite_malaxeur;
 SEM_ID sem_vitesse_moteur;
+
+int agregat_versement_en_cours[3] = {INACTIF, INACTIF, INACTIF};
+int agregat_remplissage_en_cours[3] = {INACTIF, INACTIF, INACTIF};
+int ciment_versement_en_cours[2] = {INACTIF, INACTIF};
+int ciment_remplissage_en_cours[2] = {INACTIF, INACTIF};
+int eau_versement_en_cours = INACTIF;
+int eau_remplissage_en_cours = INACTIF;
+int malaxeur_versement_en_cours = INACTIF;
+int balance_agregat_versement_en_cours = INACTIF;
+int balance_ciment_versement_en_cours = INACTIF;
+int moteur_en_cours = INACTIF;
+//PID des taches driver (test)
+int tache_remplissage_ciment = INACTIF;
+int tache_remplissage_agregat = INACTIF;
+int tache_remplissage_eau = INACTIF;
+int tache_versement_ciment = INACTIF;
+int tache_versement_agregat = INACTIF;
+int tache_versement_eau = INACTIF;
+int tache_versement_balance_agregat = INACTIF;
+int tache_versement_balance_ciment = INACTIF;
+int tache_moteur = INACTIF;
 
 
 /*
@@ -143,7 +164,7 @@ void consigne_moteur(int);
 *	Indique si le camion est en place
 *	return : 1 si oui, 0 sinon
 **/
-int getPresence();
+int getPresenceCamion();
 /****************************************/
 /***************DONNEES******************/
 /****************************************/
