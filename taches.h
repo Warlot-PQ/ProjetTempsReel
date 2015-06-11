@@ -1,6 +1,3 @@
-//#ifndef TACHES_H
-//#define TACHES_H
-
 #include <stdio.h>
 #include <unistd.h>
 #include <semLib.h>
@@ -70,4 +67,3 @@ void capteur_plein_eau();
 void capteur_vide_eau();
 void capteur_plus_eau();
 void capteur_moins_eau();
-//#endif

@@ -1,4 +1,4 @@
-#include "signauxExterieur.h"
+#include "drivers.h"
 #include "cimenterie.h"
 #include "accesTampons.h"
 #include "taches.h"
@@ -336,7 +336,7 @@ void consigne_moteur(int vitesse_voulue){
 
 int getPresence(){
 	if(timer_getPresence < 5){
-		taskDelay(100);
+		taskDelay(ATTENTE_ENTRE_DEUX_INT / 2);
 		timer_getPresence = timer_getPresence + 1;
 		return 0;
 	}else{
@@ -372,7 +372,7 @@ int driver_moteur(int vitesse_voulue){
 	while(1){
 		if (moteur_en_cours != INACTIF) {
 			while(vitesse_moteur != vitesse_voulue){
-				taskDelay(sysClkRateGet() *1);
+				taskDelay(ATTENTE_ENTRE_DEUX_INT / 2);
 				semTake(sem_vitesse_moteur, WAIT_FOREVER);
 				
 				if (vitesse_voulue > vitesse_moteur){
@@ -398,7 +398,7 @@ int driver_versement_silo_agregat(){
 	while (1){
 		for (i = 0; i < 3; i += 1){
 			if (agregat_versement_en_cours[i] != INACTIF){
-				taskDelay(ATTENTE_ENTRE_DEUX_INT);
+				taskDelay(ATTENTE_ENTRE_DEUX_INT /2);
 				//Decremente contenu silo
 				semTake(sem_capacite_silo_agregat_courrante, WAIT_FOREVER);
 				capacite_silo_agregat_courrante[i] -= UNITE_VOLUME_VERSEMENT;
@@ -430,7 +430,7 @@ int driver_versement_silo_ciment(){
 	while (1){
 		for (i = 0; i < 2; i += 1){
 			if (ciment_versement_en_cours[i] != INACTIF){
-				taskDelay(ATTENTE_ENTRE_DEUX_INT);
+				taskDelay(ATTENTE_ENTRE_DEUX_INT /2);
 				//Decremente contenu silo
 				semTake(sem_capacite_silo_ciment_courrante, WAIT_FOREVER);
 				capacite_silo_ciment_courrante[i] -= UNITE_VOLUME_VERSEMENT;

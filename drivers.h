@@ -1,5 +1,3 @@
-//#ifndef SIGNAUX_EXTERIEUR_H
-//#define SIGNAUX_EXTERIEUR_H
 #include <semLib.h>
 
 //----------------Emission
@@ -55,9 +53,9 @@ int timer_versement_malaxeur;
 
 #define INACTIF 											-1
 #define ACTIF												0
-#define ATTENTE_ENTRE_DEUX_INT								200
-#define TAUX_RAFFRAICHISSEMENT								20
-#define UNITE_VOLUME_REMPLISSAGE							50
+#define ATTENTE_ENTRE_DEUX_INT								100
+#define TAUX_RAFFRAICHISSEMENT								50
+#define UNITE_VOLUME_REMPLISSAGE							2
 #define UNITE_VOLUME_VERSEMENT								1
 
 int capacite_silo_agregat_courrante[3] = {0, 0, 0};
@@ -173,4 +171,3 @@ int driver_versement_balance_ciment();
 int driver_affichage_test();
 int longueur_entier(int);
 void affiche_silo(int[], int[], int[], int[], char);
-//#endif
